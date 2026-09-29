@@ -175,6 +175,7 @@ Run the tool again when the bus timetable or the train timetable changes.
    ```
 
    The files are in `reports/druk/`. The reports show no values in PLN.
+   The web pages of the reports have a button that downloads the printable PDF. To use it, publish the PDF in the same folder as the page: `zalacznik-2-przesiadki.pdf` next to `przesiadki-ilawa.html`, `zalacznik-3-korekty.pdf` next to `korekty-zkm.html`.
 3. Copy the list of changes that `zkmplan.py` made to the folder of the letters:
 
    ```

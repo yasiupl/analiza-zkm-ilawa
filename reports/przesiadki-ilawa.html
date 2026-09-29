@@ -117,6 +117,12 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
   .verdict .lead { font-size: 1.12rem; }
 }
 @media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+.poster .dl { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem; }
+.poster .dl button { font: 600 .88rem/1 var(--f-display); color: var(--poster-ink); background: transparent; border: 1.5px solid var(--poster-ink); border-radius: 6px; padding: .55rem .9rem; cursor: pointer; }
+.poster .dl button:hover { background: rgba(21, 23, 27, .08); }
+.poster .dl button:focus-visible { outline: 2px solid var(--poster-ink); outline-offset: 2px; }
+.poster .dl button:disabled { opacity: .6; cursor: progress; }
+.poster .dl .dl-msg { font: 400 .84rem/1.4 var(--f-display); }
 </style>
 
 <header class="poster">
@@ -128,6 +134,7 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     </div>
     <div class="board" id="board" aria-label="Przykład z rozkładu"></div>
     <div class="meta" id="meta"></div>
+  <div class="dl"><button type="button" id="dl-pdf" hidden>Pobierz wersję do druku (PDF)</button><span id="dl-msg" class="dl-msg" role="status"></span></div>
   </div>
 </header>
 
@@ -537,3 +544,28 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { drawForest(); drawHist(); drawTimeline(); }, 150); });
 })();
 </script>
+<script>
+// Download of the printable version (PDF published next to this page). Shown only
+// when the viewer can save files; the viewer confirms each save.
+(function () {
+  const PDF = "zalacznik-2-przesiadki.pdf", NAME = "przesiadki-ilawa-glowna.pdf";
+  const btn = document.getElementById("dl-pdf"), msg = document.getElementById("dl-msg");
+  if (!btn || !window.claude || !window.claude.use) return;
+  window.claude.use("downloads").then(dl => {
+    if (!dl) return;
+    btn.hidden = false;
+    btn.addEventListener("click", async () => {
+      btn.disabled = true; msg.textContent = "";
+      try {
+        const r = await fetch(PDF);
+        if (!r.ok) throw { code: "missing" };
+        await dl.save({ filename: NAME, data: await r.blob() });
+      } catch (e) {
+        const c = e && e.code;
+        if (c !== "declined") msg.textContent = c === "rate_limited" ? "Okno zapisu jest już otwarte." : "Nie udało się pobrać pliku. Spróbuj ponownie później.";
+      } finally { btn.disabled = false; }
+    });
+  }).catch(() => {});
+})();
+</script>
+
