@@ -57,25 +57,25 @@ def _any_in(sorted_x: np.ndarray, lo: np.ndarray, hi: np.ndarray, hi_closed: boo
     return b > a
 
 
-def train_to_bus(train_arr: np.ndarray, bus_dep: np.ndarray, m: float) -> dict:
+def train_to_bus(train_arr: np.ndarray, bus_dep: np.ndarray, m: float, good_window: float = GOOD) -> dict:
     d = np.sort(np.asarray(bus_dep, float))
     a = np.asarray(train_arr, float)
     nxt = _next_after(d, a + m)
     wait = nxt - a
     wait[wait > MAX_WAIT] = np.nan
     near = _any_in(d, a - NEAR_BEFORE, a + m, hi_closed=False)
-    good = (wait <= m + GOOD)
+    good = (wait <= m + good_window)
     return {"wait": wait, "near_miss": near, "good": good}
 
 
-def bus_to_train(train_dep: np.ndarray, bus_arr: np.ndarray, m: float) -> dict:
+def bus_to_train(train_dep: np.ndarray, bus_arr: np.ndarray, m: float, good_window: float = GOOD) -> dict:
     b = np.sort(np.asarray(bus_arr, float))
     t = np.asarray(train_dep, float)
     prv = _prev_before(b, t - m)
     lead = t - prv
     lead[lead > MAX_WAIT] = np.nan
     near = _any_in(b, t - m + 1e-9, t + NEAR_BEFORE, hi_closed=True)
-    good = (lead <= m + GOOD)
+    good = (lead <= m + good_window)
     return {"lead": lead, "near_miss": near, "good": good}
 
 

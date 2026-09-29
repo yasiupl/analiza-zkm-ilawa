@@ -88,13 +88,13 @@ def candidates(feed: Feed, blocks: list[Block], station: set, trains: tuple[list
                     continue
                 deps = np.sort(np.array(dep_by.get(r, []), float))
                 arrs = np.sort(np.array(arr_by.get(r, []), float))
-                g0 = int(M.train_to_bus(ta, deps, m1)["good"].sum()) if len(deps) and len(ta) else 0
-                h0 = int(M.bus_to_train(td, arrs, m2)["good"].sum()) if len(arrs) and len(td) else 0
+                g0 = int(M.train_to_bus(ta, deps, m1, good)["good"].sum()) if len(deps) and len(ta) else 0
+                h0 = int(M.bus_to_train(td, arrs, m2, good)["good"].sum()) if len(arrs) and len(td) else 0
                 best = None
                 for start in range(int(i.end + min_layover), int(j.start - dur - min_layover) + 1):
                     back = start + dur
-                    g1 = int(M.train_to_bus(ta, np.sort(np.append(deps, start)), m1)["good"].sum()) if len(ta) else 0
-                    h1 = int(M.bus_to_train(td, np.sort(np.append(arrs, back)), m2)["good"].sum()) if len(td) else 0
+                    g1 = int(M.train_to_bus(ta, np.sort(np.append(deps, start)), m1, good)["good"].sum()) if len(ta) else 0
+                    h1 = int(M.bus_to_train(td, np.sort(np.append(arrs, back)), m2, good)["good"].sum()) if len(td) else 0
                     gain = (g1 - g0) + (h1 - h0)
                     prev = deps[deps < start].max() if (deps < start).any() else None
                     nxt = deps[deps > start].min() if (deps > start).any() else None

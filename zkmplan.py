@@ -121,7 +121,8 @@ def by_line(trips, station):
     return {k: np.array(v, float) for k, v in dep.items()}, {k: np.array(v, float) for k, v in arr.items()}
 
 
-def realised(hist: pd.DataFrame, feed: Feed, proposed: dict, station: set, dtp: str, m1: float) -> dict:
+def realised(hist: pd.DataFrame, feed: Feed, proposed: dict, station: set, dtp: str, m1: float,
+             good: float = 10) -> dict:
     """Train -> bus good transfers with actual train arrivals, current and proposed timetable.
 
     The same trains are also counted with their planned arrivals (plan_before,
@@ -150,10 +151,10 @@ def realised(hist: pd.DataFrame, feed: Feed, proposed: dict, station: set, dtp: 
         d1, _ = by_line(new, station)
         for r in d0:
             out["pairs"] += len(act)
-            out["before"] += int(M.train_to_bus(act, np.sort(d0[r]), m1)["good"].sum())
-            out["after"] += int(M.train_to_bus(act, np.sort(d1[r]), m1)["good"].sum())
-            out["plan_before"] += int(M.train_to_bus(pln, np.sort(d0[r]), m1)["good"].sum())
-            out["plan_after"] += int(M.train_to_bus(pln, np.sort(d1[r]), m1)["good"].sum())
+            out["before"] += int(M.train_to_bus(act, np.sort(d0[r]), m1, good)["good"].sum())
+            out["after"] += int(M.train_to_bus(act, np.sort(d1[r]), m1, good)["good"].sum())
+            out["plan_before"] += int(M.train_to_bus(pln, np.sort(d0[r]), m1, good)["good"].sum())
+            out["plan_after"] += int(M.train_to_bus(pln, np.sort(d1[r]), m1, good)["good"].sum())
     return out
 
 
@@ -166,8 +167,18 @@ def main() -> None:
     ap.add_argument("--day-types", default="Roboczy,Sobota,Niedziela")
     ap.add_argument("--variants", default=None, help="single, interlined or both (overrides the config)")
     ap.add_argument("--time-limit", type=int, default=None, help="solver seconds (overrides the config)")
+    ap.add_argument("--set", action="append", default=[], metavar="SECTION.KEY=VALUE",
+                    help="change one value of the config for this run, e.g. transfers.good_window=5")
+    ap.add_argument("--out", default=None, help="folder for the results (default: data/plan/<today>)")
+    ap.add_argument("--no-report", action="store_true", help="do not write reports/korekty-zkm.html")
     a = ap.parse_args()
     cfg = load_config(Path(a.config))
+    for item in a.set:
+        key, _, value = item.partition("=")
+        sec, _, opt = key.partition(".")
+        if not (sec and opt and cfg.has_section(sec)):
+            raise SystemExit(f"--set {item!r}: use SECTION.KEY=VALUE with a section of the config")
+        cfg.set(sec, opt, value)
     gen, trc, shc, blc, duc, coc, dmc = (section(cfg, s) for s in
                                          ("general", "transfers", "shifts", "blocks", "duties", "costs", "demand"))
     if not a.no_fetch:
@@ -198,7 +209,7 @@ def main() -> None:
         shc["time_limit"] = a.time_limit
     m1, m2, good = trc["walk_train_to_bus"], trc["walk_bus_to_train"], trc["good_window"]
     unit_km = C.daily_cost({"total_km": 1, "duty_hours": 0, "peak_vehicles": 0}, coc)["energy"] + coc["maintenance_pln_per_km"]
-    run_dir = DATA / "plan" / dt.date.today().isoformat()
+    run_dir = Path(a.out) if a.out else DATA / "plan" / dt.date.today().isoformat()
     run_dir.mkdir(parents=True, exist_ok=True)
     result = {"generated": dt.datetime.now().isoformat(timespec="seconds"),
               "config": {s: dict(cfg[s]) for s in cfg.sections()}, "feed": feed.feed_info,
@@ -226,7 +237,8 @@ def main() -> None:
                          min_layover=int(blc["min_layover"]), habit_penalty=shc["habit_penalty"], trip_change_penalty=shc["trip_change_penalty"],
                          dwell_penalty=shc["dwell_penalty"], break_part=int(duc["break_part"]),
                          need_6h=int(duc["break_after_6h"]), need_8h=int(duc["break_after_8h"]),
-                         buffers=buffers, time_limit=int(shc["time_limit"]))
+                         buffers=buffers, time_limit=int(shc["time_limit"]),
+                         direction=str(shc.get("shift_direction") or "any"))
             print(f"3. {dtp} / {vname}: {len(blocks)} blocks, {len(duties)} duties")
             stages = [int(float(x)) for x in str(shc.get("stages") or "").replace(" ", "").split(",") if x]
             opt = O.optimise_stages(trips, blocks, duties, trains, p, stages)
@@ -255,7 +267,7 @@ def main() -> None:
                               overhead_share=coc["overhead_share"], max_duty=int(duc["max_duty"]),
                               rules={"part": int(duc["break_part"]), "need_6h": int(duc["break_after_6h"]),
                                      "need_8h": int(duc["break_after_8h"]), "max_driving": int(duc["max_driving"])})
-            real = realised(hist, feed, {t.id: t for t in new_trips}, station, dtp, m1)
+            real = realised(hist, feed, {t.id: t for t in new_trips}, station, dtp, m1, good)
             res["variants"][vname] = {
                 "status": opt["status"], "changes": opt["changes"], "curve": curve,
                 "indicators_before": ind0, "indicators_after": ind1, "cost_before": cost0, "cost_after": cost1,
@@ -293,6 +305,9 @@ def main() -> None:
     write_outputs(feed, proposed, result, run_dir)
     write_latex(result, run_dir / "zmiany.tex")
     (run_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
+    if a.no_report:
+        print(f"6. Results: {run_dir}")
+        return
     from ilawa.plan import report
     shown = result if str(coc.get("show_money") or "").lower() in ("yes", "tak", "true", "1") else strip_money(result)
     out = report.build(shown, ROOT / "reports" / "zkmplan_template.html", ROOT / "reports" / "korekty-zkm.html")

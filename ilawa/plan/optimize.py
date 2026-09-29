@@ -13,6 +13,8 @@ Model (mixed integer program, solved with CBC through PuLP):
   move so that the total vehicle time or the total driver time grows (the cost
   does not increase).
 - Trips of one line keep their order at the station.
+- Optionally (direction = "buffer") a bus may only arrive at the station earlier
+  and leave it later: each change gives the transfer more time, never less.
 - Objective: the mean number of good transfers (train, line) per day over the chosen
   dates, minus a penalty for each changed trip, for each minute of change at other
   stops and for each minute of extra dwell. A trip moves only when this pays.
@@ -55,6 +57,7 @@ class Params:
     max_changes: int | None = None     # largest number of changed trips (None = no limit)
     fixed: dict = field(default_factory=dict)   # trip id -> (a, b): shifts kept from an earlier stage
     time_limit: int = 120
+    direction: str = "any"            # any | buffer (arrivals only earlier, departures only later)
 
 
 @dataclass
@@ -138,6 +141,16 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
         changed.append(z)
         penalty.append(p.trip_change_penalty * z)
         parts[t.id] = (A, B)
+        if p.direction == "buffer" and sh.kind != "none":
+            # The transfer gets more time, never less: the bus arrives at the
+            # station earlier (or at the same time) and leaves later (or at the same time).
+            bad = []
+            if sh.kind in ("end", "through", "loop"):
+                bad += [x for v, x in A.items() if v > 0]
+            if sh.kind in ("start", "through", "loop"):
+                bad += [x for v, x in B.items() if v < 0]
+            for x in bad:
+                prob += x == 0
         if t.id in p.fixed:
             fa, fb = p.fixed[t.id]
             prob += A[fa] == 1
@@ -300,8 +313,8 @@ def count_good(trips: list[Trip], trains_by_date: dict, station: set, m1: float,
     for d, (tarr, tdep) in trains_by_date.items():
         a = np.array([x["t"] + buffers.get(x["cat"], 0.0) for x in tarr])
         b = np.array([x["t"] for x in tdep])
-        g1 = sum(int(M.train_to_bus(a, np.sort(bd), m1)["good"].sum()) for bd in dep_by.values()) if len(a) else 0
-        g2 = sum(int(M.bus_to_train(b, np.sort(ba), m2)["good"].sum()) for ba in arr_by.values()) if len(b) else 0
+        g1 = sum(int(M.train_to_bus(a, np.sort(bd), m1, good)["good"].sum()) for bd in dep_by.values()) if len(a) else 0
+        g2 = sum(int(M.bus_to_train(b, np.sort(ba), m2, good)["good"].sum()) for ba in arr_by.values()) if len(b) else 0
         per_date[str(d)] = {"t2b": g1, "b2t": g2}
         tot["t2b"] += g1
         tot["b2t"] += g2
