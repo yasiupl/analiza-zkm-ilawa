@@ -16,3 +16,6 @@ data/raw/zkm/cache/
 
 # Local test scripts
 /_*.py
+pismo/*.aux
+pismo/*.log
+pismo/*.out

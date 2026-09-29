@@ -377,7 +377,7 @@ def write_latex(result: dict, path: Path, variant: str = "single") -> None:
         for c in v["curve"][1:]:
             out.append(f"{c['stage']} & {c['changes']} & {c['good_per_day']:.0f} & {100 * (c['good_per_day'] - g0) / g0:+.0f}\\,\\% \\\\")
         out += ["\\bottomrule\\end{tabular}", "",
-                "\\begin{longtable}{@{}c c p{2.9cm} l l r r p{4.6cm}@{}}\\toprule",
+                "\\begin{longtable}{@{}c c >{\\raggedright}p{2.4cm} l l r r >{\\raggedright\\arraybackslash}p{4.3cm}@{}}\\toprule",
                 "Etap & Linia & Kierunek & Przyjazd & Odjazd & Inne & Zysk & Pociągi \\\\",
                 " & & & \\multicolumn{2}{c}{na Dworcowej} & przyst. & /dzień & (dobra przesiadka po zmianie) \\\\ \\midrule\\endhead",
                 "\\bottomrule\\endfoot"]

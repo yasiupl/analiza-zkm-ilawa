@@ -92,7 +92,6 @@ th { text-align: left; font-size: .72rem; letter-spacing: .06em; text-transform:
 td { padding: .45rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
 td.num, th.num { text-align: right; }
 #variants-tbl td:first-child { min-width: 15rem; }
-#moves-tbl td:nth-child(2) { min-width: 13rem; }
 tr.strong td { font-weight: 600; }
 .chip { display: inline-flex; align-items: center; gap: .3rem; font: 600 .74rem/1 var(--f-display); padding: .22rem .45rem; border-radius: 4px; background: var(--band-2); color: var(--ink); white-space: nowrap; }
 .chip.bad::before { content: "▲"; color: var(--bad); font-size: .7rem; }
@@ -220,17 +219,8 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
 
   <section id="fix">
     <div class="label">Co można poprawić</div>
-    <h2>Poprawki, które dają najwięcej dobrych przesiadek</h2>
-    <div class="prose" id="fix-text"></div>
-    <div class="tbl" id="variants-tbl"></div>
-    <p class="note">„Z opóźnieniami”: zmiana liczby dobrych przesiadek pociąg → autobus przy rzeczywistych czasach przyjazdu pociągów z 11–29.09.2026.</p>
-    <h3>Ile dają kolejne korekty pojedynczych kursów</h3>
-    <div class="chart" id="curve"></div>
-    <div class="legend"><span><i class="tick" style="background:var(--l1);width:14px;height:2px"></i>korekty do 5 min</span><span><i class="tick" style="background:var(--l2);width:14px;height:2px"></i>korekty do 3 min</span></div>
-    <h3>Najskuteczniejsze korekty pojedynczych kursów</h3>
-    <div class="controls"><div class="tabs" id="m-day" role="group" aria-label="Typ dnia"></div></div>
-    <div class="tbl" id="moves-tbl"></div>
-    <p class="note" id="moves-note"></p>
+    <h2>Korekty rozkładu</h2>
+    <div class="prose"><p>Propozycje zmian rozkładu przygotowuje osobne narzędzie <span class="mono">zkmplan.py</span>. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej. Zachowuje przy tym obiegi autobusów, przerwy kierowców, liczbę autobusów i czas pracy kierowców. Wyniki, etapy wdrożenia i wykaz zmian są w raporcie <a href="https://claude.ai/artifact/LHpHerFfAXQ8om2pxWeYN2">Korekty rozkładu ZKM Iława</a>.</p></div>
   </section>
 
   <section id="monitoring">
@@ -515,56 +505,6 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     $("icba-tbl").innerHTML = table([{ h: "Wskaźnik", k: "name" }, ...days.map(d => ({ h: `${fdate(d)} ${d < "2026-08-30" ? "(przed)" : "(po)"}`, num: 1, f: r => `${pct(ba[d].comparison[r.k].observed)} <span style="color:var(--muted)">(${pct(ba[d].comparison[r.k].null_mean)})</span>` }))],
       mets.map(([k, name]) => ({ k, name })));
   } else { $("key").hidden = true; }
-
-  // ---------- fix
-  if (D.opt && D.opt_extra) {
-    const O = D.opt, X = D.opt_extra, WL = X.whole_line.variants, R0 = O.Roboczy;
-    const base = R0.check_all_days.base_mean, rb = R0.realised_t2b.good_before;
-    const rel = (a, b) => `${b >= a ? "+" : "−"}${num(Math.abs(100 * (b - a) / a))}%`;
-    const c5 = X.curve.max5.curve, c3 = X.curve.max3.curve;
-    const v = WL.line1, sh1 = v.shifts["1"], sh3 = WL.line3.shifts["3"];
-    $("fix-text").innerHTML = `<p>Liczymy dobre przesiadki między pociągiem a konkretną linią, bo podróżny potrzebuje swojej linii. W dzień roboczy jest ich średnio ${num(base)} na około ${Math.round((R0.pairs_t2b + R0.pairs_b2t) / 10) * 10} możliwych. W praktyce najwięcej daje przesunięcie całej linii 1 o ${sh1} min później: ${rel(base, v.planned_mean_after)} w rozkładzie i ${rel(rb, v.realised_t2b.good_after)} przy rzeczywistych opóźnieniach pociągów. Wiele odjazdów linii 1 wypada dziś 1–3 min po przyjeździe pociągu, a ${sh1} min później zdążyliby też pasażerowie pociągów opóźnionych.</p>`;
-    const rows = [
-      { n: "Obecny rozkład", a: base, r: rb },
-      { n: `Linia 1 o ${sh1} min później, cały dzień`, a: v.planned_mean_after, r: v.realised_t2b.good_after },
-      { n: `Linia 3 o ${sh3} min później, cały dzień`, a: WL.line3.planned_mean_after, r: WL.line3.realised_t2b.good_after },
-      { n: "Obie te zmiany razem", a: WL["line1+line3"].planned_mean_after, r: WL["line1+line3"].realised_t2b.good_after },
-      { n: `${R0.moves.length} korekt pojedynczych kursów, każda do 5 min`, a: R0.check_all_days.after_mean, r: R0.realised_t2b.good_after },
-      { n: `${c5.length - 1} korekt pojedynczych kursów, każda do 5 min (tylko ${fdate(X.curve.max5.date)})`, a: c5[c5.length - 1], r: null, b: c5[0] }];
-    $("variants-tbl").innerHTML = table([{ h: "Poprawka", k: "n" }, { h: "Dobre / dzień", num: 1, f: r => num(r.a) }, { h: "W rozkładzie", num: 1, f: r => r.a === base ? "–" : rel(r.b || base, r.a) }, { h: "Z opóźnieniami", num: 1, f: r => r.r == null ? "nie liczono" : r.r === rb ? "–" : rel(rb, r.r) }], rows);
-    // curve chart
-    (function () {
-      const box = $("curve"); box.innerHTML = "";
-      const w = Math.max(box.clientWidth, 560), h = 240, ml = 44, mr = 110, mt = 14, mb = 36;
-      const n = Math.max(c5.length, c3.length) - 1, ymin = Math.floor(c5[0] / 10) * 10, ymax = Math.ceil(Math.max(...c5) / 10) * 10;
-      const X_ = i => ml + (w - ml - mr) * i / n, Y = v => mt + (h - mt - mb) * (1 - (v - ymin) / (ymax - ymin));
-      const svg = el("svg", { width: w, height: h, viewBox: `0 0 ${w} ${h}`, role: "img", "aria-label": "Dobre przesiadki a liczba korekt" }, box);
-      const ax = el("g", { class: "axis" }, svg);
-      for (let y = ymin; y <= ymax; y += 20) { el("line", { x1: ml, x2: w - mr, y1: Y(y), y2: Y(y), stroke: "var(--rule)" }, ax); const t = el("text", { x: ml - 6, y: Y(y) + 4, "text-anchor": "end" }, ax); t.textContent = y; }
-      for (let i = 0; i <= n; i += 10) { const t = el("text", { x: X_(i), y: h - mb + 16, "text-anchor": "middle" }, ax); t.textContent = i; }
-      const xl = el("text", { x: (w - mr + ml) / 2, y: h - 4, "text-anchor": "middle" }, ax); xl.textContent = "liczba korekt pojedynczych kursów";
-      [[c3, "var(--l2)", "do 3 min"], [c5, "var(--l1)", "do 5 min"]].forEach(([c, col, lab]) => {
-        el("path", { d: c.map((v, i) => `${i ? "L" : "M"}${X_(i)},${Y(v)}`).join(" "), fill: "none", stroke: col, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
-        el("circle", { cx: X_(c.length - 1), cy: Y(c[c.length - 1]), r: 4, fill: col, stroke: "var(--paper)", "stroke-width": 2 }, svg);
-        const t = el("text", { x: X_(c.length - 1) + 8, y: Y(c[c.length - 1]) + 4 }, svg); t.textContent = `${c[c.length - 1]} (${lab})`;
-      });
-      const l1 = WL.line1.planned_mean_after;
-      el("line", { x1: ml, x2: w - mr, y1: Y(l1), y2: Y(l1), stroke: "var(--muted)", "stroke-width": 1 }, svg);
-      const tl = el("text", { x: ml + 6, y: Y(l1) - 6 }, svg); tl.textContent = `dla porównania: cała linia 1 o ${sh1} min później (${num(l1)})`;
-      for (let i = 0; i <= n; i++) { const hit = el("rect", { x: X_(i) - (w - ml - mr) / n / 2, y: mt, width: (w - ml - mr) / n, height: h - mt - mb, fill: "transparent" }, svg); hover(hit, `<b>${i} korekt</b><br>do 5 min: ${c5[i] ?? "–"}<br>do 3 min: ${c3[i] ?? "–"}`); }
-    })();
-    const ms = { day: "Roboczy" };
-    const drawMoves = () => {
-      const P2 = O[ms.day];
-      $("moves-tbl").innerHTML = table([{ h: "#", num: 1, f: r => r.i }, { h: "Kurs", f: r => `<span class="sw" style="background:${LC(r.line)}"></span>linia ${r.line}: ${r.events.map(e => `${e.kind === "dep" ? "odjazd" : "przyjazd"} <span class="mono">${e.from}</span>`).join(", ")}` },
-        { h: "Nowa godzina", f: r => r.events.map(e => `<span class="mono">${e.to}</span>`).join(", ") }, { h: "Zysk", num: 1, f: r => `+${r.gain}` },
-        { h: "Kto zyskuje / traci", f: r => `${r.who.gain.map(esc).join("<br>")}${r.who.lose.length ? `<br><span style="color:var(--muted)">traci: ${r.who.lose.map(esc).join(", ")}</span>` : ""}` }],
-        P2.moves.map((m, i) => ({ ...m, i: i + 1 })));
-      $("moves-note").textContent = `${DAYNAME[ms.day]}: ${num(P2.check_all_days.base_mean)} → ${num(P2.check_all_days.after_mean)} dobrych przesiadek średnio w ${P2.check_all_days.n_days} dniach tego typu. Przy rzeczywistych opóźnieniach (pociąg → autobus): ${P2.realised_t2b.good_before} → ${P2.realised_t2b.good_after}. „z” = wysiadający z pociągu, „na” = jadący autobusem na pociąg. Każdą zmianę trzeba sprawdzić w obiegu autobusu i przy przesiadkach w mieście.`;
-    };
-    tabs("m-day", DAYS.filter(d => O[d]).map(d => [d, DAYNAME[d]]), ms, "day", drawMoves);
-    drawMoves();
-  }
 
   // ---------- monitoring
   $("mon-text").innerHTML = `<p>Faktyczne czasy pociągów zbiera skrypt <span class="mono">monitor.py</span>. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje potwierdzone czasy przyjazdu i odjazdu. API przechowuje wykonane kursy przez około 3 dni, więc krótka przerwa w pracy monitora nie powoduje utraty danych. Dane z każdego dnia trafiają do pliku <span class="mono">data/monitor/RRRR-MM-DD.csv</span>, a <span class="mono">analyze.py</span> włącza je do analizy dynamicznej.</p>

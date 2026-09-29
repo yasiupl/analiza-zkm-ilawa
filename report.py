@@ -134,8 +134,8 @@ def main() -> None:
                 for (ln, c), g in y.groupby(["line", "category"]) if len(g) >= 5}
     data["dynamic"] = dyn
 
-    # Timetable key and ranked changes (optimize.py).
-    for name, key in (("key.json", "key"), ("optimize.json", "opt"), ("optimize_extra.json", "opt_extra")):
+    # Timetable key (optimize.py --part key). Proposed changes come from zkmplan.py.
+    for name, key in (("key.json", "key"),):
         f = RES / name
         if f.exists():
             data[key] = json.loads(f.read_text(encoding="utf-8"))
