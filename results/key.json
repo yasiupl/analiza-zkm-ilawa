@@ -1,0 +1,966 @@
+{
+ "layover": {
+  "Roboczy": {
+   "2": {
+    "n_dep": 30,
+    "n_paired": 28,
+    "median": 21.0,
+    "p25": 11.75,
+    "p75": 29.25,
+    "share_le_5": 0.07142857142857142
+   },
+   "3": {
+    "n_dep": 36,
+    "n_paired": 29,
+    "median": 19.0,
+    "p25": 7.0,
+    "p75": 33.0,
+    "share_le_5": 0.1724137931034483
+   },
+   "4": {
+    "n_dep": 7,
+    "n_paired": 6,
+    "median": 11.5,
+    "p25": 7.25,
+    "p75": 12.0,
+    "share_le_5": 0.16666666666666666
+   }
+  },
+  "Sobota": {
+   "2": {
+    "n_dep": 16,
+    "n_paired": 13,
+    "median": 17.0,
+    "p25": 15.0,
+    "p75": 20.0,
+    "share_le_5": 0.0
+   },
+   "3": {
+    "n_dep": 21,
+    "n_paired": 15,
+    "median": 13.0,
+    "p25": 9.0,
+    "p75": 17.0,
+    "share_le_5": 0.2
+   }
+  },
+  "Niedziela": {
+   "3": {
+    "n_dep": 13,
+    "n_paired": 5,
+    "median": 28.0,
+    "p25": 14.0,
+    "p75": 29.0,
+    "share_le_5": 0.0
+   }
+  }
+ },
+ "regularity": {
+  "Roboczy": {
+   "1": {
+    "n": 31,
+    "headway_median": 30.5,
+    "headway_min": 1.0,
+    "headway_max": 98.0,
+    "headway_cv": 0.7942186063941897,
+    "top_minute": 5,
+    "top_minute_share": 0.0967741935483871,
+    "distinct_minutes": 23
+   },
+   "2": {
+    "n": 30,
+    "headway_median": 32.0,
+    "headway_min": 10.0,
+    "headway_max": 74.0,
+    "headway_cv": 0.40136390432286273,
+    "top_minute": 30,
+    "top_minute_share": 0.13333333333333333,
+    "distinct_minutes": 18
+   },
+   "3": {
+    "n": 36,
+    "headway_median": 30.0,
+    "headway_min": 2.0,
+    "headway_max": 63.0,
+    "headway_cv": 0.5563456870489047,
+    "top_minute": 52,
+    "top_minute_share": 0.08333333333333333,
+    "distinct_minutes": 24
+   },
+   "4": {
+    "n": 7,
+    "headway_median": 73.5,
+    "headway_min": 63.0,
+    "headway_max": 95.0,
+    "headway_cv": 0.15808399097998124,
+    "top_minute": 40,
+    "top_minute_share": 0.2857142857142857,
+    "distinct_minutes": 6
+   }
+  },
+  "Sobota": {
+   "1": {
+    "n": 14,
+    "headway_median": 32.0,
+    "headway_min": 7.0,
+    "headway_max": 93.0,
+    "headway_cv": 0.7230467909598673,
+    "top_minute": 5,
+    "top_minute_share": 0.14285714285714285,
+    "distinct_minutes": 13
+   },
+   "2": {
+    "n": 16,
+    "headway_median": 53.0,
+    "headway_min": 20.0,
+    "headway_max": 127.0,
+    "headway_cv": 0.4546647116282503,
+    "top_minute": 10,
+    "top_minute_share": 0.1875,
+    "distinct_minutes": 12
+   },
+   "3": {
+    "n": 21,
+    "headway_median": 37.5,
+    "headway_min": 10.0,
+    "headway_max": 114.0,
+    "headway_cv": 0.6222685213083806,
+    "top_minute": 35,
+    "top_minute_share": 0.19047619047619047,
+    "distinct_minutes": 17
+   }
+  },
+  "Niedziela": {
+   "1": {
+    "n": 12,
+    "headway_median": 73.0,
+    "headway_min": 7.0,
+    "headway_max": 81.0,
+    "headway_cv": 0.6814934976352142,
+    "top_minute": 15,
+    "top_minute_share": 0.16666666666666666,
+    "distinct_minutes": 10
+   },
+   "2": {
+    "n": 8,
+    "headway_median": 113.0,
+    "headway_min": 98.0,
+    "headway_max": 127.0,
+    "headway_cv": 0.07774254446979284,
+    "top_minute": 7,
+    "top_minute_share": 0.125,
+    "distinct_minutes": 8
+   },
+   "3": {
+    "n": 13,
+    "headway_median": 71.5,
+    "headway_min": 34.0,
+    "headway_max": 114.0,
+    "headway_cv": 0.388732713277025,
+    "top_minute": 0,
+    "top_minute_share": 0.15384615384615385,
+    "distinct_minutes": 11
+   }
+  }
+ },
+ "fit": {
+  "Roboczy": [
+   {
+    "by": "kierunek",
+    "group": "Działdowo / Warszawa",
+    "n_arr": 26,
+    "n_dep": 26,
+    "t2b_good": {
+     "observed": 0.7307692307692307,
+     "null_mean": 0.6737179487179487,
+     "null_p05": 0.5384615384615384,
+     "null_p95": 0.8076923076923077,
+     "percentile": 0.7866666666666666
+    },
+    "t2b_near_miss": {
+     "observed": 0.5,
+     "null_mean": 0.4871794871794871,
+     "null_p05": 0.34615384615384615,
+     "null_p95": 0.6538461538461539,
+     "percentile": 0.6516666666666666
+    },
+    "b2t_good": {
+     "observed": 0.7307692307692307,
+     "null_mean": 0.6418589743589744,
+     "null_p05": 0.46153846153846156,
+     "null_p95": 0.8076923076923077,
+     "percentile": 0.8716666666666667
+    },
+    "b2t_near_miss": {
+     "observed": 0.4230769230769231,
+     "null_mean": 0.48576923076923073,
+     "null_p05": 0.34615384615384615,
+     "null_p95": 0.6153846153846154,
+     "percentile": 0.3016666666666667
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Jabłonowo / Toruń",
+    "n_arr": 14,
+    "n_dep": 14,
+    "t2b_good": {
+     "observed": 0.8571428571428571,
+     "null_mean": 0.6807142857142857,
+     "null_p05": 0.5,
+     "null_p95": 0.8571428571428571,
+     "percentile": 0.9783333333333334
+    },
+    "t2b_near_miss": {
+     "observed": 0.2857142857142857,
+     "null_mean": 0.4679761904761905,
+     "null_p05": 0.21428571428571427,
+     "null_p95": 0.6428571428571429,
+     "percentile": 0.13666666666666666
+    },
+    "b2t_good": {
+     "observed": 0.5714285714285714,
+     "null_mean": 0.6690476190476191,
+     "null_p05": 0.5,
+     "null_p95": 0.8571428571428571,
+     "percentile": 0.265
+    },
+    "b2t_near_miss": {
+     "observed": 0.6428571428571429,
+     "null_mean": 0.5053571428571427,
+     "null_p05": 0.35714285714285715,
+     "null_p95": 0.7142857142857143,
+     "percentile": 0.945
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Malbork / Gdańsk",
+    "n_arr": 28,
+    "n_dep": 27,
+    "t2b_good": {
+     "observed": 0.6071428571428571,
+     "null_mean": 0.6683928571428572,
+     "null_p05": 0.5,
+     "null_p95": 0.8214285714285714,
+     "percentile": 0.2916666666666667
+    },
+    "t2b_near_miss": {
+     "observed": 0.4642857142857143,
+     "null_mean": 0.4802976190476191,
+     "null_p05": 0.355357142857143,
+     "null_p95": 0.6071428571428571,
+     "percentile": 0.5066666666666667
+    },
+    "b2t_good": {
+     "observed": 0.5925925925925926,
+     "null_mean": 0.6449382716049382,
+     "null_p05": 0.4444444444444444,
+     "null_p95": 0.8148148148148148,
+     "percentile": 0.37333333333333335
+    },
+    "b2t_near_miss": {
+     "observed": 0.25925925925925924,
+     "null_mean": 0.5104938271604939,
+     "null_p05": 0.3333333333333333,
+     "null_p95": 0.7037037037037037,
+     "percentile": 0.02666666666666667
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Ostróda / Olsztyn",
+    "n_arr": 18,
+    "n_dep": 17,
+    "t2b_good": {
+     "observed": 0.5555555555555556,
+     "null_mean": 0.6546296296296297,
+     "null_p05": 0.4444444444444444,
+     "null_p95": 0.8333333333333334,
+     "percentile": 0.24333333333333335
+    },
+    "t2b_near_miss": {
+     "observed": 0.7222222222222222,
+     "null_mean": 0.44518518518518513,
+     "null_p05": 0.2777777777777778,
+     "null_p95": 0.6138888888888864,
+     "percentile": 0.9966666666666667
+    },
+    "b2t_good": {
+     "observed": 0.7058823529411765,
+     "null_mean": 0.6475490196078431,
+     "null_p05": 0.47058823529411764,
+     "null_p95": 0.8235294117647058,
+     "percentile": 0.745
+    },
+    "b2t_near_miss": {
+     "observed": 0.47058823529411764,
+     "null_mean": 0.5191176470588236,
+     "null_p05": 0.29411764705882354,
+     "null_p95": 0.7058823529411765,
+     "percentile": 0.4633333333333333
+    }
+   },
+   {
+    "by": "przewoźnik",
+    "group": "PKP Intercity",
+    "n_arr": 56,
+    "n_dep": 56,
+    "t2b_good": {
+     "observed": 0.6964285714285714,
+     "null_mean": 0.6738988095238095,
+     "null_p05": 0.5714285714285714,
+     "null_p95": 0.7678571428571429,
+     "percentile": 0.6766666666666666
+    },
+    "t2b_near_miss": {
+     "observed": 0.5178571428571429,
+     "null_mean": 0.48125,
+     "null_p05": 0.375,
+     "null_p95": 0.5892857142857143,
+     "percentile": 0.7583333333333333
+    },
+    "b2t_good": {
+     "observed": 0.6785714285714286,
+     "null_mean": 0.6452678571428572,
+     "null_p05": 0.5348214285714286,
+     "null_p95": 0.75,
+     "percentile": 0.73
+    },
+    "b2t_near_miss": {
+     "observed": 0.42857142857142855,
+     "null_mean": 0.4925595238095238,
+     "null_p05": 0.375,
+     "null_p95": 0.6071428571428571,
+     "percentile": 0.24666666666666667
+    }
+   },
+   {
+    "by": "przewoźnik",
+    "group": "POLREGIO",
+    "n_arr": 30,
+    "n_dep": 28,
+    "t2b_good": {
+     "observed": 0.6333333333333333,
+     "null_mean": 0.6602222222222222,
+     "null_p05": 0.5316666666666667,
+     "null_p95": 0.8,
+     "percentile": 0.4166666666666667
+    },
+    "t2b_near_miss": {
+     "observed": 0.4666666666666667,
+     "null_mean": 0.4576666666666667,
+     "null_p05": 0.3,
+     "null_p95": 0.6,
+     "percentile": 0.6066666666666667
+    },
+    "b2t_good": {
+     "observed": 0.6071428571428571,
+     "null_mean": 0.6550595238095238,
+     "null_p05": 0.4642857142857143,
+     "null_p95": 0.7857142857142857,
+     "percentile": 0.355
+    },
+    "b2t_near_miss": {
+     "observed": 0.39285714285714285,
+     "null_mean": 0.5260714285714285,
+     "null_p05": 0.35714285714285715,
+     "null_p95": 0.6785714285714286,
+     "percentile": 0.10833333333333334
+    }
+   }
+  ],
+  "Sobota": [
+   {
+    "by": "kierunek",
+    "group": "Działdowo / Warszawa",
+    "n_arr": 26,
+    "n_dep": 26,
+    "t2b_good": {
+     "observed": 0.5,
+     "null_mean": 0.4319871794871796,
+     "null_p05": 0.2692307692307692,
+     "null_p95": 0.5769230769230769,
+     "percentile": 0.845
+    },
+    "t2b_near_miss": {
+     "observed": 0.46153846153846156,
+     "null_mean": 0.2912179487179487,
+     "null_p05": 0.15384615384615385,
+     "null_p95": 0.4230769230769231,
+     "percentile": 0.985
+    },
+    "b2t_good": {
+     "observed": 0.34615384615384615,
+     "null_mean": 0.383525641025641,
+     "null_p05": 0.2692307692307692,
+     "null_p95": 0.5,
+     "percentile": 0.40166666666666667
+    },
+    "b2t_near_miss": {
+     "observed": 0.3076923076923077,
+     "null_mean": 0.2775,
+     "null_p05": 0.15384615384615385,
+     "null_p95": 0.38461538461538464,
+     "percentile": 0.755
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Jabłonowo / Toruń",
+    "n_arr": 12,
+    "n_dep": 11,
+    "t2b_good": {
+     "observed": 0.3333333333333333,
+     "null_mean": 0.36680555555555555,
+     "null_p05": 0.16666666666666666,
+     "null_p95": 0.5833333333333334,
+     "percentile": 0.5683333333333334
+    },
+    "t2b_near_miss": {
+     "observed": 0.4166666666666667,
+     "null_mean": 0.2511111111111111,
+     "null_p05": 0.08333333333333333,
+     "null_p95": 0.5,
+     "percentile": 0.9416666666666667
+    },
+    "b2t_good": {
+     "observed": 0.36363636363636365,
+     "null_mean": 0.41954545454545455,
+     "null_p05": 0.18181818181818182,
+     "null_p95": 0.6363636363636364,
+     "percentile": 0.495
+    },
+    "b2t_near_miss": {
+     "observed": 0.2727272727272727,
+     "null_mean": 0.30303030303030304,
+     "null_p05": 0.09090909090909091,
+     "null_p95": 0.5454545454545454,
+     "percentile": 0.5633333333333334
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Malbork / Gdańsk",
+    "n_arr": 28,
+    "n_dep": 26,
+    "t2b_good": {
+     "observed": 0.5357142857142857,
+     "null_mean": 0.40035714285714286,
+     "null_p05": 0.25,
+     "null_p95": 0.5714285714285714,
+     "percentile": 0.9366666666666666
+    },
+    "t2b_near_miss": {
+     "observed": 0.25,
+     "null_mean": 0.2719642857142857,
+     "null_p05": 0.14285714285714285,
+     "null_p95": 0.42857142857142855,
+     "percentile": 0.5083333333333333
+    },
+    "b2t_good": {
+     "observed": 0.4230769230769231,
+     "null_mean": 0.38102564102564107,
+     "null_p05": 0.19230769230769232,
+     "null_p95": 0.5769230769230769,
+     "percentile": 0.6833333333333333
+    },
+    "b2t_near_miss": {
+     "observed": 0.15384615384615385,
+     "null_mean": 0.28634615384615386,
+     "null_p05": 0.11538461538461539,
+     "null_p95": 0.5,
+     "percentile": 0.14666666666666667
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Ostróda / Olsztyn",
+    "n_arr": 15,
+    "n_dep": 16,
+    "t2b_good": {
+     "observed": 0.3333333333333333,
+     "null_mean": 0.39644444444444443,
+     "null_p05": 0.2,
+     "null_p95": 0.5333333333333333,
+     "percentile": 0.38166666666666665
+    },
+    "t2b_near_miss": {
+     "observed": 0.26666666666666666,
+     "null_mean": 0.24599999999999994,
+     "null_p05": 0.06666666666666667,
+     "null_p95": 0.4,
+     "percentile": 0.7033333333333334
+    },
+    "b2t_good": {
+     "observed": 0.5625,
+     "null_mean": 0.40177083333333335,
+     "null_p05": 0.25,
+     "null_p95": 0.5625,
+     "percentile": 0.97
+    },
+    "b2t_near_miss": {
+     "observed": 0.3125,
+     "null_mean": 0.28833333333333333,
+     "null_p05": 0.125,
+     "null_p95": 0.4375,
+     "percentile": 0.69
+    }
+   },
+   {
+    "by": "przewoźnik",
+    "group": "PKP Intercity",
+    "n_arr": 56,
+    "n_dep": 56,
+    "t2b_good": {
+     "observed": 0.48214285714285715,
+     "null_mean": 0.4087202380952381,
+     "null_p05": 0.30357142857142855,
+     "null_p95": 0.5178571428571429,
+     "percentile": 0.9083333333333333
+    },
+    "t2b_near_miss": {
+     "observed": 0.39285714285714285,
+     "null_mean": 0.2777380952380953,
+     "null_p05": 0.19642857142857142,
+     "null_p95": 0.375,
+     "percentile": 0.9916666666666667
+    },
+    "b2t_good": {
+     "observed": 0.375,
+     "null_mean": 0.4008333333333333,
+     "null_p05": 0.2857142857142857,
+     "null_p95": 0.5,
+     "percentile": 0.3983333333333333
+    },
+    "b2t_near_miss": {
+     "observed": 0.2857142857142857,
+     "null_mean": 0.28883928571428574,
+     "null_p05": 0.19642857142857142,
+     "null_p95": 0.39285714285714285,
+     "percentile": 0.5333333333333333
+    }
+   },
+   {
+    "by": "przewoźnik",
+    "group": "POLREGIO",
+    "n_arr": 25,
+    "n_dep": 23,
+    "t2b_good": {
+     "observed": 0.4,
+     "null_mean": 0.3960666666666666,
+     "null_p05": 0.24,
+     "null_p95": 0.56,
+     "percentile": 0.6033333333333334
+    },
+    "t2b_near_miss": {
+     "observed": 0.24,
+     "null_mean": 0.2534666666666667,
+     "null_p05": 0.12,
+     "null_p95": 0.4,
+     "percentile": 0.545
+    },
+    "b2t_good": {
+     "observed": 0.5217391304347826,
+     "null_mean": 0.3684782608695652,
+     "null_p05": 0.21739130434782608,
+     "null_p95": 0.5217391304347826,
+     "percentile": 0.9716666666666667
+    },
+    "b2t_near_miss": {
+     "observed": 0.17391304347826086,
+     "null_mean": 0.27963768115942034,
+     "null_p05": 0.13043478260869565,
+     "null_p95": 0.43478260869565216,
+     "percentile": 0.20666666666666667
+    }
+   }
+  ],
+  "Niedziela": [
+   {
+    "by": "kierunek",
+    "group": "Działdowo / Warszawa",
+    "n_arr": 25,
+    "n_dep": 28,
+    "t2b_good": {
+     "observed": 0.4,
+     "null_mean": 0.3141333333333334,
+     "null_p05": 0.2,
+     "null_p95": 0.44,
+     "percentile": 0.9183333333333333
+    },
+    "t2b_near_miss": {
+     "observed": 0.2,
+     "null_mean": 0.20566666666666666,
+     "null_p05": 0.12,
+     "null_p95": 0.32,
+     "percentile": 0.5916666666666667
+    },
+    "b2t_good": {
+     "observed": 0.17857142857142858,
+     "null_mean": 0.2359523809523809,
+     "null_p05": 0.14285714285714285,
+     "null_p95": 0.32142857142857145,
+     "percentile": 0.24333333333333335
+    },
+    "b2t_near_miss": {
+     "observed": 0.21428571428571427,
+     "null_mean": 0.17589285714285713,
+     "null_p05": 0.10714285714285714,
+     "null_p95": 0.25,
+     "percentile": 0.875
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Jabłonowo / Toruń",
+    "n_arr": 11,
+    "n_dep": 12,
+    "t2b_good": {
+     "observed": 0.18181818181818182,
+     "null_mean": 0.3148484848484848,
+     "null_p05": 0.09090909090909091,
+     "null_p95": 0.5454545454545454,
+     "percentile": 0.2733333333333333
+    },
+    "t2b_near_miss": {
+     "observed": 0.2727272727272727,
+     "null_mean": 0.2246969696969697,
+     "null_p05": 0.0,
+     "null_p95": 0.45454545454545453,
+     "percentile": 0.7783333333333333
+    },
+    "b2t_good": {
+     "observed": 0.25,
+     "null_mean": 0.265,
+     "null_p05": 0.08333333333333333,
+     "null_p95": 0.4166666666666667,
+     "percentile": 0.6366666666666667
+    },
+    "b2t_near_miss": {
+     "observed": 0.08333333333333333,
+     "null_mean": 0.2048611111111111,
+     "null_p05": 0.08333333333333333,
+     "null_p95": 0.3333333333333333,
+     "percentile": 0.22166666666666668
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Malbork / Gdańsk",
+    "n_arr": 28,
+    "n_dep": 26,
+    "t2b_good": {
+     "observed": 0.25,
+     "null_mean": 0.29178571428571426,
+     "null_p05": 0.17857142857142858,
+     "null_p95": 0.39285714285714285,
+     "percentile": 0.3416666666666667
+    },
+    "t2b_near_miss": {
+     "observed": 0.25,
+     "null_mean": 0.18255952380952378,
+     "null_p05": 0.10714285714285714,
+     "null_p95": 0.2857142857142857,
+     "percentile": 0.93
+    },
+    "b2t_good": {
+     "observed": 0.34615384615384615,
+     "null_mean": 0.257051282051282,
+     "null_p05": 0.11538461538461539,
+     "null_p95": 0.38461538461538464,
+     "percentile": 0.9133333333333333
+    },
+    "b2t_near_miss": {
+     "observed": 0.0,
+     "null_mean": 0.18679487179487178,
+     "null_p05": 0.07692307692307693,
+     "null_p95": 0.3076923076923077,
+     "percentile": 0.005
+    }
+   },
+   {
+    "by": "kierunek",
+    "group": "Ostróda / Olsztyn",
+    "n_arr": 16,
+    "n_dep": 14,
+    "t2b_good": {
+     "observed": 0.4375,
+     "null_mean": 0.30104166666666665,
+     "null_p05": 0.125,
+     "null_p95": 0.5,
+     "percentile": 0.9166666666666666
+    },
+    "t2b_near_miss": {
+     "observed": 0.0625,
+     "null_mean": 0.18791666666666668,
+     "null_p05": 0.0625,
+     "null_p95": 0.375,
+     "percentile": 0.14
+    },
+    "b2t_good": {
+     "observed": 0.35714285714285715,
+     "null_mean": 0.27464285714285713,
+     "null_p05": 0.07142857142857142,
+     "null_p95": 0.5,
+     "percentile": 0.8216666666666667
+    },
+    "b2t_near_miss": {
+     "observed": 0.2857142857142857,
+     "null_mean": 0.18749999999999997,
+     "null_p05": 0.0,
+     "null_p95": 0.35714285714285715,
+     "percentile": 0.8916666666666667
+    }
+   },
+   {
+    "by": "przewoźnik",
+    "group": "PKP Intercity",
+    "n_arr": 58,
+    "n_dep": 58,
+    "t2b_good": {
+     "observed": 0.3275862068965517,
+     "null_mean": 0.3101149425287356,
+     "null_p05": 0.2413793103448276,
+     "null_p95": 0.3793103448275862,
+     "percentile": 0.7266666666666667
+    },
+    "t2b_near_miss": {
+     "observed": 0.20689655172413793,
+     "null_mean": 0.2074137931034483,
+     "null_p05": 0.15517241379310345,
+     "null_p95": 0.25948275862068887,
+     "percentile": 0.5866666666666667
+    },
+    "b2t_good": {
+     "observed": 0.27586206896551724,
+     "null_mean": 0.2601436781609196,
+     "null_p05": 0.1896551724137931,
+     "null_p95": 0.3275862068965517,
+     "percentile": 0.6883333333333334
+    },
+    "b2t_near_miss": {
+     "observed": 0.13793103448275862,
+     "null_mean": 0.18264367816091953,
+     "null_p05": 0.1206896551724138,
+     "null_p95": 0.25862068965517243,
+     "percentile": 0.2
+    }
+   },
+   {
+    "by": "przewoźnik",
+    "group": "POLREGIO",
+    "n_arr": 22,
+    "n_dep": 22,
+    "t2b_good": {
+     "observed": 0.3181818181818182,
+     "null_mean": 0.2871212121212121,
+     "null_p05": 0.13636363636363635,
+     "null_p95": 0.45454545454545453,
+     "percentile": 0.715
+    },
+    "t2b_near_miss": {
+     "observed": 0.18181818181818182,
+     "null_mean": 0.16825757575757574,
+     "null_p05": 0.045454545454545456,
+     "null_p95": 0.2727272727272727,
+     "percentile": 0.7133333333333334
+    },
+    "b2t_good": {
+     "observed": 0.2727272727272727,
+     "null_mean": 0.23757575757575755,
+     "null_p05": 0.13636363636363635,
+     "null_p95": 0.36363636363636365,
+     "percentile": 0.7983333333333333
+    },
+    "b2t_near_miss": {
+     "observed": 0.13636363636363635,
+     "null_mean": 0.19416666666666665,
+     "null_p05": 0.09090909090909091,
+     "null_p95": 0.3181818181818182,
+     "percentile": 0.305
+    }
+   }
+  ]
+ },
+ "school_trips": [
+  {
+   "line": "1",
+   "time": "07:24",
+   "kind": "dep",
+   "flags": "sp"
+  },
+  {
+   "line": "3",
+   "time": "07:45",
+   "kind": "dep",
+   "flags": "ks"
+  },
+  {
+   "line": "3",
+   "time": "08:16",
+   "kind": "arr",
+   "flags": "s"
+  },
+  {
+   "line": "3",
+   "time": "08:39",
+   "kind": "arr",
+   "flags": "s"
+  }
+ ],
+ "ic_before_after": {
+  "2026-08-19": {
+   "n_arr": 55,
+   "n_dep": 55,
+   "comparison": {
+    "t2b_near_miss": {
+     "observed": 0.509090909090909,
+     "null_mean": 0.47683636363636356,
+     "null_p05": 0.36363636363636365,
+     "null_p95": 0.6,
+     "percentile": 0.699
+    },
+    "t2b_good": {
+     "observed": 0.6727272727272727,
+     "null_mean": 0.6676545454545454,
+     "null_p05": 0.5454545454545454,
+     "null_p95": 0.7636363636363637,
+     "percentile": 0.563
+    },
+    "t2b_near_miss_long": {
+     "observed": 0.2,
+     "null_mean": 0.1714727272727273,
+     "null_p05": 0.09090909090909091,
+     "null_p95": 0.2545454545454545,
+     "percentile": 0.791
+    },
+    "t2b_wait_median": {
+     "observed": 9.0,
+     "null_mean": 10.415730125436195,
+     "null_p05": 8.492459045971021,
+     "null_p95": 12.867684930548029,
+     "percentile": 0.131
+    },
+    "t2b_wait_mean": {
+     "observed": 12.345454545454546,
+     "null_mean": 12.926518269353895,
+     "null_p05": 10.90485049120397,
+     "null_p95": 15.400765468600218,
+     "percentile": 0.352
+    },
+    "b2t_near_miss": {
+     "observed": 0.4,
+     "null_mean": 0.4997090909090908,
+     "null_p05": 0.36363636363636365,
+     "null_p95": 0.6363636363636364,
+     "percentile": 0.128
+    },
+    "b2t_good": {
+     "observed": 0.7636363636363637,
+     "null_mean": 0.6393454545454546,
+     "null_p05": 0.509090909090909,
+     "null_p95": 0.7636363636363637,
+     "percentile": 0.966
+    },
+    "b2t_near_miss_long": {
+     "observed": 0.16363636363636364,
+     "null_mean": 0.20389090909090907,
+     "null_p05": 0.12727272727272726,
+     "null_p95": 0.2909090909090909,
+     "percentile": 0.28
+    },
+    "b2t_lead_median": {
+     "observed": 12.0,
+     "null_mean": 12.166687862335655,
+     "null_p05": 10.025064762904254,
+     "null_p95": 14.963506779505348,
+     "percentile": 0.506
+    },
+    "b2t_lead_mean": {
+     "observed": 12.981818181818182,
+     "null_mean": 14.16462373771437,
+     "null_p05": 12.002535721243156,
+     "null_p95": 16.591171904061802,
+     "percentile": 0.208
+    }
+   }
+  },
+  "2026-09-23": {
+   "n_arr": 56,
+   "n_dep": 56,
+   "comparison": {
+    "t2b_near_miss": {
+     "observed": 0.6071428571428571,
+     "null_mean": 0.4849821428571429,
+     "null_p05": 0.375,
+     "null_p95": 0.6071428571428571,
+     "percentile": 0.97
+    },
+    "t2b_good": {
+     "observed": 0.7142857142857143,
+     "null_mean": 0.6780357142857142,
+     "null_p05": 0.5714285714285714,
+     "null_p95": 0.7678571428571429,
+     "percentile": 0.755
+    },
+    "t2b_near_miss_long": {
+     "observed": 0.19642857142857142,
+     "null_mean": 0.16830357142857144,
+     "null_p05": 0.08928571428571429,
+     "null_p95": 0.25,
+     "percentile": 0.783
+    },
+    "t2b_wait_median": {
+     "observed": 10.0,
+     "null_mean": 10.2631158802007,
+     "null_p05": 8.545323230371267,
+     "null_p95": 12.311180323370536,
+     "percentile": 0.439
+    },
+    "t2b_wait_mean": {
+     "observed": 12.071428571428571,
+     "null_mean": 12.691469288552923,
+     "null_p05": 10.8806201204922,
+     "null_p95": 14.846388836494842,
+     "percentile": 0.333
+    },
+    "b2t_near_miss": {
+     "observed": 0.42857142857142855,
+     "null_mean": 0.49607142857142855,
+     "null_p05": 0.375,
+     "null_p95": 0.625,
+     "percentile": 0.227
+    },
+    "b2t_good": {
+     "observed": 0.6785714285714286,
+     "null_mean": 0.643875,
+     "null_p05": 0.5357142857142857,
+     "null_p95": 0.7678571428571429,
+     "percentile": 0.723
+    },
+    "b2t_near_miss_long": {
+     "observed": 0.19642857142857142,
+     "null_mean": 0.1985,
+     "null_p05": 0.10714285714285714,
+     "null_p95": 0.2857142857142857,
+     "percentile": 0.535
+    },
+    "b2t_lead_median": {
+     "observed": 12.5,
+     "null_mean": 12.067126305497819,
+     "null_p05": 10.090444354794831,
+     "null_p95": 14.404022585785784,
+     "percentile": 0.647
+    },
+    "b2t_lead_mean": {
+     "observed": 13.553571428571429,
+     "null_mean": 14.070299816254549,
+     "null_p05": 11.971156072097065,
+     "null_p95": 16.11464383916017,
+     "percentile": 0.349
+    }
+   }
+  }
+ }
+}

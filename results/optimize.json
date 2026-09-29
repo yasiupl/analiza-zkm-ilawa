@@ -1,0 +1,895 @@
+{
+ "Roboczy": {
+  "date": "2026-09-30",
+  "day_type": "Roboczy",
+  "base": {
+   "1": [
+    22,
+    15
+   ],
+   "2": [
+    27,
+    30
+   ],
+   "3": [
+    28,
+    20
+   ],
+   "4": [
+    6,
+    8
+   ],
+   "7": [
+    3,
+    3
+   ]
+  },
+  "after": {
+   "1": [
+    29,
+    20
+   ],
+   "2": [
+    31,
+    32
+   ],
+   "3": [
+    28,
+    24
+   ],
+   "4": [
+    6,
+    8
+   ],
+   "7": [
+    4,
+    5
+   ]
+  },
+  "base_total": 162,
+  "after_total": 187,
+  "pairs_t2b": 347,
+  "pairs_b2t": 341,
+  "moves": [
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "09:12",
+      "to": "09:08",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "09:13",
+      "to": "09:09",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": -4,
+    "gain": 4,
+    "group": 2,
+    "who": {
+     "gain": [
+      "z R 90221 (08:55, z Jamielnik)",
+      "z IC 1511 (08:57, z Działdowo)",
+      "z IC 5116 (08:58, z Prabuty)",
+      "na R 90751 (09:15, do Iława Miasto)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "11:17",
+      "to": "11:12",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "11:18",
+      "to": "11:13",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": -5,
+    "gain": 3,
+    "group": 4,
+    "who": {
+     "gain": [
+      "z EIP 4509 (11:02, z Warszawa Wschodnia)",
+      "na TLK 8328 (11:17, do Działdowo)",
+      "na IC 6115 (11:17, do Ostróda)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "21:05",
+      "to": "21:10",
+      "towards": "Długa"
+     }
+    ],
+    "delta": 5,
+    "gain": 3,
+    "group": 44,
+    "who": {
+     "gain": [
+      "z EIP 3503 (21:02, z Warszawa Wschodnia)",
+      "z R 90113 (21:03, z Samborowo)",
+      "z TLK 53170 (21:06, z Prabuty)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "7",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "005-01",
+      "from": "09:15",
+      "to": "09:10",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "09:15",
+      "to": "09:10",
+      "towards": "Nowa Wieś (pętla, przejazd przez Dworcową)"
+     }
+    ],
+    "delta": -5,
+    "gain": 3,
+    "group": 193,
+    "who": {
+     "gain": [
+      "z IC 1511 (08:57, z Działdowo)",
+      "z IC 5116 (08:58, z Prabuty)",
+      "na R 90751 (09:15, do Iława Miasto)",
+      "na IC 7503 (09:17, do Ostróda)"
+     ],
+     "lose": [
+      "z R 90730 (09:10, z Rudzienice Suskie)"
+     ]
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "19:00",
+      "to": "18:58",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "19:01",
+      "to": "18:59",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": -2,
+    "gain": 2,
+    "group": 12,
+    "who": {
+     "gain": [
+      "na IC 5110 (19:03, do Działdowo)",
+      "na EIP 4503 (19:03, do Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "19:00",
+      "to": "18:58",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": -2,
+    "gain": 2,
+    "group": 137,
+    "who": {
+     "gain": [
+      "na IC 5110 (19:03, do Działdowo)",
+      "na EIP 4503 (19:03, do Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "07:00",
+      "to": "07:03",
+      "towards": "Iława ul. Lipowy Dwór (ogrody)"
+     }
+    ],
+    "delta": 3,
+    "gain": 2,
+    "group": 80,
+    "who": {
+     "gain": [
+      "z TLK 35171 (06:59, z Działdowo)",
+      "z TLK 53104 (06:59, z Prabuty)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "13:00",
+      "to": "13:03",
+      "towards": "Iława ul. Lipowy Dwór (ogrody)"
+     }
+    ],
+    "delta": 3,
+    "gain": 2,
+    "group": 90,
+    "who": {
+     "gain": [
+      "z IC 1815 (12:58, z Działdowo)",
+      "z IC 5114 (12:58, z Prabuty)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "14:45",
+      "to": "14:48",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": 3,
+    "gain": 2,
+    "group": 127,
+    "who": {
+     "gain": [
+      "na EIP 3553 (15:03, do Malbork)",
+      "na R 55205 (15:03, do Rudzienice Suskie)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "16:20",
+      "to": "16:24",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": 4,
+    "gain": 2,
+    "group": 66,
+    "who": {
+     "gain": [
+      "na IC 1614 (16:36, do Jabłonowo Pomorskie)",
+      "na R 90225 (16:39, do Rudzienice Suskie)"
+     ],
+     "lose": []
+    }
+   }
+  ],
+  "check_all_days": {
+   "n_days": 20,
+   "base_mean": 162.9,
+   "after_mean": 187.4
+  },
+  "realised_t2b": {
+   "pairs": 3275,
+   "good_before": 777,
+   "good_after": 826
+  }
+ },
+ "Sobota": {
+  "date": "2026-10-03",
+  "day_type": "Sobota",
+  "base": {
+   "1": [
+    10,
+    8
+   ],
+   "2": [
+    13,
+    20
+   ],
+   "3": [
+    20,
+    21
+   ]
+  },
+  "after": {
+   "1": [
+    16,
+    9
+   ],
+   "2": [
+    18,
+    24
+   ],
+   "3": [
+    22,
+    23
+   ]
+  },
+  "base_total": 92,
+  "after_total": 112,
+  "pairs_t2b": 208,
+  "pairs_b2t": 205,
+  "moves": [
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "16:37",
+      "to": "16:42",
+      "towards": "Iława ul. Lipowy Dwór (ogrody)"
+     }
+    ],
+    "delta": 5,
+    "gain": 3,
+    "group": 51,
+    "who": {
+     "gain": [
+      "z R 90625 (16:34, z Smolniki)",
+      "z IC 1614 (16:35, z Ostróda)",
+      "z R 90225 (16:38, z Jamielnik)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "13:12",
+      "to": "13:11",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "13:13",
+      "to": "13:12",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": -1,
+    "gain": 2,
+    "group": 4,
+    "who": {
+     "gain": [
+      "z IC 1815 (12:58, z Działdowo)",
+      "z IC 5114 (12:58, z Prabuty)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "13:01",
+      "to": "13:02",
+      "towards": "Iława ul. Lipowy Dwór (ogrody)"
+     }
+    ],
+    "delta": 1,
+    "gain": 2,
+    "group": 48,
+    "who": {
+     "gain": [
+      "z IC 1815 (12:58, z Działdowo)",
+      "z IC 5114 (12:58, z Prabuty)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "15:00",
+      "to": "15:02",
+      "towards": "Długa"
+     }
+    ],
+    "delta": 2,
+    "gain": 2,
+    "group": 19,
+    "who": {
+     "gain": [
+      "z IC 1515 (14:57, z Działdowo)",
+      "z IC 8114 (14:58, z Prabuty)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "11:01",
+      "to": "11:03",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": 2,
+    "gain": 2,
+    "group": 29,
+    "who": {
+     "gain": [
+      "na TLK 8328 (11:17, do Działdowo)",
+      "na IC 6115 (11:17, do Ostróda)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "14:52",
+      "to": "14:48",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "14:53",
+      "to": "14:49",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": -4,
+    "gain": 2,
+    "group": 5,
+    "who": {
+     "gain": [
+      "z R 55205 (14:38, z Iława Miasto)",
+      "na EIP 5304 (14:53, do Warszawa Wschodnia)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "12:44",
+      "to": "12:48",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": 4,
+    "gain": 2,
+    "group": 31,
+    "who": {
+     "gain": [
+      "na R 90632 (13:01, do Smolniki)",
+      "na EIP 4507 (13:03, do Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "21:06",
+      "to": "21:10",
+      "towards": "Nowa Wieś"
+     }
+    ],
+    "delta": 4,
+    "gain": 2,
+    "group": 95,
+    "who": {
+     "gain": [
+      "z EIP 3503 (21:02, z Warszawa Wschodnia)",
+      "z R 90113 (21:03, z Samborowo)",
+      "z TLK 53170 (21:06, z Prabuty)"
+     ],
+     "lose": [
+      "z EIC 5100 (20:52, z Malbork)"
+     ]
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "09:15",
+      "to": "09:10",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": -5,
+    "gain": 2,
+    "group": 60,
+    "who": {
+     "gain": [
+      "na R 90751 (09:15, do Iława Miasto)",
+      "na IC 7503 (09:17, do Ostróda)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "07:57",
+      "to": "07:58",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "07:58",
+      "to": "07:59",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": 1,
+    "gain": 1,
+    "group": 0,
+    "who": {
+     "gain": [
+      "z IC 1521 (07:55, z Działdowo)"
+     ],
+     "lose": []
+    }
+   }
+  ],
+  "check_all_days": {
+   "n_days": 4,
+   "base_mean": 92.0,
+   "after_mean": 112.0
+  },
+  "realised_t2b": {
+   "pairs": 661,
+   "good_before": 146,
+   "good_after": 161
+  }
+ },
+ "Niedziela": {
+  "date": "2026-10-04",
+  "day_type": "Niedziela",
+  "base": {
+   "1": [
+    8,
+    6
+   ],
+   "2": [
+    10,
+    7
+   ],
+   "3": [
+    10,
+    12
+   ]
+  },
+  "after": {
+   "1": [
+    11,
+    8
+   ],
+   "2": [
+    12,
+    8
+   ],
+   "3": [
+    11,
+    15
+   ]
+  },
+  "base_total": 53,
+  "after_total": 65,
+  "pairs_t2b": 203,
+  "pairs_b2t": 196,
+  "moves": [
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "07:07",
+      "to": "07:04",
+      "towards": "Iława ul. Lipowy Dwór (ogrody)"
+     }
+    ],
+    "delta": -3,
+    "gain": 2,
+    "group": 26,
+    "who": {
+     "gain": [
+      "z R 90623 (06:50, z Smolniki)",
+      "z EIP 5300 (06:52, z Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "08:44",
+      "to": "08:48",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": 4,
+    "gain": 2,
+    "group": 35,
+    "who": {
+     "gain": [
+      "na IC 5116 (09:00, do Działdowo)",
+      "na EIP 1503 (09:03, do Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "10:47",
+      "to": "10:48",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "10:48",
+      "to": "10:49",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": 1,
+    "gain": 1,
+    "group": 1,
+    "who": {
+     "gain": [
+      "na EIP 4509 (11:03, do Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "16:57",
+      "to": "16:58",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "16:58",
+      "to": "16:59",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": 1,
+    "gain": 1,
+    "group": 5,
+    "who": {
+     "gain": [
+      "na R 90636 (17:13, do Smolniki)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "12:37",
+      "to": "12:38",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": 1,
+    "gain": 1,
+    "group": 39,
+    "who": {
+     "gain": [
+      "na EIP 5352 (12:53, do Warszawa Wschodnia)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "3",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "07:58",
+      "to": "07:59",
+      "towards": "Nowa Wieś"
+     }
+    ],
+    "delta": 1,
+    "gain": 1,
+    "group": 47,
+    "who": {
+     "gain": [
+      "z IC 1521 (07:55, z Działdowo)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "14:07",
+      "to": "14:05",
+      "towards": "Dworcowa"
+     },
+     {
+      "kind": "dep",
+      "stop": "079-00",
+      "from": "14:08",
+      "to": "14:06",
+      "towards": "Piaskowa"
+     }
+    ],
+    "delta": -2,
+    "gain": 1,
+    "group": 3,
+    "who": {
+     "gain": [
+      "z EIP 5404 (13:52, z Malbork)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "10:58",
+      "to": "11:00",
+      "towards": "Długa"
+     }
+    ],
+    "delta": 2,
+    "gain": 1,
+    "group": 10,
+    "who": {
+     "gain": [
+      "z IC 1513 (10:55, z Działdowo)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "1",
+    "events": [
+     {
+      "kind": "dep",
+      "stop": "005-01",
+      "from": "15:40",
+      "to": "15:42",
+      "towards": "Długa"
+     }
+    ],
+    "delta": 2,
+    "gain": 1,
+    "group": 16,
+    "who": {
+     "gain": [
+      "z R 90244 (15:38, z Rudzienice Suskie)"
+     ],
+     "lose": []
+    }
+   },
+   {
+    "line": "2",
+    "events": [
+     {
+      "kind": "arr",
+      "stop": "079-00",
+      "from": "15:18",
+      "to": "15:16",
+      "towards": "Dworcowa"
+     }
+    ],
+    "delta": -2,
+    "gain": 1,
+    "group": 22,
+    "who": {
+     "gain": [
+      "na R 90634 (15:21, do Smolniki)"
+     ],
+     "lose": []
+    }
+   }
+  ],
+  "check_all_days": {
+   "n_days": 4,
+   "base_mean": 52.25,
+   "after_mean": 64.0
+  },
+  "realised_t2b": {
+   "pairs": 664,
+   "good_before": 97,
+   "good_after": 104
+  }
+ }
+}
