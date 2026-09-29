@@ -12,8 +12,9 @@ Steps:
  3. Shift trips by a few minutes (see zkmplan.ini) to add good transfers at the
     station, with the blocks, the driver breaks and the cost kept.
  4. Find extra round trips that buses waiting at the station can run.
- 5. Estimate the effect on bus use and ticket revenue.
- 6. Write the results to data/plan/<date>/ and the report reports/korekty-zkm.html.
+ 5. Estimate the effect on bus use (and on ticket revenue, see show_money).
+ 6. Write the results to data/plan/<date>/ (with a LaTeX list of the changes,
+    zmiany.tex) and the report reports/korekty-zkm.html.
 """
 from __future__ import annotations
 
@@ -34,6 +35,7 @@ from ilawa.calendar import day_type
 from ilawa.common import DATA, ROOT
 from ilawa.plan import costs as C
 from ilawa.plan import demand as DM
+from ilawa.plan import explain as EX
 from ilawa.plan import gaps as G
 from ilawa.plan import optimize as O
 from ilawa.plan import trains as TR
@@ -229,12 +231,13 @@ def main() -> None:
             stages = [int(float(x)) for x in str(shc.get("stages") or "").replace(" ", "").split(",") if x]
             opt = O.optimise_stages(trips, blocks, duties, trains, p, stages)
             new_trips = opt["trips"]
+            EX.contributions(trips, new_trips, opt["changes"], all_trains, rep, station, m1, m2, good, buffers)
             nd_all = max(1, len(all_trains))
-            curve = [{"stage": 0, "limit": 0, "changes": 0,
-                      "good_per_day": O.count_good(trips, all_trains, station, m1, m2, good)["total"] / nd_all}]
+            gpd = lambda ts, b=None: O.count_good(ts, all_trains, station, m1, m2, good, b)["total"] / nd_all
+            curve = [{"stage": 0, "limit": 0, "changes": 0, "good_per_day": gpd(trips, buffers), "good_per_day_plan": gpd(trips)}]
             for s in opt["stages"]:
                 curve.append({"stage": s["stage"], "limit": s["limit"], "changes": s["changes"], "status": s["status"],
-                              "good_per_day": O.count_good(s["trips"], all_trains, station, m1, m2, good)["total"] / nd_all})
+                              "good_per_day": gpd(s["trips"], buffers), "good_per_day_plan": gpd(s["trips"])})
             nblocks, nduties = O.rebuild_blocks(blocks, new_trips), O.rebuild_duties(duties, new_trips)
             ind1 = C.indicators(feed, nblocks, nduties, depot, blc["road_factor"], blc["deadhead_kmh"])
             cost1 = C.daily_cost(ind1, coc)
@@ -279,10 +282,20 @@ def main() -> None:
                 v = r["variants"][vname]
                 per[dtp] = {**v[f"indicators_{when}"], **{f"cost_{k}": x for k, x in v[f"cost_{when}"].items()}}
             result.setdefault("annual", {}).setdefault(vname, {})[when] = C.annual(per, year, coc)
+    n_days = C.day_counts(year)
+    for vname in variants:              # extra bus trips in a year, all day types
+        tot = {}
+        for k in ("low", "mid", "high"):
+            tot[k] = sum(n_days.get(dtp, 0) * r["variants"][vname]["demand"][k]["extra_trips_day"]
+                         for dtp, r in result["day_types"].items())
+        result.setdefault("annual_demand", {})[vname] = {**tot, "days": {d: n_days.get(d, 0) for d in result["day_types"]}}
+    result["revenue_per_trip"] = DM.revenue_per_trip(dmc)
     write_outputs(feed, proposed, result, run_dir)
+    write_latex(result, run_dir / "zmiany.tex")
     (run_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     from ilawa.plan import report
-    out = report.build(result, ROOT / "reports" / "zkmplan_template.html", ROOT / "reports" / "korekty-zkm.html")
+    shown = result if str(coc.get("show_money") or "").lower() in ("yes", "tak", "true", "1") else strip_money(result)
+    out = report.build(shown, ROOT / "reports" / "zkmplan_template.html", ROOT / "reports" / "korekty-zkm.html")
     print(f"6. Results: {run_dir}\n   Report: {out}")
 
 
@@ -292,14 +305,16 @@ def write_outputs(feed: Feed, proposed: dict, result: dict, run_dir: Path) -> No
         w = csv.writer(f)
         w.writerow(["typ_dnia", "wariant_obiegow", "etap", "kurs", "linia", "kierunek", "rodzaj", "zmiana_przed_dworcowa_min",
                     "zmiana_po_dworcowej_min", "przyjazd_dworcowa", "nowy_przyjazd", "odjazd_dworcowa", "nowy_odjazd",
-                    "pierwszy_przystanek", "nowy", "ostatni_przystanek", "nowy"])
+                    "pierwszy_przystanek", "nowy", "ostatni_przystanek", "nowy", "dobre_przesiadki_dziennie",
+                    "zyskuja", "traca"])
         for dtp, r in result["day_types"].items():
             for vname, v in r["variants"].items():
                 for c in v["changes"]:
                     w.writerow([dtp, vname, c.get("stage", ""), c["trip"], c["route"], c["headsign"], c["kind"], c["shift_before"],
                                 c["shift_after"], fm(c["station_arr"][0]), fm(c["station_arr"][1]),
                                 fm(c["station_dep"][0]), fm(c["station_dep"][1]), fm(c["first_stop"][0]),
-                                fm(c["first_stop"][1]), fm(c["last_stop"][0]), fm(c["last_stop"][1])])
+                                fm(c["first_stop"][1]), fm(c["last_stop"][0]), fm(c["last_stop"][1]),
+                                c.get("gain_per_day", ""), "; ".join(c.get("gains", [])), "; ".join(c.get("losses", []))])
     tables = feed._read_all()
     rows = []
     for r in tables["stop_times.txt"]:
@@ -313,6 +328,69 @@ def write_outputs(feed: Feed, proposed: dict, result: dict, run_dir: Path) -> No
         fi = tables["feed_info.txt"][0]
         tables["feed_info.txt"] = [{**fi, "feed_version": f"{fi.get('feed_version', '')}-propozycja"}]
     gtfs_write.write(tables, run_dir / "gtfs_propozycja", run_dir / "gtfs_propozycja.zip")
+
+
+
+MONEY_KEYS = {"cost_before", "cost_after", "marginal_cost", "extra_revenue_year", "base_revenue_year",
+              "revenue_per_trip", "revenue_per_trip_low", "revenue_per_trip_mid", "revenue_per_trip_high"}
+
+
+def strip_money(obj):
+    """Copy of the result without values in PLN (for a report shown before the operator's data are in)."""
+    if isinstance(obj, dict):
+        out = {}
+        for k, v in obj.items():
+            if k in MONEY_KEYS or k.startswith("cost_") or k.endswith("_pln_per_l") or "_pln_" in k or k in (
+                    "fare_normal", "fare_reduced"):
+                continue
+            out[k] = strip_money(v)
+        return out
+    if isinstance(obj, list):
+        return [strip_money(v) for v in obj]
+    return obj
+
+
+def _tex(x) -> str:
+    rep = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_",
+           "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\textasciicircum{}"}
+    return "".join(rep.get(ch, ch) for ch in str(x))
+
+
+def write_latex(result: dict, path: Path, variant: str = "single") -> None:
+    """List of the proposed changes as LaTeX (longtable), one part for each day type."""
+    fm = lambda m: "" if m is None else f"{int(m) // 60}:{int(m) % 60:02d}"
+    pair = lambda p: "--" if p[0] is None else fm(p[0]) if p[0] == p[1] else f"{fm(p[0])}\\,$\\to$\\,\\textbf{{{fm(p[1])}}}"
+    sh = lambda x: "0" if not x else f"{x:+d}".replace("-", "$-$")
+    names = {"Roboczy": "Dzień roboczy", "Sobota": "Sobota", "Niedziela": "Niedziela i święta"}
+    pl = lambda d: f"{int(d[8:10])}.{d[5:7]}.{d[:4]}"
+    out = ["% Generated by zkmplan.py. Do not edit: run the tool again.",
+           f"% Generated {result['generated']}, ZKM feed {(result.get('feed') or {}).get('feed_version', '')}"]
+    for dtp, r in result["day_types"].items():
+        v = r["variants"].get(variant) or next(iter(r["variants"].values()))
+        g0 = v["curve"][0]["good_per_day"]
+        out += [f"\\subsection*{{{names.get(dtp, dtp)}}}",
+                f"Plan na dzień {pl(r['date'])}, sprawdzony na {len(r['all_dates'])} dniach tego typu "
+                f"({pl(r['all_dates'][0])}--{pl(r['all_dates'][-1])}). "
+                f"Dobre przesiadki dziennie (pary pociąg--linia, z zapasem na typowe opóźnienie pociągu): obecnie {g0:.0f}.", "",
+                "\\begin{tabular}{@{}lrrr@{}}\\toprule",
+                "Etap & Zmienione kursy (razem) & Dobre przesiadki dziennie & Zmiana \\\\ \\midrule"]
+        for c in v["curve"][1:]:
+            out.append(f"{c['stage']} & {c['changes']} & {c['good_per_day']:.0f} & {100 * (c['good_per_day'] - g0) / g0:+.0f}\\,\\% \\\\")
+        out += ["\\bottomrule\\end{tabular}", "",
+                "\\begin{longtable}{@{}c c p{2.9cm} l l r r p{4.6cm}@{}}\\toprule",
+                "Etap & Linia & Kierunek & Przyjazd & Odjazd & Inne & Zysk & Pociągi \\\\",
+                " & & & \\multicolumn{2}{c}{na Dworcowej} & przyst. & /dzień & (dobra przesiadka po zmianie) \\\\ \\midrule\\endhead",
+                "\\bottomrule\\endfoot"]
+        key = lambda c: (c.get("stage", 1), c["station_dep"][0] if c["station_dep"][0] is not None else c["station_arr"][0] or 0)
+        for c in sorted(v["changes"], key=key):
+            other = sh(c["shift_after"]) if c["kind"] != "through" else f"{sh(c['shift_before'])}/{sh(c['shift_after'])}"
+            trains = _tex("; ".join(c.get("gains", []))) or ("\\textit{zmiana towarzysząca}" if not c.get("losses") else "")
+            if c.get("losses"):
+                trains += ("; " if trains else "") + "\\textit{traci: " + _tex("; ".join(c["losses"])) + "}"
+            out.append(f"{c.get('stage', 1)} & {_tex(c['route'])} & {_tex(c['headsign'])} & {pair(c['station_arr'])} & "
+                       f"{pair(c['station_dep'])} & {other} & {c.get('gain_per_day', 0):+.1f} & {trains} \\\\")
+        out += ["\\end{longtable}", ""]
+    path.write_text("\n".join(out), encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -3,7 +3,8 @@
 Anchor: the average daily passenger exchange at the railway station (boardings
 plus alightings, Urząd Transportu Kolejowego). Everything else is a parameter:
 the share of station passengers who use the city bus, the elasticity of bus use
-to the waiting time at the transfer, and the average revenue per bus trip.
+to the waiting time at the transfer, and the ticket prices with the shares of
+reduced and free trips (or the average revenue per bus trip of the operator).
 The result is an estimate with a low, middle and high variant, not a forecast.
 """
 from __future__ import annotations
@@ -30,18 +31,32 @@ def mean_waits(train_arr: np.ndarray, train_dep: np.ndarray, dep_by_line: dict, 
             "all": float(np.mean(w1 + w2)) if (w1 or w2) else float("nan"), "pairs": len(w1) + len(w2)}
 
 
+def revenue_per_trip(cfg: dict) -> float:
+    """Average ticket revenue per bus trip.
+
+    The value `revenue_per_trip` from the configuration, when given. Else:
+    (1 - share_free) x ((1 - share_reduced) x fare_normal + share_reduced x fare_reduced).
+    """
+    if cfg.get("revenue_per_trip") is not None:
+        return float(cfg["revenue_per_trip"])
+    red, free = cfg.get("share_reduced") or 0.0, cfg.get("share_free") or 0.0
+    return (1 - free) * ((1 - red) * cfg["fare_normal"] + red * cfg["fare_reduced"])
+
+
 def ridership_effect(wait_before: float, wait_after: float, cfg: dict) -> dict:
-    """Extra bus trips and revenue per day and per year for three variants."""
+    """Extra bus trips per day and per year, and the revenue, for three variants."""
     out = {}
+    rev = revenue_per_trip(cfg)
     base_exchange = cfg["station_daily_exchange"]
     rel = (wait_after - wait_before) / wait_before if wait_before else 0.0
     for name in ("low", "mid", "high"):
-        share, el, rev = cfg[f"bus_share_{name}"], cfg[f"wait_elasticity_{name}"], cfg[f"revenue_per_trip_{name}"]
+        share, el = cfg[f"bus_share_{name}"], cfg[f"wait_elasticity_{name}"]
         base = base_exchange * share
         change = el * rel
         extra = base * change
         out[name] = {"bus_share": share, "elasticity": el, "revenue_per_trip": rev,
                      "base_trips_day": base, "change": change, "extra_trips_day": extra,
-                     "extra_trips_year": extra * 365, "extra_revenue_year": extra * 365 * rev}
+                     "extra_trips_year": extra * 365, "extra_revenue_year": extra * 365 * rev,
+                     "base_revenue_year": base * 365 * rev}
     out["wait_before"], out["wait_after"], out["wait_change"] = wait_before, wait_after, rel
     return out

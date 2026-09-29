@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-29T13:13:14",
+ "generated": "2026-09-29T15:35:30",
  "config": {
   "general": {
    "station_stop_name": "Dworcowa",
@@ -54,7 +54,8 @@
    "driver_pln_per_hour": "55",
    "vehicle_fixed_pln_per_day": "160",
    "reserve_share": "0.15",
-   "overhead_share": "0.15"
+   "overhead_share": "0.15",
+   "show_money": "no"
   },
   "demand": {
    "station_daily_exchange": "4700",
@@ -64,9 +65,11 @@
    "wait_elasticity_low": "-0.2",
    "wait_elasticity_mid": "-0.4",
    "wait_elasticity_high": "-0.7",
-   "revenue_per_trip_low": "1.6",
-   "revenue_per_trip_mid": "2.0",
-   "revenue_per_trip_high": "2.4",
+   "fare_normal": "4.00",
+   "fare_reduced": "2.00",
+   "share_reduced": "0.50",
+   "share_free": "0.20",
+   "revenue_per_trip": "",
    "wait_cap": "60"
   }
  },
@@ -2949,7 +2952,12 @@
         335,
         337
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5118 (04:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0505_029-01",
@@ -2974,7 +2982,12 @@
         327,
         331
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90205 (05:46)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0535_039-01",
@@ -2999,7 +3012,12 @@
         353,
         352
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90250 (05:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0552_005-01",
@@ -3024,7 +3042,12 @@
         373,
         375
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90650 (05:50)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0605_005-01",
@@ -3049,7 +3072,12 @@
         382,
         381
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90650 (05:50)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_0610_002-01",
@@ -3074,7 +3102,12 @@
         400,
         405
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90101 (07:00)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0616_029-01",
@@ -3099,7 +3132,10 @@
         398,
         399
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "1_RO_0642_005-01",
@@ -3124,7 +3160,12 @@
         432,
         437
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5708 (06:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0650_039-01",
@@ -3149,7 +3190,12 @@
         428,
         432
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90240 (07:27)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0652_005-01",
@@ -3174,7 +3220,12 @@
         434,
         436
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90623 (06:50)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0700_005-01",
@@ -3199,7 +3250,15 @@
         437,
         433
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5708 (06:39)",
+        "z R 90101 (06:44)"
+       ],
+       "losses": [
+        "z EIP 5300 (06:52)"
+       ]
       },
       {
        "trip": "1_RO_0717_002-01",
@@ -3224,7 +3283,10 @@
         469,
         471
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_RO_S_0717_031-01",
@@ -3249,7 +3311,12 @@
         467,
         468
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1501 (08:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_S_0724_005-01",
@@ -3274,7 +3341,12 @@
         462,
         464
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90240 (07:22)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0725_039-01",
@@ -3299,7 +3371,12 @@
         466,
         468
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1501 (08:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_0800_005-01",
@@ -3324,7 +3401,12 @@
         513,
         515
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1521 (07:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0802_029-01",
@@ -3349,7 +3431,12 @@
         505,
         506
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1618 (08:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0808_005-01",
@@ -3374,7 +3461,12 @@
         509,
         511
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 1501 (08:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0816_035-01",
@@ -3399,7 +3491,12 @@
         519,
         523
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90221 (08:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_0840_002-01",
@@ -3424,7 +3521,12 @@
         552,
         550
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90751 (09:15)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0903_005-01",
@@ -3449,7 +3551,13 @@
         563,
         560
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.9,
+       "gains": [
+        "z R 90652 (08:46)",
+        "z R 95623 (08:46)"
+       ],
+       "losses": []
       },
       {
        "trip": "7_RO_0915_005-01",
@@ -3474,7 +3582,12 @@
         581,
         580
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1511 (08:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0955_039-01",
@@ -3499,7 +3612,12 @@
         614,
         616
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5710 (10:30)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1013_029-01",
@@ -3524,7 +3642,12 @@
         636,
         638
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5402 (10:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1015_039-01",
@@ -3549,7 +3672,12 @@
         636,
         638
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5402 (10:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1020_051-01",
@@ -3574,7 +3702,12 @@
         644,
         648
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 4509 (11:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1036_005-01",
@@ -3599,7 +3732,12 @@
         656,
         657
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5710 (10:29)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1045_002-01",
@@ -3624,7 +3762,13 @@
         677,
         672
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.8,
+       "gains": [
+        "na TLK 8328 (11:17)",
+        "na IC 6115 (11:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1055_005-01",
@@ -3649,7 +3793,12 @@
         675,
         680
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5402 (10:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1119_035-01",
@@ -3674,7 +3823,12 @@
         702,
         700
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90242 (11:45)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1120_005-01",
@@ -3699,7 +3853,12 @@
         703,
         702
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 4509 (11:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1130_005-01",
@@ -3724,7 +3883,12 @@
         710,
         709
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z TLK 8328 (11:12)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1139_039-01",
@@ -3749,7 +3913,12 @@
         720,
         718
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3509 (12:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1150_005-01",
@@ -3774,7 +3943,12 @@
         731,
         733
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90654 (11:48)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1155_051-01",
@@ -3799,7 +3973,12 @@
         739,
         741
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90223 (12:36)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1200_039-01",
@@ -3824,7 +4003,12 @@
         741,
         746
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1706 (12:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1205_002-01",
@@ -3849,7 +4033,12 @@
         757,
         758
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5352 (12:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1215_029-01",
@@ -3874,7 +4063,12 @@
         760,
         765
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5114 (12:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1235_039-01",
@@ -3899,7 +4093,12 @@
         776,
         774
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5114 (12:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1300_005-01",
@@ -3924,7 +4123,12 @@
         804,
         809
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.85,
+       "gains": [
+        "z IC 1815 (12:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1321_029-01",
@@ -3949,7 +4153,12 @@
         826,
         828
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3507 (14:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1325_002-01",
@@ -3974,7 +4183,12 @@
         837,
         835
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90200 (14:00)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1327_039-01",
@@ -3999,7 +4213,12 @@
         829,
         828
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5404 (13:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1335_005-01",
@@ -4024,7 +4243,12 @@
         839,
         837
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z IC 7515 (13:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1400_002-01",
@@ -4049,7 +4273,12 @@
         870,
         869
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5714 (14:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1406_035-01",
@@ -4074,7 +4303,12 @@
         871,
         869
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5714 (14:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1414_002-01",
@@ -4099,7 +4333,13 @@
         886,
         888
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na EIP 3553 (15:03)",
+        "na R 55205 (15:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1420_035-01",
@@ -4124,7 +4364,13 @@
         885,
         888
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na EIP 3553 (15:03)",
+        "na R 55205 (15:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1430_051-01",
@@ -4149,7 +4395,12 @@
         898,
         894
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 8114 (14:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1455_039-01",
@@ -4174,7 +4425,12 @@
         917,
         912
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 7107 (15:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1502_005-01",
@@ -4199,7 +4455,13 @@
         935,
         938
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1515 (14:57)",
+        "z IC 8114 (14:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1515_002-01",
@@ -4224,7 +4486,12 @@
         947,
         948
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3505 (16:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1516_005-01",
@@ -4249,7 +4516,13 @@
         941,
         939
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1515 (14:57)",
+        "z IC 8114 (14:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1520_005-01",
@@ -4274,7 +4547,12 @@
         943,
         947
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7107 (15:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1520_029-01",
@@ -4299,7 +4577,13 @@
         944,
         948
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na R 90647 (16:01)",
+        "na EIP 3505 (16:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1534_039-01",
@@ -4324,7 +4608,12 @@
         956,
         953
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90209 (15:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1540_005-01",
@@ -4349,7 +4638,12 @@
         963,
         965
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90244 (15:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1550_002-01",
@@ -4374,7 +4668,12 @@
         982,
         985
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90225 (16:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1557_035-01",
@@ -4399,7 +4698,12 @@
         982,
         984
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90225 (16:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1558_039-01",
@@ -4424,7 +4728,13 @@
         980,
         984
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.8,
+       "gains": [
+        "na IC 1614 (16:36)",
+        "na R 90225 (16:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1610_035-01",
@@ -4449,7 +4759,12 @@
         996,
         998
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5308 (16:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1615_039-01",
@@ -4474,7 +4789,12 @@
         997,
         998
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5308 (16:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1625_005-01",
@@ -4499,7 +4819,12 @@
         1009,
         1014
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90202 (16:26)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1635_005-01",
@@ -4524,7 +4849,12 @@
         1028,
         1031
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90625 (16:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1640_029-01",
@@ -4549,7 +4879,12 @@
         1024,
         1022
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na TLK 3829 (17:07)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1708_035-01",
@@ -4574,7 +4909,12 @@
         1055,
         1058
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5406 (17:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1715_005-01",
@@ -4599,7 +4939,12 @@
         1058,
         1057
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z TLK 3829 (16:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1717_039-01",
@@ -4624,7 +4969,12 @@
         1059,
         1058
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 55201 (17:43)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1746_005-01",
@@ -4649,7 +4999,12 @@
         1090,
         1086
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 55201 (17:28)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1830_002-01",
@@ -4674,7 +5029,13 @@
         1140,
         1138
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na IC 5110 (19:03)",
+        "na EIP 4503 (19:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1834_035-01",
@@ -4699,7 +5060,13 @@
         1140,
         1138
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na IC 5110 (19:03)",
+        "na EIP 4503 (19:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1850_035-01",
@@ -4724,7 +5091,12 @@
         1153,
         1152
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na IC 6119 (19:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1908_005-01",
@@ -4749,7 +5121,13 @@
         1169,
         1171
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 5110 (19:01)",
+        "z EIP 4503 (19:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1923_005-01",
@@ -4774,7 +5152,12 @@
         1180,
         1181
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z IC 6119 (19:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1934_039-01",
@@ -4799,7 +5182,12 @@
         1193,
         1188
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.1,
+       "gains": [
+        "na EIP 5102 (19:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1955_005-01",
@@ -4824,7 +5212,12 @@
         1225,
         1222
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90660 (19:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1957_005-01",
@@ -4849,7 +5242,12 @@
         1217,
         1220
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5102 (19:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2006_005-01",
@@ -4874,7 +5272,12 @@
         1223,
         1219
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90227 (19:48)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_2020_035-01",
@@ -4899,7 +5302,12 @@
         1243,
         1248
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3503 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2030_039-01",
@@ -4924,7 +5332,12 @@
         1249,
         1248
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIC 5100 (20:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_2042_005-01",
@@ -4949,7 +5362,12 @@
         1263,
         1262
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90246 (20:27)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2046_005-01",
@@ -4974,7 +5392,12 @@
         1263,
         1258
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90246 (20:27)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_2104_005-01",
@@ -4999,7 +5422,13 @@
         1295,
         1298
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z TLK 35105 (20:58)",
+        "z R 90113 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2106_005-01",
@@ -5024,7 +5453,12 @@
         1283,
         1284
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90113 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2107_039-01",
@@ -5049,7 +5483,12 @@
         1285,
         1280
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 95636 (21:25)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_2138_005-01",
@@ -5074,7 +5513,12 @@
         1320,
         1319
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z IC 7509 (21:20)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_2212_002-01",
@@ -5099,7 +5543,12 @@
         1362,
         1365
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1519 (23:00)"
+       ],
+       "losses": []
       }
      ],
      "curve": [
@@ -5107,28 +5556,32 @@
        "stage": 0,
        "limit": 0,
        "changes": 0,
-       "good_per_day": 154.8
+       "good_per_day": 147.7,
+       "good_per_day_plan": 154.8
       },
       {
        "stage": 1,
        "limit": 20,
        "changes": 20,
        "status": "Optimal",
-       "good_per_day": 176.1
+       "good_per_day": 179.65,
+       "good_per_day_plan": 176.1
       },
       {
        "stage": 2,
        "limit": 40,
        "changes": 40,
        "status": "Optimal",
-       "good_per_day": 189.9
+       "good_per_day": 199.15,
+       "good_per_day_plan": 189.9
       },
       {
        "stage": 3,
        "limit": null,
        "changes": 87,
        "status": "Optimal",
-       "good_per_day": 229.3
+       "good_per_day": 243.65,
+       "good_per_day_plan": 229.3
       }
      ],
      "indicators_before": {
@@ -6535,32 +6988,35 @@
       "low": {
        "bus_share": 0.05,
        "elasticity": -0.2,
-       "revenue_per_trip": 1.6,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 235.0,
        "change": 0.012935948524454767,
        "extra_trips_day": 3.0399479032468704,
        "extra_trips_year": 1109.5809846851078,
-       "extra_revenue_year": 1775.3295754961725
+       "extra_revenue_year": 2662.994363244259,
+       "base_revenue_year": 205860.00000000003
       },
       "mid": {
        "bus_share": 0.1,
        "elasticity": -0.4,
-       "revenue_per_trip": 2.0,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 470.0,
        "change": 0.025871897048909534,
        "extra_trips_day": 12.159791612987481,
        "extra_trips_year": 4438.323938740431,
-       "extra_revenue_year": 8876.647877480862
+       "extra_revenue_year": 10651.977452977037,
+       "base_revenue_year": 411720.00000000006
       },
       "high": {
        "bus_share": 0.15,
        "elasticity": -0.7,
-       "revenue_per_trip": 2.4,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 705.0,
        "change": 0.045275819835591674,
        "extra_trips_day": 31.919452984092132,
        "extra_trips_year": 11650.600339193628,
-       "extra_revenue_year": 27961.440814064707
+       "extra_revenue_year": 27961.440814064714,
+       "base_revenue_year": 617580.0000000001
       },
       "wait_before": 34.21727053140096,
       "wait_after": 32.004106280193234,
@@ -9829,7 +10285,12 @@
         335,
         337
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5118 (04:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0505_029-01",
@@ -9854,7 +10315,12 @@
         327,
         331
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90205 (05:46)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0535_039-01",
@@ -9879,7 +10345,12 @@
         353,
         352
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90250 (05:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0552_005-01",
@@ -9904,7 +10375,12 @@
         373,
         375
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90650 (05:50)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0605_005-01",
@@ -9929,7 +10405,12 @@
         382,
         381
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90650 (05:50)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_0610_002-01",
@@ -9954,7 +10435,12 @@
         400,
         405
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90101 (07:00)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0616_029-01",
@@ -9979,7 +10465,10 @@
         398,
         399
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "1_RO_0642_005-01",
@@ -10004,7 +10493,12 @@
         432,
         437
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5708 (06:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0650_039-01",
@@ -10029,7 +10523,12 @@
         428,
         432
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90240 (07:27)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0652_005-01",
@@ -10054,7 +10553,12 @@
         434,
         436
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90623 (06:50)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0700_005-01",
@@ -10079,7 +10583,15 @@
         437,
         433
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5708 (06:39)",
+        "z R 90101 (06:44)"
+       ],
+       "losses": [
+        "z EIP 5300 (06:52)"
+       ]
       },
       {
        "trip": "1_RO_0717_002-01",
@@ -10104,7 +10616,10 @@
         469,
         471
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_RO_S_0717_031-01",
@@ -10129,7 +10644,12 @@
         467,
         468
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1501 (08:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_S_0724_005-01",
@@ -10154,7 +10674,12 @@
         462,
         464
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90240 (07:22)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0725_039-01",
@@ -10179,7 +10704,12 @@
         466,
         468
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1501 (08:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_0800_005-01",
@@ -10204,7 +10734,12 @@
         513,
         515
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1521 (07:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0802_029-01",
@@ -10229,7 +10764,12 @@
         505,
         506
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1618 (08:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0808_005-01",
@@ -10254,7 +10794,12 @@
         509,
         511
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 1501 (08:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0816_035-01",
@@ -10279,7 +10824,12 @@
         519,
         523
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90221 (08:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_0840_002-01",
@@ -10304,7 +10854,12 @@
         552,
         550
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90751 (09:15)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_0903_005-01",
@@ -10329,7 +10884,13 @@
         563,
         560
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.9,
+       "gains": [
+        "z R 90652 (08:46)",
+        "z R 95623 (08:46)"
+       ],
+       "losses": []
       },
       {
        "trip": "7_RO_0915_005-01",
@@ -10354,7 +10915,12 @@
         581,
         580
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1511 (08:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_0955_039-01",
@@ -10379,7 +10945,12 @@
         614,
         616
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5710 (10:30)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1013_029-01",
@@ -10404,7 +10975,12 @@
         636,
         638
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5402 (10:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1015_039-01",
@@ -10429,7 +11005,12 @@
         636,
         638
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5402 (10:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1020_051-01",
@@ -10454,7 +11035,12 @@
         644,
         648
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 4509 (11:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1036_005-01",
@@ -10479,7 +11065,12 @@
         656,
         657
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5710 (10:29)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1045_002-01",
@@ -10504,7 +11095,13 @@
         677,
         672
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.8,
+       "gains": [
+        "na TLK 8328 (11:17)",
+        "na IC 6115 (11:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1055_005-01",
@@ -10529,7 +11126,12 @@
         675,
         680
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5402 (10:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1119_035-01",
@@ -10554,7 +11156,12 @@
         702,
         700
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90242 (11:45)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1120_005-01",
@@ -10579,7 +11186,12 @@
         703,
         702
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 4509 (11:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1130_005-01",
@@ -10604,7 +11216,12 @@
         710,
         709
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z TLK 8328 (11:12)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1139_039-01",
@@ -10629,7 +11246,12 @@
         720,
         718
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3509 (12:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1150_005-01",
@@ -10654,7 +11276,12 @@
         731,
         733
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90654 (11:48)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1155_051-01",
@@ -10679,7 +11306,12 @@
         739,
         741
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90223 (12:36)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1200_039-01",
@@ -10704,7 +11336,12 @@
         741,
         746
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1706 (12:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1205_002-01",
@@ -10729,7 +11366,12 @@
         757,
         758
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5352 (12:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1215_029-01",
@@ -10754,7 +11396,12 @@
         760,
         765
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5114 (12:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1229_005-01",
@@ -10779,7 +11426,10 @@
         772,
         771
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_RO_1235_039-01",
@@ -10804,7 +11454,12 @@
         776,
         774
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5114 (12:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1300_005-01",
@@ -10829,7 +11484,12 @@
         804,
         809
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.85,
+       "gains": [
+        "z IC 1815 (12:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1308_035-01",
@@ -10854,7 +11514,10 @@
         813,
         811
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_RO_1321_029-01",
@@ -10879,7 +11542,12 @@
         826,
         828
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3507 (14:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1325_002-01",
@@ -10904,7 +11572,12 @@
         837,
         835
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90200 (14:00)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1327_039-01",
@@ -10929,7 +11602,12 @@
         829,
         828
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5404 (13:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1335_005-01",
@@ -10954,7 +11632,12 @@
         839,
         837
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z IC 7515 (13:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1400_002-01",
@@ -10979,7 +11662,12 @@
         870,
         869
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5714 (14:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1406_035-01",
@@ -11004,7 +11692,12 @@
         871,
         869
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5714 (14:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1414_002-01",
@@ -11029,7 +11722,13 @@
         886,
         888
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na EIP 3553 (15:03)",
+        "na R 55205 (15:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1420_035-01",
@@ -11054,7 +11753,13 @@
         885,
         888
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na EIP 3553 (15:03)",
+        "na R 55205 (15:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "4_RO_1430_051-01",
@@ -11079,7 +11784,12 @@
         898,
         894
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 8114 (14:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1455_039-01",
@@ -11104,7 +11814,12 @@
         917,
         912
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 7107 (15:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1502_005-01",
@@ -11129,7 +11844,13 @@
         935,
         938
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1515 (14:57)",
+        "z IC 8114 (14:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1515_002-01",
@@ -11154,7 +11875,12 @@
         947,
         948
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3505 (16:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1516_005-01",
@@ -11179,7 +11905,13 @@
         941,
         939
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1515 (14:57)",
+        "z IC 8114 (14:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1520_005-01",
@@ -11204,7 +11936,12 @@
         943,
         947
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7107 (15:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1520_029-01",
@@ -11229,7 +11966,13 @@
         944,
         948
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na R 90647 (16:01)",
+        "na EIP 3505 (16:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1534_039-01",
@@ -11254,7 +11997,12 @@
         956,
         953
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90209 (15:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1540_005-01",
@@ -11279,7 +12027,12 @@
         963,
         965
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90244 (15:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1550_002-01",
@@ -11304,7 +12057,12 @@
         982,
         985
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90225 (16:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1557_035-01",
@@ -11329,7 +12087,12 @@
         982,
         984
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na R 90225 (16:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1558_039-01",
@@ -11354,7 +12117,13 @@
         980,
         984
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.8,
+       "gains": [
+        "na IC 1614 (16:36)",
+        "na R 90225 (16:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1610_035-01",
@@ -11379,7 +12148,12 @@
         996,
         998
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5308 (16:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1615_039-01",
@@ -11404,7 +12178,12 @@
         997,
         998
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5308 (16:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1625_005-01",
@@ -11429,7 +12208,12 @@
         1009,
         1014
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90202 (16:26)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1635_005-01",
@@ -11454,7 +12238,12 @@
         1028,
         1031
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90625 (16:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1640_029-01",
@@ -11479,7 +12268,12 @@
         1024,
         1022
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na TLK 3829 (17:07)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1708_035-01",
@@ -11504,7 +12298,12 @@
         1055,
         1058
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5406 (17:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1715_005-01",
@@ -11529,7 +12328,12 @@
         1058,
         1057
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z TLK 3829 (16:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1717_039-01",
@@ -11554,7 +12358,12 @@
         1059,
         1058
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 55201 (17:43)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1746_005-01",
@@ -11579,7 +12388,12 @@
         1090,
         1086
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 55201 (17:28)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1830_002-01",
@@ -11604,7 +12418,13 @@
         1140,
         1138
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na IC 5110 (19:03)",
+        "na EIP 4503 (19:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1834_035-01",
@@ -11629,7 +12449,13 @@
         1140,
         1138
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na IC 5110 (19:03)",
+        "na EIP 4503 (19:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1850_035-01",
@@ -11654,7 +12480,12 @@
         1153,
         1152
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "na IC 6119 (19:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1908_005-01",
@@ -11679,7 +12510,13 @@
         1169,
         1171
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 5110 (19:01)",
+        "z EIP 4503 (19:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1923_005-01",
@@ -11704,7 +12541,12 @@
         1180,
         1181
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z IC 6119 (19:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_1934_039-01",
@@ -11729,7 +12571,12 @@
         1193,
         1188
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.1,
+       "gains": [
+        "na EIP 5102 (19:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_1955_005-01",
@@ -11754,7 +12601,12 @@
         1225,
         1222
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90660 (19:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_1957_005-01",
@@ -11779,7 +12631,12 @@
         1217,
         1220
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5102 (19:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2006_005-01",
@@ -11804,7 +12661,12 @@
         1223,
         1219
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90227 (19:48)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_2020_035-01",
@@ -11829,7 +12691,12 @@
         1243,
         1248
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3503 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2030_039-01",
@@ -11854,7 +12721,12 @@
         1249,
         1248
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIC 5100 (20:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_2042_005-01",
@@ -11879,7 +12751,12 @@
         1263,
         1262
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90246 (20:27)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2046_005-01",
@@ -11904,7 +12781,12 @@
         1263,
         1258
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90246 (20:27)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_2104_005-01",
@@ -11929,7 +12811,13 @@
         1295,
         1298
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z TLK 35105 (20:58)",
+        "z R 90113 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2106_005-01",
@@ -11954,7 +12842,12 @@
         1283,
         1284
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z R 90113 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_RO_2107_039-01",
@@ -11979,7 +12872,12 @@
         1285,
         1280
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 95636 (21:25)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_RO_2138_005-01",
@@ -12004,7 +12902,12 @@
         1320,
         1319
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 0.9,
+       "gains": [
+        "z IC 7509 (21:20)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_RO_2212_002-01",
@@ -12029,7 +12932,12 @@
         1362,
         1365
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1519 (23:00)"
+       ],
+       "losses": []
       }
      ],
      "curve": [
@@ -12037,28 +12945,32 @@
        "stage": 0,
        "limit": 0,
        "changes": 0,
-       "good_per_day": 154.8
+       "good_per_day": 147.7,
+       "good_per_day_plan": 154.8
       },
       {
        "stage": 1,
        "limit": 20,
        "changes": 20,
        "status": "Optimal",
-       "good_per_day": 175.2
+       "good_per_day": 179.75,
+       "good_per_day_plan": 175.2
       },
       {
        "stage": 2,
        "limit": 40,
        "changes": 40,
        "status": "Optimal",
-       "good_per_day": 189.9
+       "good_per_day": 199.25,
+       "good_per_day_plan": 189.9
       },
       {
        "stage": 3,
        "limit": null,
        "changes": 89,
        "status": "Optimal",
-       "good_per_day": 229.3
+       "good_per_day": 243.65,
+       "good_per_day_plan": 229.3
       }
      ],
      "indicators_before": {
@@ -13417,32 +14329,35 @@
       "low": {
        "bus_share": 0.05,
        "elasticity": -0.2,
-       "revenue_per_trip": 1.6,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 235.0,
        "change": 0.012950066885736586,
        "extra_trips_day": 3.0432657181480978,
        "extra_trips_year": 1110.7919871240556,
-       "extra_revenue_year": 1777.2671793984891
+       "extra_revenue_year": 2665.9007690977337,
+       "base_revenue_year": 205860.00000000003
       },
       "mid": {
        "bus_share": 0.1,
        "elasticity": -0.4,
-       "revenue_per_trip": 2.0,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 470.0,
        "change": 0.025900133771473172,
        "extra_trips_day": 12.173062872592391,
        "extra_trips_year": 4443.167948496222,
-       "extra_revenue_year": 8886.335896992445
+       "extra_revenue_year": 10663.603076390935,
+       "base_revenue_year": 411720.00000000006
       },
       "high": {
        "bus_share": 0.15,
        "elasticity": -0.7,
-       "revenue_per_trip": 2.4,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 705.0,
        "change": 0.04532523410007805,
        "extra_trips_day": 31.954290040555023,
        "extra_trips_year": 11663.315864802584,
-       "extra_revenue_year": 27991.9580755262
+       "extra_revenue_year": 27991.958075526207,
+       "base_revenue_year": 617580.0000000001
       },
       "wait_before": 34.21727053140096,
       "wait_after": 32.001690821256034,
@@ -18636,7 +19551,10 @@
         340,
         345
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_0542_005-01",
@@ -18661,7 +19579,10 @@
         359,
         357
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_0602_039-01",
@@ -18686,7 +19607,12 @@
         380,
         377
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90745 (06:22)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0602_005-01",
@@ -18711,7 +19637,12 @@
         384,
         380
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90205 (05:44)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0627_029-01",
@@ -18736,7 +19667,12 @@
         409,
         408
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5300 (06:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0711_005-01",
@@ -18761,7 +19697,12 @@
         448,
         446
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5300 (06:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0730_035-01",
@@ -18786,7 +19727,12 @@
         472,
         471
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1521 (07:56)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0740_005-01",
@@ -18811,7 +19757,12 @@
         477,
         473
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90240 (07:22)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0825_029-01",
@@ -18836,7 +19787,12 @@
         527,
         528
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1503 (09:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0826_005-01",
@@ -18861,7 +19817,10 @@
         526,
         525
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_SO_0852_035-01",
@@ -18886,7 +19845,13 @@
         555,
         550
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na R 90751 (09:15)",
+        "na IC 7503 (09:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_0905_005-01",
@@ -18911,7 +19876,12 @@
         578,
         579
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5116 (08:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0925_005-01",
@@ -18936,7 +19906,12 @@
         584,
         583
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90730 (09:10)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0945_005-01",
@@ -18961,7 +19936,10 @@
         603,
         600
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_SO_1007_035-01",
@@ -18986,7 +19964,12 @@
         630,
         625
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5710 (10:30)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1035_005-01",
@@ -19011,7 +19994,10 @@
         657,
         655
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_1042_039-01",
@@ -19036,7 +20022,13 @@
         661,
         663
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na TLK 8328 (11:17)",
+        "na IC 6115 (11:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1100_035-01",
@@ -19061,7 +20053,12 @@
         682,
         679
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1547 (11:24)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1105_002-01",
@@ -19086,7 +20083,12 @@
         697,
         698
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5302 (11:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1200_035-01",
@@ -19111,7 +20113,12 @@
         742,
         746
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1706 (12:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1218_029-01",
@@ -19136,7 +20143,12 @@
         761,
         764
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5114 (12:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1225_039-01",
@@ -19161,7 +20173,13 @@
         764,
         768
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na R 90632 (13:01)",
+        "na EIP 4507 (13:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1301_005-01",
@@ -19186,7 +20204,13 @@
         801,
         805
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1815 (12:58)",
+        "z IC 5114 (12:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1320_005-01",
@@ -19211,7 +20235,14 @@
         833,
         828
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 3.0,
+       "gains": [
+        "z IC 1815 (12:58)",
+        "z IC 5114 (12:58)",
+        "z EIP 4507 (13:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1330_039-01",
@@ -19236,7 +20267,12 @@
         831,
         828
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5404 (13:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1335_005-01",
@@ -19261,7 +20297,12 @@
         838,
         836
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7515 (13:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1405_029-01",
@@ -19286,7 +20327,12 @@
         870,
         869
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5714 (14:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1420_002-01",
@@ -19311,7 +20357,12 @@
         892,
         893
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1515 (15:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1431_039-01",
@@ -19336,7 +20387,12 @@
         892,
         893
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1515 (15:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1435_035-01",
@@ -19361,7 +20417,12 @@
         897,
         894
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 8114 (14:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1500_005-01",
@@ -19386,7 +20447,13 @@
         933,
         938
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1515 (14:57)",
+        "z IC 8114 (14:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1510_005-01",
@@ -19411,7 +20478,14 @@
         929,
         927
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [
+        "z EIP 5304 (14:52)"
+       ],
+       "losses": [
+        "z EIP 3553 (15:02)"
+       ]
       },
       {
        "trip": "2_SO_1533_039-01",
@@ -19436,7 +20510,12 @@
         952,
         948
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5306 (15:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1555_002-01",
@@ -19461,7 +20540,10 @@
         987,
         985
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_1637_005-01",
@@ -19486,7 +20568,12 @@
         1016,
         1017
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90625 (16:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1721_005-01",
@@ -19511,7 +20598,12 @@
         1061,
         1058
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIC 4505 (17:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1745_029-01",
@@ -19536,7 +20628,10 @@
         1087,
         1082
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_1810_005-01",
@@ -19561,7 +20656,12 @@
         1107,
         1106
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5406 (17:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1833_039-01",
@@ -19586,7 +20686,12 @@
         1131,
         1133
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1517 (19:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1915_005-01",
@@ -19611,7 +20716,12 @@
         1177,
         1176
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1517 (18:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1940_029-01",
@@ -19636,7 +20746,12 @@
         1202,
         1200
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5320 (20:05)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_2038_039-01",
@@ -19661,7 +20776,12 @@
         1259,
         1258
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3503 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_2106_005-01",
@@ -19686,7 +20806,12 @@
         1288,
         1289
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90113 (21:03)"
+       ],
+       "losses": []
       }
      ],
      "curve": [
@@ -19694,28 +20819,32 @@
        "stage": 0,
        "limit": 0,
        "changes": 0,
-       "good_per_day": 91.0
+       "good_per_day": 91.0,
+       "good_per_day_plan": 91.0
       },
       {
        "stage": 1,
        "limit": 20,
        "changes": 20,
        "status": "Optimal",
-       "good_per_day": 112.0
+       "good_per_day": 117.0,
+       "good_per_day_plan": 112.0
       },
       {
        "stage": 2,
        "limit": 40,
        "changes": 40,
        "status": "Optimal",
-       "good_per_day": 123.0
+       "good_per_day": 132.0,
+       "good_per_day_plan": 123.0
       },
       {
        "stage": 3,
        "limit": null,
        "changes": 43,
        "status": "Optimal",
-       "good_per_day": 124.0
+       "good_per_day": 133.0,
+       "good_per_day_plan": 124.0
       }
      ],
      "indicators_before": {
@@ -20205,32 +21334,35 @@
       "low": {
        "bus_share": 0.05,
        "elasticity": -0.2,
-       "revenue_per_trip": 1.6,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 235.0,
        "change": 0.009538428341637581,
        "extra_trips_day": 2.2415306602848317,
        "extra_trips_year": 818.1586910039636,
-       "extra_revenue_year": 1309.0539056063417
+       "extra_revenue_year": 1963.5808584095128,
+       "base_revenue_year": 205860.00000000003
       },
       "mid": {
        "bus_share": 0.1,
        "elasticity": -0.4,
-       "revenue_per_trip": 2.0,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 470.0,
        "change": 0.019076856683275162,
        "extra_trips_day": 8.966122641139327,
        "extra_trips_year": 3272.634764015854,
-       "extra_revenue_year": 6545.269528031708
+       "extra_revenue_year": 7854.323433638051,
+       "base_revenue_year": 411720.00000000006
       },
       "high": {
        "bus_share": 0.15,
        "elasticity": -0.7,
-       "revenue_per_trip": 2.4,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 705.0,
        "change": 0.033384499195731526,
        "extra_trips_day": 23.536071932990726,
        "extra_trips_year": 8590.666255541615,
-       "extra_revenue_year": 20617.599013299874
+       "extra_revenue_year": 20617.599013299878,
+       "base_revenue_year": 617580.0000000001
       },
       "wait_before": 37.97243947858473,
       "wait_after": 36.16145251396648,
@@ -21935,7 +23067,10 @@
         360,
         356
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_0542_005-01",
@@ -21960,7 +23095,12 @@
         359,
         361
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90621 (05:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0548_035-01",
@@ -21985,7 +23125,10 @@
         370,
         369
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_0602_039-01",
@@ -22010,7 +23153,10 @@
         380,
         381
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_SO_0602_005-01",
@@ -22035,7 +23181,12 @@
         384,
         380
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90205 (05:44)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0615_005-01",
@@ -22060,7 +23211,10 @@
         392,
         388
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_SO_0627_029-01",
@@ -22085,7 +23239,12 @@
         409,
         408
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5300 (06:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0635_039-01",
@@ -22110,7 +23269,12 @@
         413,
         408
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5300 (06:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0711_005-01",
@@ -22135,7 +23299,12 @@
         448,
         446
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5300 (06:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0730_035-01",
@@ -22160,7 +23329,12 @@
         472,
         471
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1521 (07:56)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0740_005-01",
@@ -22185,7 +23359,12 @@
         477,
         473
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90240 (07:22)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0825_029-01",
@@ -22210,7 +23389,12 @@
         527,
         528
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1503 (09:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0826_005-01",
@@ -22235,7 +23419,10 @@
         526,
         525
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_0852_039-01",
@@ -22260,7 +23447,10 @@
         550,
         549
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_SO_0852_035-01",
@@ -22285,7 +23475,13 @@
         555,
         550
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na R 90751 (09:15)",
+        "na IC 7503 (09:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_0905_005-01",
@@ -22310,7 +23506,12 @@
         578,
         579
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5116 (08:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_0925_005-01",
@@ -22335,7 +23536,12 @@
         584,
         583
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90730 (09:10)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_0945_005-01",
@@ -22360,7 +23566,10 @@
         603,
         600
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_SO_1007_035-01",
@@ -22385,7 +23594,12 @@
         630,
         625
        ],
-       "stage": 3
+       "stage": 3,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5710 (10:30)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1035_005-01",
@@ -22410,7 +23624,10 @@
         657,
         655
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "2_SO_1042_039-01",
@@ -22435,7 +23652,13 @@
         661,
         663
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na TLK 8328 (11:17)",
+        "na IC 6115 (11:17)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1100_035-01",
@@ -22460,7 +23683,12 @@
         682,
         679
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1547 (11:24)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1105_002-01",
@@ -22485,7 +23713,12 @@
         697,
         698
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5302 (11:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1200_035-01",
@@ -22510,7 +23743,12 @@
         742,
         746
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1706 (12:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1218_029-01",
@@ -22535,7 +23773,12 @@
         761,
         764
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5114 (12:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1225_039-01",
@@ -22560,7 +23803,13 @@
         764,
         768
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na R 90632 (13:01)",
+        "na EIP 4507 (13:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1301_005-01",
@@ -22585,7 +23834,13 @@
         801,
         805
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1815 (12:58)",
+        "z IC 5114 (12:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1320_005-01",
@@ -22610,7 +23865,14 @@
         833,
         828
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 3.0,
+       "gains": [
+        "z IC 1815 (12:58)",
+        "z IC 5114 (12:58)",
+        "z EIP 4507 (13:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1330_039-01",
@@ -22635,7 +23897,12 @@
         831,
         828
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5404 (13:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1335_005-01",
@@ -22660,7 +23927,12 @@
         838,
         836
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7515 (13:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1405_029-01",
@@ -22685,7 +23957,12 @@
         870,
         869
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5714 (14:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1420_002-01",
@@ -22710,7 +23987,12 @@
         892,
         893
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1515 (15:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1431_039-01",
@@ -22735,7 +24017,12 @@
         892,
         893
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1515 (15:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1435_035-01",
@@ -22760,7 +24047,12 @@
         897,
         894
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 8114 (14:59)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_SO_1500_005-01",
@@ -22785,7 +24077,13 @@
         933,
         938
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1515 (14:57)",
+        "z IC 8114 (14:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1510_005-01",
@@ -22810,7 +24108,14 @@
         929,
         927
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [
+        "z EIP 5304 (14:52)"
+       ],
+       "losses": [
+        "z EIP 3553 (15:02)"
+       ]
       },
       {
        "trip": "2_SO_1533_039-01",
@@ -22835,7 +24140,12 @@
         952,
         948
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5306 (15:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1637_005-01",
@@ -22860,7 +24170,12 @@
         1016,
         1017
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90625 (16:34)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1721_005-01",
@@ -22885,7 +24200,12 @@
         1061,
         1059
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIC 4505 (17:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1810_005-01",
@@ -22910,7 +24230,12 @@
         1107,
         1106
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5406 (17:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_1833_039-01",
@@ -22935,7 +24260,12 @@
         1131,
         1133
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1517 (19:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1915_005-01",
@@ -22960,7 +24290,12 @@
         1177,
         1176
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1517 (18:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_1940_029-01",
@@ -22985,7 +24320,12 @@
         1202,
         1200
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5320 (20:05)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_SO_2038_039-01",
@@ -23010,7 +24350,12 @@
         1259,
         1258
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 3503 (21:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_SO_2106_005-01",
@@ -23035,7 +24380,12 @@
         1288,
         1289
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90113 (21:03)"
+       ],
+       "losses": []
       }
      ],
      "curve": [
@@ -23043,28 +24393,32 @@
        "stage": 0,
        "limit": 0,
        "changes": 0,
-       "good_per_day": 91.0
+       "good_per_day": 91.0,
+       "good_per_day_plan": 91.0
       },
       {
        "stage": 1,
        "limit": 20,
        "changes": 20,
        "status": "Optimal",
-       "good_per_day": 111.0
+       "good_per_day": 117.0,
+       "good_per_day_plan": 111.0
       },
       {
        "stage": 2,
        "limit": 40,
        "changes": 40,
        "status": "Optimal",
-       "good_per_day": 123.0
+       "good_per_day": 132.0,
+       "good_per_day_plan": 123.0
       },
       {
        "stage": 3,
        "limit": null,
        "changes": 45,
        "status": "Optimal",
-       "good_per_day": 125.0
+       "good_per_day": 134.0,
+       "good_per_day_plan": 125.0
       }
      ],
      "indicators_before": {
@@ -23524,32 +24878,35 @@
       "low": {
        "bus_share": 0.05,
        "elasticity": -0.2,
-       "revenue_per_trip": 1.6,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 235.0,
        "change": 0.010136725646357272,
        "extra_trips_day": 2.382130526893959,
        "extra_trips_year": 869.4776423162951,
-       "extra_revenue_year": 1391.1642277060723
+       "extra_revenue_year": 2086.7463415591087,
+       "base_revenue_year": 205860.00000000003
       },
       "mid": {
        "bus_share": 0.1,
        "elasticity": -0.4,
-       "revenue_per_trip": 2.0,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 470.0,
        "change": 0.020273451292714545,
        "extra_trips_day": 9.528522107575837,
        "extra_trips_year": 3477.9105692651806,
-       "extra_revenue_year": 6955.821138530361
+       "extra_revenue_year": 8346.985366236435,
+       "base_revenue_year": 411720.00000000006
       },
       "high": {
        "bus_share": 0.15,
        "elasticity": -0.7,
-       "revenue_per_trip": 2.4,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 705.0,
        "change": 0.03547853976225045,
        "extra_trips_day": 25.012370532386566,
        "extra_trips_year": 9129.515244321097,
-       "extra_revenue_year": 21910.83658637063
+       "extra_revenue_year": 21910.836586370635,
+       "base_revenue_year": 617580.0000000001
       },
       "wait_before": 37.97243947858473,
       "wait_after": 36.047858472998136,
@@ -26889,7 +28246,10 @@
         385,
         384
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_ND_0629_029-01",
@@ -26914,7 +28274,12 @@
         411,
         408
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5300 (06:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_0727_039-01",
@@ -26939,7 +28304,12 @@
         465,
         468
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1501 (08:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_0758_005-01",
@@ -26964,7 +28334,12 @@
         498,
         502
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1521 (07:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_0815_005-01",
@@ -26989,7 +28364,12 @@
         528,
         525
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1521 (07:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_0822_035-01",
@@ -27014,7 +28394,13 @@
         524,
         528
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na IC 5116 (09:00)",
+        "na EIP 1503 (09:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_0916_005-01",
@@ -27039,7 +28425,13 @@
         576,
         574
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1553 (08:57)",
+        "z IC 5116 (08:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_0935_005-01",
@@ -27064,7 +28456,12 @@
         608,
         605
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7503 (09:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1000_005-01",
@@ -27089,7 +28486,10 @@
         620,
         623
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "1_ND_1015_002-01",
@@ -27114,7 +28514,12 @@
         647,
         648
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 4509 (11:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1024_035-01",
@@ -27139,7 +28544,12 @@
         646,
         648
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 4509 (11:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1051_005-01",
@@ -27164,7 +28574,12 @@
         671,
         666
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5710 (10:29)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1058_005-01",
@@ -27189,7 +28604,13 @@
         691,
         696
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z EIP 5402 (10:52)",
+        "z IC 1513 (10:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1100_005-01",
@@ -27214,7 +28635,12 @@
         680,
         683
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1513 (10:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1130_035-01",
@@ -27239,7 +28665,12 @@
         712,
         708
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5302 (11:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1212_029-01",
@@ -27264,7 +28695,12 @@
         757,
         758
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5352 (12:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1220_005-01",
@@ -27289,7 +28725,12 @@
         760,
         759
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 3509 (12:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1438_005-01",
@@ -27314,7 +28755,13 @@
         898,
         902
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 5714 (14:33)",
+        "z R 55205 (14:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1500_039-01",
@@ -27339,7 +28786,12 @@
         918,
         916
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.75,
+       "gains": [
+        "na R 90634 (15:21)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1500_035-01",
@@ -27364,7 +28816,12 @@
         922,
         924
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90244 (15:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1535_005-01",
@@ -27389,7 +28846,12 @@
         955,
         952
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7107 (15:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1540_005-01",
@@ -27414,7 +28876,12 @@
         973,
         975
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90244 (15:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1625_002-01",
@@ -27439,7 +28906,12 @@
         1017,
         1018
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90636 (17:13)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1721_005-01",
@@ -27464,7 +28936,12 @@
         1061,
         1059
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIC 4505 (17:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1810_005-01",
@@ -27489,7 +28966,12 @@
         1110,
         1109
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5406 (17:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1833_039-01",
@@ -27514,7 +28996,12 @@
         1131,
         1133
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1517 (19:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1915_005-01",
@@ -27539,7 +29026,12 @@
         1176,
         1175
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1517 (18:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1940_029-01",
@@ -27564,7 +29056,12 @@
         1202,
         1200
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5320 (20:05)"
+       ],
+       "losses": []
       }
      ],
      "curve": [
@@ -27572,21 +29069,24 @@
        "stage": 0,
        "limit": 0,
        "changes": 0,
-       "good_per_day": 48.5
+       "good_per_day": 46.25,
+       "good_per_day_plan": 48.5
       },
       {
        "stage": 1,
        "limit": 20,
        "changes": 20,
        "status": "Optimal",
-       "good_per_day": 61.5
+       "good_per_day": 70.25,
+       "good_per_day_plan": 61.5
       },
       {
        "stage": 2,
        "limit": 40,
        "changes": 28,
        "status": "Optimal",
-       "good_per_day": 65.25
+       "good_per_day": 76.0,
+       "good_per_day_plan": 65.25
       }
      ],
      "indicators_before": {
@@ -28033,32 +29533,35 @@
       "low": {
        "bus_share": 0.05,
        "elasticity": -0.2,
-       "revenue_per_trip": 1.6,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 235.0,
        "change": 0.004758616983012037,
        "extra_trips_day": 1.1182749910078287,
        "extra_trips_year": 408.17037171785745,
-       "extra_revenue_year": 653.072594748572
+       "extra_revenue_year": 979.608892122858,
+       "base_revenue_year": 205860.00000000003
       },
       "mid": {
        "bus_share": 0.1,
        "elasticity": -0.4,
-       "revenue_per_trip": 2.0,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 470.0,
        "change": 0.009517233966024073,
        "extra_trips_day": 4.473099964031315,
        "extra_trips_year": 1632.6814868714298,
-       "extra_revenue_year": 3265.3629737428596
+       "extra_revenue_year": 3918.435568491432,
+       "base_revenue_year": 411720.00000000006
       },
       "high": {
        "bus_share": 0.15,
        "elasticity": -0.7,
-       "revenue_per_trip": 2.4,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 705.0,
        "change": 0.016655159440542123,
        "extra_trips_day": 11.741887405582197,
        "extra_trips_year": 4285.788903037502,
-       "extra_revenue_year": 10285.893367290004
+       "extra_revenue_year": 10285.893367290006,
+       "base_revenue_year": 617580.0000000001
       },
       "wait_before": 45.04227188081937,
       "wait_after": 43.97057728119181,
@@ -29091,7 +30594,10 @@
         385,
         384
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_ND_0629_029-01",
@@ -29116,7 +30622,12 @@
         411,
         408
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5300 (06:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_0727_039-01",
@@ -29141,7 +30652,12 @@
         465,
         468
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 1501 (08:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_0758_005-01",
@@ -29166,7 +30682,12 @@
         498,
         502
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1521 (07:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_0815_005-01",
@@ -29191,7 +30712,12 @@
         528,
         525
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1521 (07:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_0822_035-01",
@@ -29216,7 +30742,13 @@
         524,
         528
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 2.0,
+       "gains": [
+        "na IC 5116 (09:00)",
+        "na EIP 1503 (09:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_0900_005-01",
@@ -29241,7 +30773,14 @@
         557,
         562
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.25,
+       "gains": [
+        "z IC 1553 (08:57)"
+       ],
+       "losses": [
+        "z R 95623 (08:46)"
+       ]
       },
       {
        "trip": "3_ND_0916_005-01",
@@ -29266,7 +30805,13 @@
         576,
         574
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 1553 (08:57)",
+        "z IC 5116 (08:58)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_0920_039-01",
@@ -29291,7 +30836,10 @@
         578,
         582
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "1_ND_0935_005-01",
@@ -29316,7 +30864,12 @@
         608,
         605
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7503 (09:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1015_002-01",
@@ -29341,7 +30894,12 @@
         647,
         648
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 4509 (11:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1024_035-01",
@@ -29366,7 +30924,12 @@
         646,
         648
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 4509 (11:03)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1051_005-01",
@@ -29391,7 +30954,12 @@
         671,
         666
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 5710 (10:29)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1058_005-01",
@@ -29416,7 +30984,13 @@
         691,
         696
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z EIP 5402 (10:52)",
+        "z IC 1513 (10:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1100_005-01",
@@ -29441,7 +31015,12 @@
         680,
         683
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1513 (10:55)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1130_035-01",
@@ -29466,7 +31045,12 @@
         712,
         708
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na EIP 5302 (11:53)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1212_029-01",
@@ -29491,7 +31075,12 @@
         757,
         755
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1706 (12:40)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1220_005-01",
@@ -29516,7 +31105,12 @@
         760,
         759
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 3509 (12:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1438_005-01",
@@ -29541,7 +31135,13 @@
         898,
         902
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 2.0,
+       "gains": [
+        "z IC 5714 (14:33)",
+        "z R 55205 (14:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1500_039-01",
@@ -29566,7 +31166,12 @@
         918,
         916
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.75,
+       "gains": [
+        "na R 90634 (15:21)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1500_035-01",
@@ -29591,7 +31196,12 @@
         922,
         924
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na R 90244 (15:39)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1535_005-01",
@@ -29616,7 +31226,12 @@
         955,
         952
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 7107 (15:16)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1540_005-01",
@@ -29641,7 +31256,12 @@
         973,
         977
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z R 90244 (15:38)"
+       ],
+       "losses": []
       },
       {
        "trip": "1_ND_1625_002-01",
@@ -29666,7 +31286,12 @@
         1017,
         1015
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5112 (17:00)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1721_005-01",
@@ -29691,7 +31316,12 @@
         1061,
         1059
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIC 4505 (17:02)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1810_005-01",
@@ -29716,7 +31346,12 @@
         1110,
         1109
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z EIP 5406 (17:52)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_1833_039-01",
@@ -29741,7 +31376,12 @@
         1131,
         1133
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 1517 (19:08)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1915_005-01",
@@ -29766,7 +31406,12 @@
         1176,
         1175
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "z IC 1517 (18:57)"
+       ],
+       "losses": []
       },
       {
        "trip": "3_ND_1940_029-01",
@@ -29791,7 +31436,12 @@
         1202,
         1200
        ],
-       "stage": 1
+       "stage": 1,
+       "gain_per_day": 1.0,
+       "gains": [
+        "na IC 5320 (20:05)"
+       ],
+       "losses": []
       },
       {
        "trip": "2_ND_2037_039-01",
@@ -29816,7 +31466,10 @@
         1255,
         1252
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       },
       {
        "trip": "3_ND_2131_035-01",
@@ -29841,7 +31494,10 @@
         1313,
         1312
        ],
-       "stage": 2
+       "stage": 2,
+       "gain_per_day": 0.0,
+       "gains": [],
+       "losses": []
       }
      ],
      "curve": [
@@ -29849,21 +31505,24 @@
        "stage": 0,
        "limit": 0,
        "changes": 0,
-       "good_per_day": 48.5
+       "good_per_day": 46.25,
+       "good_per_day_plan": 48.5
       },
       {
        "stage": 1,
        "limit": 20,
        "changes": 20,
        "status": "Optimal",
-       "good_per_day": 60.5
+       "good_per_day": 69.25,
+       "good_per_day_plan": 60.5
       },
       {
        "stage": 2,
        "limit": 40,
        "changes": 31,
        "status": "Optimal",
-       "good_per_day": 66.5
+       "good_per_day": 76.25,
+       "good_per_day_plan": 66.5
       }
      ],
      "indicators_before": {
@@ -30265,32 +31924,35 @@
       "low": {
        "bus_share": 0.05,
        "elasticity": -0.2,
-       "revenue_per_trip": 1.6,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 235.0,
        "change": 0.005879021155380624,
        "extra_trips_day": 1.3815699715144467,
        "extra_trips_year": 504.27303960277305,
-       "extra_revenue_year": 806.8368633644369
+       "extra_revenue_year": 1210.2552950466554,
+       "base_revenue_year": 205860.00000000003
       },
       "mid": {
        "bus_share": 0.1,
        "elasticity": -0.4,
-       "revenue_per_trip": 2.0,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 470.0,
        "change": 0.011758042310761248,
        "extra_trips_day": 5.526279886057787,
        "extra_trips_year": 2017.0921584110922,
-       "extra_revenue_year": 4034.1843168221844
+       "extra_revenue_year": 4841.021180186622,
+       "base_revenue_year": 411720.00000000006
       },
       "high": {
        "bus_share": 0.15,
        "elasticity": -0.7,
-       "revenue_per_trip": 2.4,
+       "revenue_per_trip": 2.4000000000000004,
        "base_trips_day": 705.0,
        "change": 0.02057657404383218,
        "extra_trips_day": 14.506484700901687,
        "extra_trips_year": 5294.866915829116,
-       "extra_revenue_year": 12707.680597989878
+       "extra_revenue_year": 12707.68059798988,
+       "base_revenue_year": 617580.0000000001
       },
       "wait_before": 45.04227188081937,
       "wait_after": 43.718249534450656,
@@ -31361,5 +33023,28 @@
     }
    }
   }
- }
+ },
+ "annual_demand": {
+  "single": {
+   "low": 950.5164019781852,
+   "mid": 3802.0656079127407,
+   "high": 9980.422220770943,
+   "days": {
+    "Roboczy": 253,
+    "Sobota": 50,
+    "Niedziela": 62
+   }
+  },
+  "interlined": {
+   "low": 974.7100912700623,
+   "mid": 3898.8403650802493,
+   "high": 10234.455958335655,
+   "days": {
+    "Roboczy": 253,
+    "Sobota": 50,
+    "Niedziela": 62
+   }
+  }
+ },
+ "revenue_per_trip": 2.4000000000000004
 }
