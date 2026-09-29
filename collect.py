@@ -99,7 +99,10 @@ def main() -> None:
     a = ap.parse_args()
     if not a.skip_plk:
         print("PKP PLK open data API")
-        collect_plk(min(a.days_back, 62))
+        try:
+            collect_plk(min(a.days_back, 62))
+        except Exception as e:  # continue with the other source
+            print(f"  PLK FAILED: {e}")
     if not a.skip_spoznienia:
         print("spoznienia.me (PKP Intercity history)")
         collect_spoznienia(a.days_back)

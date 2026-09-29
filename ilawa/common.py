@@ -68,6 +68,8 @@ def http_get(url: str, params: dict | None = None, headers: dict | None = None,
                 return resp.status, body, dict(resp.headers)
         except urllib.error.HTTPError as e:
             body = e.read() or b""
+            if body[:2] == b"\x1f\x8b":
+                body = gzip.decompress(body)
             if e.code in (429, 500, 502, 503, 504) and attempt < retries - 1:
                 wait = int(e.headers.get("Retry-After", "0") or 0) or 10 * (attempt + 1)
                 time.sleep(wait)
@@ -85,7 +87,11 @@ def plk_get(path: str, params: dict | None = None, timeout: int = 120):
                                      {"X-API-Key": plk_key()}, timeout=timeout)
     limits = {k: v for k, v in headers.items() if k.lower().startswith("x-ratelimit")}
     if status != 200:
-        raise RuntimeError(f"PLK {path} HTTP {status}: {body[:300]!r}")
+        try:
+            msg = json.loads(body).get("messageEn") or body[:300].decode("utf-8", "replace")
+        except (ValueError, AttributeError):
+            msg = body[:300].decode("utf-8", "replace")
+        raise RuntimeError(f"PLK {path} HTTP {status}: {msg}")
     return json.loads(body), limits
 
 
