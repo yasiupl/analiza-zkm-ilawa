@@ -159,6 +159,31 @@ Run the tool again when the bus timetable or the train timetable changes.
 6. The tool finds buses that wait at the station for a long time. It proposes an extra trip of the same line when the trip gives more good connections and the driver keeps the break.
 7. The tool estimates the effect on passengers from the passenger exchange at the station, the share of bus users and the change of the waiting time. The report gives a low, a middle and a high variant.
 
+### Print the reports and the letters
+
+1. Make the data of the reports:
+
+   ```
+   python report.py
+   python zkmplan.py --no-fetch
+   ```
+
+2. Make the printable reports (LaTeX and PDF, A4):
+
+   ```
+   python print_reports.py --pdf
+   ```
+
+   The files are in `reports/druk/`. The reports show no values in PLN.
+3. Copy the list of changes that `zkmplan.py` made to the folder of the letters:
+
+   ```
+   cp data/plan/<date>/zmiany.tex pismo/zalacznik-1-zmiany.tex
+   ```
+
+4. Write the data of the sender at the top of `pismo/wspolne.tex`.
+5. Compile each letter two times with `xelatex` in the folder `pismo/`. Each PDF contains the letter, the list of changes (attachment 1) and the two printable reports (attachments 2 and 3).
+
 ## Files
 
 | Path | Content |
@@ -169,6 +194,9 @@ Run the tool again when the bus timetable or the train timetable changes.
 | `zkm_gtfs.py` | Converter of the ZKM Iława timetable to GTFS |
 | `zkmplan.py` | Tool for timetable corrections |
 | `zkmplan.ini` | Parameters of the tool for timetable corrections |
+| `print_reports.py` | Printable reports (LaTeX, PDF) |
+| `pismo/` | Letters to the city and to the operator (LaTeX, PDF) |
+| `reports/druk/` | Printable reports and their figures |
 | `ilawa/zkm_scrape.py` | Reader of the rozklad.com pages |
 | `ilawa/gtfs_write.py` | Writer of the GTFS feed |
 | `ilawa/plan/` | Blocks, duties, costs, optimiser, extra trips, passenger effect and report of the tool |

@@ -1,8 +1,11 @@
-% Wniosek do Burmistrza Miasta Iławy i do ZKM Sp. z o.o. w Iławie.
-% Kompilacja (dwa razy, dla tabel na wielu stronach):
-%   xelatex wniosek.tex   (lub lualatex)
+% Wspólna część obu pism: preambuła, dane nadawcy, uzasadnienie i załączniki.
+% Pisma: pismo-burmistrz.tex i pismo-zkm.tex. Kompilacja (dwa razy):
+%   xelatex pismo-burmistrz.tex
+%   xelatex pismo-zkm.tex
 % Załącznik nr 1 (zalacznik-1-zmiany.tex) tworzy narzędzie zkmplan.py:
 %   cp ../data/plan/<data>/zmiany.tex zalacznik-1-zmiany.tex
+% Załączniki nr 2 i 3 (raporty do druku) tworzy print_reports.py:
+%   python3 print_reports.py --pdf   (pliki w ../reports/druk/)
 \documentclass[11pt,a4paper]{article}
 \usepackage[a4paper, top=2.2cm, bottom=2.4cm, left=2.5cm, right=2.2cm]{geometry}
 \usepackage{fontspec}
@@ -14,6 +17,7 @@
 \usepackage{array, booktabs, longtable}
 \usepackage{enumitem}
 \usepackage{parskip}
+\usepackage{pdfpages}
 \usepackage[hidelinks]{hyperref}
 \emergencystretch=3em
 \setlist{itemsep=3pt, topsep=4pt, leftmargin=1.6em}
@@ -26,14 +30,16 @@
 \newcommand{\Data}{\makebox[2.8cm]{\dotfill}}
 \newcommand{\RaportPrzesiadki}{https://claude.ai/artifact/SjGg6GoZq5NishuoizYrvL}
 \newcommand{\RaportKorekty}{https://claude.ai/artifact/LHpHerFfAXQ8om2pxWeYN2}
+\newcommand{\DrukPrzesiadki}{../reports/druk/zalacznik-2-przesiadki.pdf}
+\newcommand{\DrukKorekty}{../reports/druk/zalacznik-3-korekty.pdf}
 % ---------------------------------------------------------------------------
 
 \newcommand{\Czesc}[1]{\par\medskip{\large\bfseries #1}\par\smallskip}
 \newcommand{\Tytul}[1]{\par\smallskip{\bfseries #1}\par}
 
-\begin{document}
+% Nagłówek: nadawca po lewej, miejscowość i data po prawej, adresat niżej po prawej.
+\newcommand{\Naglowek}[1]{%
 \thispagestyle{empty}
-
 \begin{minipage}[t]{0.52\textwidth}
 \Nadawca\\
 \AdresNadawcy\\
@@ -45,41 +51,14 @@ Iława, dnia \Data{} 2026 r.
 
 \vspace{1.1cm}
 \hfill\begin{minipage}[t]{0.55\textwidth}
-\textbf{Burmistrz Miasta Iławy}\\
-Urząd Miasta Iławy\\
-ul. Niepodległości 13\\
-14-200 Iława
-
-\medskip
-\textbf{Zarząd\\
-„Zakład Komunikacji Miejskiej” Sp.\ z~o.o. w~Iławie}\\
-ul. Wojska Polskiego 29\\
-14-200 Iława
+#1
 \end{minipage}
+\vspace{0.9cm}}
 
-\vspace{0.9cm}
-\begin{center}
-{\large\bfseries WNIOSEK}\\[2pt]
-w sprawie skoordynowania rozkładu jazdy autobusów komunikacji miejskiej\\
-z rozkładem jazdy pociągów na stacji Iława Główna\\[6pt]
-{\large\bfseries oraz WNIOSEK O UDOSTĘPNIENIE INFORMACJI PUBLICZNEJ}
-\end{center}
+\newcommand{\Wstep}{%
+Przeanalizowałem rozkład jazdy autobusów ZKM Iława obowiązujący od 1 września 2026 r. na tle rozkładu jazdy pociągów na stacji Iława Główna (dane PKP Polskich Linii Kolejowych S.A.). Wyniki i metoda są opisane w raportach załączonych do pisma (załączniki nr~2 i~3).}
 
-Przeanalizowałem rozkład jazdy autobusów ZKM Iława obowiązujący od 1 września 2026 r. na tle rozkładu jazdy pociągów na stacji Iława Główna (dane PKP Polskich Linii Kolejowych S.A.). Wyniki i metoda są opisane w materiałach wskazanych na końcu pisma. Na tej podstawie składam dwa wnioski.
-
-\Czesc{I. Wniosek na podstawie art. 241 Kodeksu postępowania administracyjnego}
-
-Część I kieruję do Burmistrza Miasta Iławy jako organu gminy, która organizuje publiczny transport zbiorowy na swoim obszarze i jest jedynym wspólnikiem ZKM Sp.\ z~o.o. Zarząd ZKM proszę o udział w rozpatrzeniu wniosku.
-
-Wnoszę o:
-\begin{enumerate}
-\item Wprowadzenie korekt rozkładu jazdy na przystanku Dworcowa, które zwiększą liczbę dogodnych przesiadek między autobusami ZKM a pociągami. Proponowane zmiany, podzielone na trzy etapy, zawiera załącznik nr~1. Każdą zmianę powinien sprawdzić dyspozytor ZKM.
-\item Uwzględnianie rozkładu jazdy pociągów przy każdej zmianie rozkładu ZKM oraz przegląd rozkładu ZKM po każdej zmianie lub korekcie rozkładu kolejowego.
-\item Rozważenie obiegów, w których autobus może zmienić linię na przystanku Dworcowa, jeżeli ZKM ich obecnie nie stosuje.
-\item Rozważenie dodatkowych kursów w czasie, gdy autobusy stoją na przystanku Dworcowa dłużej, niż trwa kurs tam i z powrotem.
-\item Publikowanie rozkładu jazdy ZKM w otwartym formacie GTFS, na przykład w serwisie dane.gov.pl, a w miarę możliwości także danych o bieżącym położeniu autobusów.
-\end{enumerate}
-
+\newcommand{\Uzasadnienie}{%
 \Tytul{Uzasadnienie}
 
 Autobusy ZKM nie są obecnie dopasowane do pociągów. W dzień roboczy autobus odjeżdża z przystanku Dworcowa w chwili, gdy podróżni idą jeszcze z peronu, przy 50\,\% przyjazdów pociągów. Rozkład autobusów ułożony losowo dałby 47\,\%. Liczba dogodnych przesiadek również odpowiada rozkładowi losowemu.
@@ -91,8 +70,8 @@ Proponowane zmiany wyznaczyło narzędzie, które przesuwa kursy o najwyżej 5 m
 \begin{center}
 \begin{tabular}{@{}lrrrrl@{}}
 \toprule
- & \multicolumn{5}{c}{Dogodne przesiadki dziennie} \\
-\cmidrule(l){2-6}
+ & \multicolumn{4}{c}{Dogodne przesiadki dziennie} & \\
+\cmidrule(lr){2-5}
 Typ dnia & obecnie & etap 1 & etap 2 & wszystkie zmiany & liczba zmian \\
 \midrule
 Dzień roboczy (188 kursów) & 148 & 180 (+22\,\%) & 199 (+35\,\%) & 244 (+65\,\%) & 20 / 40 / 87 \\
@@ -108,42 +87,32 @@ Na stacji Iława Główna wsiada i wysiada średnio 4700 osób na dobę (Urząd 
 
 Narzędzie znalazło w dzień roboczy 8 okresów, w których autobus stoi na przystanku Dworcowa dłużej, niż trwa kurs tam i z powrotem. Dodatkowe kursy w tym czasie dałyby łącznie około 25 dogodnych przesiadek dziennie. Przy obiegach ze zmianą linii na przystanku Dworcowa obecny rozkład wymaga w szczycie 15 autobusów zamiast 18.
 
-Rozkład w formacie GTFS pozwoli pokazać połączenia autobus--pociąg w wyszukiwarkach połączeń i łatwo sprawdzać skutki każdej zmiany rozkładu. Rozkład ZKM w tym formacie przygotowałem na potrzeby analizy. Jestem gotów przekazać narzędzie, dane i rozkład w formacie GTFS oraz spotkać się z przedstawicielami Urzędu Miasta i ZKM.
+Rozkład w formacie GTFS pozwoli pokazać połączenia autobus--pociąg w wyszukiwarkach połączeń i łatwo sprawdzać skutki każdej zmiany rozkładu. Rozkład ZKM w tym formacie przygotowałem na potrzeby analizy. Jestem gotów przekazać narzędzie, dane i rozkład w formacie GTFS oraz spotkać się z przedstawicielami Urzędu Miasta i ZKM.}
 
-\Czesc{II. Wniosek o udostępnienie informacji publicznej}
-
-Na podstawie art. 2 ust. 1 i art. 10 ust. 1 ustawy z dnia 6 września 2001 r. o dostępie do informacji publicznej wnoszę o udostępnienie poniższych informacji. Część II kieruję do obu adresatów, każdego w zakresie informacji, które posiada.
-\begin{enumerate}
-\item Dokumenty określające zasady układania rozkładu jazdy ZKM, w tym wytyczne dotyczące skomunikowania autobusów z pociągami, jeżeli takie dokumenty istnieją.
-\item Obiegi autobusów (rozkłady pracy pojazdów) i służby kierowców dla rozkładu jazdy obowiązującego od 1 września 2026 r.
-\item Liczba pasażerów przewiezionych w 2025 r. z podziałem na linie oraz wyniki badań napełnień lub potoków pasażerskich, w tym dla przystanku Dworcowa, jeżeli były prowadzone.
-\item Liczba sprzedanych biletów w 2025 r. z podziałem na rodzaje (normalne, ulgowe, okresowe) oraz liczba przejazdów bezpłatnych, jeżeli jest ewidencjonowana.
-\item Przychody ze sprzedaży biletów, wykonana praca przewozowa (wozokilometry) i koszty działalności przewozowej w 2025 r., w tym koszt jednego wozokilometra.
-\item Informacja, czy ZKM gromadzi dane o faktycznych godzinach odjazdów autobusów (na przykład z systemu GPS) i w jakiej formie.
-\end{enumerate}
-
-Informacje proszę przekazać w formie elektronicznej na adres \EmailNadawcy, w miarę możliwości w formacie arkusza kalkulacyjnego lub CSV.
-
-Proszę o zawiadomienie o sposobie załatwienia wniosku z części I w terminie określonym w art. 244 Kodeksu postępowania administracyjnego oraz o udostępnienie informacji z części II w terminie 14 dni, zgodnie z art. 13 ust. 1 ustawy o dostępie do informacji publicznej.
-
+\newcommand{\Podpis}{%
 \vspace{0.8cm}
 \hfill\begin{minipage}{0.42\textwidth}\centering
 Z poważaniem\\[1.4cm]
 \makebox[5.5cm]{\dotfill}\\
 \Nadawca
-\end{minipage}
+\end{minipage}}
 
-\Tytul{Materiały}
+\newcommand{\MaterialyIZalaczniki}{%
+\Tytul{Materiały w internecie}
 \begin{itemize}
-\item Raport „Przesiadki Iława Główna”: analiza rozkładów, opóźnień pociągów i metoda:\\ \url{\RaportPrzesiadki}
-\item Raport „Korekty rozkładu ZKM Iława”: propozycja zmian w etapach, obiegi autobusów, przerwy kierowców, szacunek liczby pasażerów:\\ \url{\RaportKorekty}
+\item Raport „Przesiadki Iława Główna”: \url{\RaportPrzesiadki}
+\item Raport „Korekty rozkładu ZKM Iława”: \url{\RaportKorekty}
 \end{itemize}
 
 \Tytul{Załączniki}
 \begin{enumerate}
 \item Wykaz proponowanych zmian rozkładu jazdy (dzień roboczy, sobota, niedziela).
-\end{enumerate}
+\item Raport „Przesiadki Iława Główna” (analiza rozkładów i opóźnień), wersja do druku.
+\item Raport „Korekty rozkładu ZKM Iława” (propozycja korekt), wersja do druku.
+\end{enumerate}}
 
+% Załącznik nr 1 i raporty (załączniki nr 2 i 3), jeżeli ich pliki PDF istnieją.
+\newcommand{\Zalaczniki}{%
 \newpage
 \section*{Załącznik nr 1. Wykaz proponowanych zmian rozkładu jazdy}
 
@@ -160,5 +129,5 @@ Wykaz dotyczy obiegów, w których autobus zostaje na jednej linii. Godziny są 
 \renewcommand{\arraystretch}{1.15}
 \input{zalacznik-1-zmiany.tex}
 }
-
-\end{document}
+\IfFileExists{\DrukPrzesiadki}{\includepdf[pages=-]{\DrukPrzesiadki}}{\typeout{Brak pliku \DrukPrzesiadki: uruchom print_reports.py --pdf}}
+\IfFileExists{\DrukKorekty}{\includepdf[pages=-]{\DrukKorekty}}{\typeout{Brak pliku \DrukKorekty: uruchom print_reports.py --pdf}}}

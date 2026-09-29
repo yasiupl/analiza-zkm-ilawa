@@ -19,3 +19,6 @@ data/raw/zkm/cache/
 pismo/*.aux
 pismo/*.log
 pismo/*.out
+reports/druk/*.aux
+reports/druk/*.log
+reports/druk/*.out
