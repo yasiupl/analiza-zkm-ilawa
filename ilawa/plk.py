@@ -81,6 +81,11 @@ def operation_rows(js: dict, station_id: int, seen_at: str) -> Iterable[dict]:
         for s in t.get("stations", []):
             if int(s.get("stationId", -1)) != station_id:
                 continue
+            confirmed = bool(s.get("isConfirmed"))
+            # Before a train passes, the API repeats the planned time as "actual".
+            # Keep an actual time only when the passage is confirmed.
+            act_arr = s.get("actualArrival") if confirmed else None
+            act_dep = s.get("actualDeparture") if confirmed else None
             yield {
                 "operating_date": (t.get("operatingDate") or "")[:10],
                 "schedule_id": t.get("scheduleId"),
@@ -89,11 +94,11 @@ def operation_rows(js: dict, station_id: int, seen_at: str) -> Iterable[dict]:
                 "status": t.get("trainStatus"),
                 "planned_arr": s.get("plannedArrival"),
                 "planned_dep": s.get("plannedDeparture"),
-                "actual_arr": s.get("actualArrival"),
-                "actual_dep": s.get("actualDeparture"),
-                "arr_delay": s.get("arrivalDelayMinutes"),
-                "dep_delay": s.get("departureDelayMinutes"),
-                "confirmed": s.get("isConfirmed"),
+                "actual_arr": act_arr,
+                "actual_dep": act_dep,
+                "arr_delay": s.get("arrivalDelayMinutes") if confirmed else None,
+                "dep_delay": s.get("departureDelayMinutes") if confirmed else None,
+                "confirmed": confirmed,
                 "cancelled": s.get("isCancelled"),
                 "seen_at": seen_at,
             }
@@ -101,3 +106,12 @@ def operation_rows(js: dict, station_id: int, seen_at: str) -> Iterable[dict]:
 
 def now_iso() -> str:
     return dt.datetime.now().replace(microsecond=0).isoformat()
+
+
+def delay_minutes(planned: str | None, actual: str | None) -> float | None:
+    """Delay in minutes from two ISO date-times. None when a value is missing."""
+    if not planned or not actual:
+        return None
+    a = dt.datetime.fromisoformat(actual[:19])
+    p = dt.datetime.fromisoformat(planned[:19])
+    return round((a - p).total_seconds() / 60, 1)

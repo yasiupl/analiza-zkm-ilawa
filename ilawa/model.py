@@ -11,6 +11,9 @@ Bus -> train, for a train departing at t:
   lead       = t minus last bus arrival b <= t - m
   good       = bus arrives in [t - m - GOOD, t - m]
   near_miss  = bus arrives in (t - m, t + 2]: it comes too late for the train
+near_miss_long = near_miss and not good: the bus leaves (or comes) at the
+  wrong moment and the next usable bus is later than m + GOOD. This is the case
+  that passengers remember.
 Null model: every bus line is shifted by its own random offset U(-30, 30) min.
 It keeps the bus headways but removes any relation to the train timetable.
 """
@@ -123,10 +126,12 @@ def stats(train_arr, train_dep, bus_arr_by_line: dict, bus_dep_by_line: dict, m_
     return {
         "t2b_near_miss": rate(t2b["near_miss"], w_arr),
         "t2b_good": rate(t2b["good"], w_arr),
+        "t2b_near_miss_long": rate(t2b["near_miss"] & ~t2b["good"], w_arr),
         "t2b_wait_median": float(np.nanmedian(t2b["wait"])) if np.isfinite(t2b["wait"]).any() else np.nan,
         "t2b_wait_mean": float(np.nanmean(t2b["wait"])) if np.isfinite(t2b["wait"]).any() else np.nan,
         "b2t_near_miss": rate(b2t["near_miss"], w_dep),
         "b2t_good": rate(b2t["good"], w_dep),
+        "b2t_near_miss_long": rate(b2t["near_miss"] & ~b2t["good"], w_dep),
         "b2t_lead_median": float(np.nanmedian(b2t["lead"])) if np.isfinite(b2t["lead"]).any() else np.nan,
         "b2t_lead_mean": float(np.nanmean(b2t["lead"])) if np.isfinite(b2t["lead"]).any() else np.nan,
     }
@@ -171,3 +176,25 @@ def offset_histogram(train_times, bus_times, lo: int = -30, hi: int = 30) -> dic
     bins = np.arange(lo, hi + 2)
     h, _ = np.histogram(np.round(diff), bins=bins)
     return {"bins": bins[:-1].tolist(), "counts": h.tolist()}
+
+
+def best_shifts(train_arr, train_dep, bus_arr_by_line: dict, bus_dep_by_line: dict, m_t2b: float,
+                m_b2t: float, w_arr=None, w_dep=None, span: int = 10) -> dict:
+    """For each line alone: the shift (whole minutes, -span..+span) that gives the
+    most good connections (train->bus plus bus->train, capacity weighted)."""
+    def score(ba, bd):
+        r = stats(train_arr, train_dep, ba, bd, m_t2b, m_b2t, w_arr, w_dep)
+        return (r["t2b_good"] + r["b2t_good"]) / 2, r
+    base, base_r = score(bus_arr_by_line, bus_dep_by_line)
+    out = {"base": base, "base_detail": base_r, "lines": {}}
+    for ln in sorted(set(bus_arr_by_line) | set(bus_dep_by_line)):
+        best = (base, 0, base_r)
+        for d in range(-span, span + 1):
+            ba = {k: (v + d if k == ln else v) for k, v in bus_arr_by_line.items()}
+            bd = {k: (v + d if k == ln else v) for k, v in bus_dep_by_line.items()}
+            sc, r = score(ba, bd)
+            if sc > best[0] + 1e-9:
+                best = (sc, d, r)
+        out["lines"][ln] = {"shift": best[1], "score": best[0], "gain": best[0] - base,
+                            "t2b_good": best[2]["t2b_good"], "b2t_good": best[2]["b2t_good"]}
+    return out

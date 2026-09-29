@@ -3,11 +3,15 @@
 Run continuously:        python monitor.py
 Run one poll (cron):     python monitor.py --once
 Export CSV only:         python monitor.py --export
+Import saved responses:  python monitor.py --import data/raw/plk/operations_*.json.gz
 
 Each poll reads /operations for the station and keeps the last known planned
 and actual times per train in data/monitor.sqlite. Raw responses go to
 data/raw/plk/ops/<date>/ (not versioned). Daily CSV files go to
 data/monitor/<date>.csv (versioned).
+
+The API keeps executed trains for about 3 days. A gap in the monitoring
+that is shorter than 3 days does not cause a loss of data.
 
 API limits (basic key): 100 requests per hour, 1000 per day. The default
 interval (5 min by day, 20 min at night) uses about 230 requests per day.
@@ -22,8 +26,10 @@ import sys
 import time
 import traceback
 
-from ilawa.common import DATA, RAW, find_station_id, plk_get, save_json
-from ilawa.plk import now_iso, operation_rows, schedule_rows
+from pathlib import Path
+
+from ilawa.common import DATA, RAW, find_station_id, load_json, plk_get, save_json
+from ilawa.plk import delay_minutes, now_iso, operation_rows, schedule_rows
 
 DB = DATA / "monitor.sqlite"
 OUT = DATA / "monitor"
@@ -34,7 +40,8 @@ CREATE TABLE IF NOT EXISTS routes (
   operating_date TEXT, schedule_id INT, order_id INT, train_order_id INT,
   carrier TEXT, number TEXT, category TEXT, name TEXT,
   origin TEXT, destination TEXT, prev_station TEXT, next_station TEXT,
-  arr_time TEXT, dep_time TEXT, platform_arr TEXT, platform_dep TEXT, stop_type TEXT,
+  arr_time TEXT, dep_time TEXT, arr_day INT, dep_day INT,
+  platform_arr TEXT, platform_dep TEXT, stop_type TEXT,
   PRIMARY KEY (operating_date, schedule_id, order_id, train_order_id));
 CREATE TABLE IF NOT EXISTS obs (
   operating_date TEXT, schedule_id INT, order_id INT, train_order_id INT,
@@ -83,14 +90,21 @@ def refresh_routes(con: sqlite3.Connection, sid: int, day: dt.date) -> int:
     have = con.execute("SELECT COUNT(*) FROM routes WHERE operating_date=?", (day.isoformat(),)).fetchone()[0]
     if have:
         return 0
-    js, _ = plk_get("/schedules", {"dateFrom": day.isoformat(),
-                                   "dateTo": (day + dt.timedelta(days=1)).isoformat(),
-                                   "stations": sid, "fullRoute": "true", "dictionaries": "true"},
-                    timeout=300)
-    rows = schedule_rows(js, sid)
+    rows = []
+    for f in sorted((RAW / "plk").glob("schedules_*.json*")):  # saved by collect.py
+        a, b = f.name.split(".")[0].split("_")[1:3]
+        if a <= day.isoformat() <= b:
+            rows = [r for r in schedule_rows(load_json(f), sid) if r["operating_date"] == day.isoformat()]
+            break
+    if not rows:
+        js, _ = plk_get("/schedules", {"dateFrom": day.isoformat(),
+                                       "dateTo": (day + dt.timedelta(days=1)).isoformat(),
+                                       "stations": sid, "fullRoute": "true", "dictionaries": "true"},
+                        timeout=300)
+        rows = schedule_rows(js, sid)
     cols = ["operating_date", "schedule_id", "order_id", "train_order_id", "carrier", "number",
             "category", "name", "origin", "destination", "prev_station", "next_station",
-            "arr_time", "dep_time", "platform_arr", "platform_dep", "stop_type"]
+            "arr_time", "dep_time", "arr_day", "dep_day", "platform_arr", "platform_dep", "stop_type"]
     con.executemany(f"INSERT OR REPLACE INTO routes ({','.join(cols)}) VALUES ({','.join('?' * len(cols))})",
                     [[r.get(c) for c in cols] for r in rows])
     con.commit()
@@ -114,7 +128,8 @@ def poll(con: sqlite3.Connection, sid: int) -> dict:
 def export_day(con: sqlite3.Connection, day: str) -> int:
     q = """
     SELECT r.operating_date, r.carrier, r.category, r.number, r.name, r.origin, r.destination,
-           r.prev_station, r.next_station, r.arr_time, r.dep_time, r.platform_arr, r.platform_dep,
+           r.prev_station, r.next_station, r.arr_time, r.dep_time, r.arr_day, r.dep_day,
+           r.platform_arr, r.platform_dep,
            o.status, o.planned_arr, o.planned_dep, o.actual_arr, o.actual_dep,
            o.arr_delay, o.dep_delay, o.confirmed, o.cancelled, o.first_seen, o.last_seen, o.n_seen,
            r.schedule_id, r.order_id, r.train_order_id
@@ -125,7 +140,13 @@ def export_day(con: sqlite3.Connection, day: str) -> int:
     ORDER BY COALESCE(r.dep_time, r.arr_time)"""
     cur = con.execute(q, (day,))
     cols = [c[0] for c in cur.description]
-    rows = cur.fetchall()
+    rows = [list(r) for r in cur.fetchall()]
+    # Fill delays from planned and actual date-times when the API gives none.
+    ix = {c: i for i, c in enumerate(cols)}
+    for r in rows:
+        for kind in ("arr", "dep"):
+            if r[ix[f"{kind}_delay"]] is None:
+                r[ix[f"{kind}_delay"]] = delay_minutes(r[ix[f"planned_{kind}"]], r[ix[f"actual_{kind}"]])
     if not rows:
         return 0
     OUT.mkdir(parents=True, exist_ok=True)
@@ -146,8 +167,25 @@ def main() -> None:
     ap.add_argument("--night-interval", type=int, default=1200, help="seconds between polls 01:00-04:00")
     ap.add_argument("--once", action="store_true", help="one poll, then exit (for cron or Task Scheduler)")
     ap.add_argument("--export", action="store_true", help="write CSV files for all days, then exit")
+    ap.add_argument("--import", dest="imports", nargs="+", metavar="FILE",
+                    help="load saved /operations responses, then exit")
     a = ap.parse_args()
     con = connect()
+    if a.imports:
+        sid = find_station_id()
+        days = set()
+        for f in a.imports:
+            js = load_json(Path(f))
+            seen = js.get("generatedAt", now_iso())[:19]
+            rows = list(operation_rows(js, sid, seen))
+            con.executemany(UPSERT_OBS, rows)
+            days |= {r["operating_date"] for r in rows}
+            print(f, len(rows))
+        con.commit()
+        for d in sorted(days):
+            refresh_routes(con, sid, dt.date.fromisoformat(d))
+            print(d, export_day(con, d))
+        return
     if a.export:
         days = [r[0] for r in con.execute("SELECT DISTINCT operating_date FROM routes ORDER BY 1")]
         for d in days:

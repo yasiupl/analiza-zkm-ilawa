@@ -109,6 +109,8 @@ def load_ic_history() -> pd.DataFrame:
     df["number"] = df["train_number"]
     df["relation"] = df["from_station"] + " – " + df["to_station"]
     df["source"] = "spoznienia.me"
+    df["date_arr"] = df["date"]
+    df["date_dep"] = df["date"]
     return df
 
 
@@ -117,7 +119,10 @@ def load_monitor() -> pd.DataFrame:
     if not files:
         return pd.DataFrame()
     df = pd.concat([pd.read_csv(f, dtype=str) for f in files], ignore_index=True)
-    df["date"] = df["operating_date"]
+    od = pd.to_datetime(df["operating_date"])
+    for k in ("arr", "dep"):
+        off = pd.to_numeric(df[f"{k}_day"], errors="coerce").fillna(0)
+        df[f"date_{k}"] = (od + pd.to_timedelta(off, unit="D")).dt.strftime("%Y-%m-%d")
     df["arr_min"] = df["arr_time"].map(to_min)
     df["dep_min"] = df["dep_time"].map(to_min)
     df["arr_delay"] = pd.to_numeric(df["arr_delay"], errors="coerce")
@@ -151,6 +156,7 @@ def static_for_date(tr: pd.DataFrame, d: dt.date, m1: float, m2: float) -> pd.Da
                     "neighbour": r["prev_station"], "capacity": r["capacity"],
                     "in_bus_hours": lo <= r["arr_min"] <= hi,
                     "wait": w, "good": bool(t2b["good"][i]), "near_miss": bool(t2b["near_miss"][i]),
+                    "near_miss_long": bool(t2b["near_miss"][i] and not t2b["good"][i]),
                     "bus_line": bus.line if bus else None, "bus_time": bus.hhmm if bus else None,
                     "bus_towards": bus.towards if bus else None})
     for i, (_, r) in enumerate(dep.iterrows()):
@@ -162,6 +168,7 @@ def static_for_date(tr: pd.DataFrame, d: dt.date, m1: float, m2: float) -> pd.Da
                     "neighbour": r["next_station"], "capacity": r["capacity"],
                     "in_bus_hours": lo <= r["dep_min"] <= hi,
                     "wait": w, "good": bool(b2t["good"][i]), "near_miss": bool(b2t["near_miss"][i]),
+                    "near_miss_long": bool(b2t["near_miss"][i] and not b2t["good"][i]),
                     "bus_line": bus.line if bus else None, "bus_time": bus.hhmm if bus else None,
                     "bus_towards": None})
     return pd.DataFrame(out)
@@ -195,8 +202,85 @@ def null_for_date(tr: pd.DataFrame, d: dt.date, m1: float, m2: float, n: int, we
     obs = M.stats(a["arr_min"].to_numpy(), t["dep_min"].to_numpy(), b["arr"], b["dep"], m1, m2, wa, wt)
     nul = M.null_model(a["arr_min"].to_numpy(), t["dep_min"].to_numpy(), b["arr"], b["dep"],
                        m1, m2, wa, wt, n=n)
-    return {"date": str(d), "day_type": day_type(d), "n_train_arr": len(a), "n_train_dep": len(t),
-            "comparison": M.compare(obs, nul)}
+    res = {"date": str(d), "day_type": day_type(d), "n_train_arr": len(a), "n_train_dep": len(t),
+           "comparison": M.compare(obs, nul)}
+    if weighted:
+        res["best_shifts"] = M.best_shifts(a["arr_min"].to_numpy(), t["dep_min"].to_numpy(),
+                                           b["arr"], b["dep"], m1, m2, wa, wt)
+    return res
+
+
+def per_line_for_date(tr: pd.DataFrame, d: dt.date, m1: float, m2: float, n_null: int = 0,
+                      seed: int = 3) -> list[dict]:
+    """The same metrics for each bus line alone: a passenger needs one line, not any bus."""
+    b = bus_sets(d)
+    rng = np.random.default_rng(seed)
+    out = []
+    for ln in sorted(set(b["arr"]) | set(b["dep"])):
+        bd, ba = b["dep"].get(ln, np.array([])), b["arr"].get(ln, np.array([]))
+        for direction, times, bus, fn, m in (
+                ("pociąg→autobus", tr[(tr["arr_date"] == d)]["arr_min"].dropna().to_numpy(), bd, M.train_to_bus, m1),
+                ("autobus→pociąg", tr[(tr["dep_date"] == d)]["dep_min"].dropna().to_numpy(), ba, M.bus_to_train, m2)):
+            if len(bus) == 0:
+                continue
+            lo, hi = bus.min() - 60, bus.max()  # trains while this line runs
+            if direction == "autobus→pociąg":
+                lo, hi = bus.min(), bus.max() + 60
+            t = times[(times >= lo) & (times <= hi)]
+            if len(t) == 0:
+                continue
+            r = fn(t, bus, m)
+            key = "wait" if "wait" in r else "lead"
+            row = {"date": str(d), "day_type": day_type(d), "line": ln, "direction": direction,
+                   "n_trains": int(len(t)), "n_buses": int(len(bus)),
+                   "near_miss": float(r["near_miss"].mean()), "good": float(r["good"].mean()),
+                   "median_wait": float(np.nanmedian(r[key])) if np.isfinite(r[key]).any() else None,
+                   "mean_wait": float(np.nanmean(r[key])) if np.isfinite(r[key]).any() else None}
+            if n_null:
+                nm = np.empty(n_null)
+                gd = np.empty(n_null)
+                for i in range(n_null):
+                    rr = fn(t, bus + rng.uniform(-30, 30), m)
+                    nm[i], gd[i] = rr["near_miss"].mean(), rr["good"].mean()
+                row.update({"null_near_miss": float(nm.mean()), "near_miss_pct": float((nm <= row["near_miss"]).mean()),
+                            "null_good": float(gd.mean()), "good_pct": float((gd <= row["good"]).mean())})
+            out.append(row)
+    return out
+
+
+def dynamic_per_line(hist: pd.DataFrame, m1: float, draws: int = 500, seed: int = 11) -> pd.DataFrame:
+    """Train -> bus of one line: planned wait, expected actual wait, chance to keep the planned bus."""
+    rng = np.random.default_rng(seed)
+    out = []
+    for date_s in sorted(hist["date_arr"].dropna().unique()):
+        d = dt.date.fromisoformat(str(date_s)[:10])
+        if d < BUS_TT_VALID_FROM:
+            continue
+        b = bus_sets(d)
+        g = hist[(hist["date_arr"] == date_s)]
+        g = g[np.isfinite(g["arr_min"]) & np.isfinite(g["arr_delay"])]
+        for ln, bd in b["dep"].items():
+            bd = np.sort(bd)
+            sel = g[(g["arr_min"] >= bd.min() - 60) & (g["arr_min"] <= bd.max())]
+            for _, r in sel.iterrows():
+                a, dl = r["arr_min"], r["arr_delay"]
+                pw = M.train_to_bus(np.array([a]), bd, m1)["wait"][0]
+                eps = rng.uniform(*BUS_DEV, size=(draws, len(bd)))
+                dd = bd[None, :] + eps
+                act = a + dl
+                w = np.where(dd >= act + m1, dd, np.inf).min(axis=1) - act
+                w[~np.isfinite(w) | (w > M.MAX_WAIT)] = np.nan
+                if not np.isfinite(pw):
+                    continue
+                keep = np.nan
+                if np.isfinite(pw):
+                    i = int(np.searchsorted(bd, a + pw - 1e-9))
+                    keep = float((dd[:, i] >= act + m1).mean())
+                out.append({"date": str(d), "day_type": day_type(d), "line": ln, "category": r.get("category"),
+                            "number": r.get("number"), "source": r.get("source"), "delay": dl,
+                            "planned_wait": pw, "actual_wait": float(np.nanmean(w)) if np.isfinite(w).any() else np.nan,
+                            "planned_good": bool(np.isfinite(pw) and pw <= m1 + M.GOOD), "p_keep": keep})
+    return pd.DataFrame(out)
 
 
 # ---------------------------------------------------------------- dynamic
@@ -204,7 +288,8 @@ def dynamic(hist: pd.DataFrame, m1: float, m2: float, draws: int = 2000, seed: i
     """For each observed train: planned vs actual transfer, bus deviation U(-1, +3)."""
     rng = np.random.default_rng(seed)
     out = []
-    for date_s, g in hist.groupby("date"):
+    dates = sorted(set(hist["date_arr"].dropna()) | set(hist["date_dep"].dropna()))
+    for date_s in dates:
         d = dt.date.fromisoformat(str(date_s)[:10])
         if d < BUS_TT_VALID_FROM:
             continue
@@ -212,11 +297,12 @@ def dynamic(hist: pd.DataFrame, m1: float, m2: float, draws: int = 2000, seed: i
         bd = np.sort(np.concatenate(list(b["dep"].values())))
         ba = np.sort(np.concatenate(list(b["arr"].values())))
         lo, hi = min(ba.min(), bd.min()), max(ba.max(), bd.max())
+        g = hist[(hist["date_arr"] == date_s) | (hist["date_dep"] == date_s)]
         for _, r in g.iterrows():
             base = {"date": str(d), "day_type": day_type(d), "category": r.get("category"),
                     "number": r.get("number"), "relation": r.get("relation"), "source": r.get("source")}
             a, da = r["arr_min"], r["arr_delay"]
-            if np.isfinite(a) and np.isfinite(da) and lo <= a <= hi:
+            if r["date_arr"] == date_s and np.isfinite(a) and np.isfinite(da) and lo <= a <= hi:
                 plan = M.train_to_bus(np.array([a]), bd, m1)
                 pw = plan["wait"][0]
                 act = a + da
@@ -234,7 +320,7 @@ def dynamic(hist: pd.DataFrame, m1: float, m2: float, draws: int = 2000, seed: i
                             "planned_good": bool(np.isfinite(pw) and pw <= m1 + M.GOOD),
                             "p_keep_planned_bus": kept})
             t, dl = r["dep_min"], r["dep_delay"]
-            if np.isfinite(t) and np.isfinite(dl) and lo <= t <= hi:
+            if r["date_dep"] == date_s and np.isfinite(t) and np.isfinite(dl) and lo <= t <= hi:
                 plan = M.bus_to_train(np.array([t]), ba, m2)
                 pl = plan["lead"][0]
                 if np.isfinite(pl):
@@ -256,6 +342,7 @@ def describe(df: pd.DataFrame, weight: bool = False) -> dict:
             "wait": M.summary(x["wait"].to_numpy(float), w),
             "good_rate": M.rate(x["good"].to_numpy(), w),
             "near_miss_rate": M.rate(x["near_miss"].to_numpy(), w),
+            "near_miss_long_rate": M.rate(x["near_miss_long"].to_numpy(), w),
             "no_bus_rate": float(x["wait"].isna().mean()) if len(x) else None}
 
 
@@ -313,6 +400,22 @@ def main() -> None:
             "date": str(d),
             "bus_dep_minus_train_arr": M.offset_histogram(ta, np.concatenate(list(b["dep"].values()))),
             "train_dep_minus_bus_arr": M.offset_histogram(np.concatenate(list(b["arr"].values())), td)}
+    # Per line: all dates, null model on the representative dates.
+    pl = []
+    for d in dates:
+        pl += per_line_for_date(tr, d, m1, m2, n_null=1000 if d in reps.values() else 0)
+    pl = pd.DataFrame(pl)
+    pl.to_csv(RES / "static_per_line.csv", index=False)
+    summary["per_line"] = {}
+    for (dtp, ln, direction), g in pl.groupby(["day_type", "line", "direction"]):
+        rep = g[g["date"] == str(reps.get(dtp))]
+        summary["per_line"].setdefault(dtp, {}).setdefault(ln, {})[direction] = {
+            "near_miss": float(g["near_miss"].mean()), "good": float(g["good"].mean()),
+            "median_wait": float(g["median_wait"].median()), "mean_wait": float(g["mean_wait"].mean()),
+            "n_trains_per_day": float(g["n_trains"].mean()), "n_buses_per_day": float(g["n_buses"].mean()),
+            **({k: float(rep[k].iloc[0]) for k in ("null_near_miss", "near_miss_pct", "null_good", "good_pct")}
+               if len(rep) and "null_near_miss" in rep else {})}
+
     # Sensitivity to walking time (all dates pooled).
     for mw in (2, 3, 4, 5, 6, 8):
         e2 = pd.concat([static_for_date(tr, d, mw, mw) for d in dates], ignore_index=True)
@@ -343,6 +446,17 @@ def main() -> None:
                                     "p_keep": float(x[x["planned_good"]]["p_keep_planned_bus"].mean())
                                     if x["planned_good"].any() else None}
                                 for c, x in g.groupby(g["category"].fillna("?"))}}
+        dl = dynamic_per_line(hist, m1)
+        dl.to_csv(RES / f"dynamic_per_line_{name}.csv", index=False)
+        dsum["per_line_t2b"] = {}
+        for ln, g in dl.groupby("line"):
+            pg = g[g["planned_good"]]
+            dsum["per_line_t2b"][ln] = {
+                "n": int(len(g)), "planned_wait_mean": float(g["planned_wait"].mean()),
+                "actual_wait_mean": float(g["actual_wait"].mean()),
+                "extra_wait_mean": float((g["actual_wait"] - g["planned_wait"]).mean()),
+                "n_planned_good": int(len(pg)),
+                "p_keep_planned_good": float(pg["p_keep"].mean()) if len(pg) else None}
         summary["dynamic"][name] = dsum
 
     (RES / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1, default=float),
