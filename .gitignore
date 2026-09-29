@@ -11,3 +11,4 @@ data/raw/plk/ops/
 data/*.sqlite
 data/*.sqlite-*
 logs/
+data/raw/gtfs/*.zip

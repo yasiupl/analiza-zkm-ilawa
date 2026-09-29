@@ -45,7 +45,34 @@ def bus_sets(d: dt.date) -> dict:
             "dep": {k: np.array(v, float) for k, v in dep.items()}}
 
 
+def gtfs_category(row) -> str:
+    """Commercial category from the GTFS route name, the train number or the agency."""
+    for v in (row.get("route_short_name"), str(row.get("number") or "").split(" ")[0]):
+        v = str(v or "").strip().upper()
+        if v and v.isalpha() and len(v) <= 4:
+            return v
+    return {"PR": "R", "IC": "IC", "KM": "R", "KS": "R", "AR": "R"}.get(str(row.get("agency_id")), "R")
+
+
+def load_gtfs_trains() -> pd.DataFrame:
+    df = pd.read_csv(DATA / "trains_gtfs_ilawa.csv", dtype={"number": str})
+    sd = pd.to_datetime(df["service_date"])
+    for k in ("arr", "dep"):
+        m = df[f"{k}_min"]
+        df[f"{k}_date"] = (sd + pd.to_timedelta((m // 1440).fillna(0), unit="D")).dt.date
+        df[f"{k}_min"] = m % 1440
+        df[f"{k}_time"] = df[f"{k}_min"].map(lambda x: f"{int(x)//60:02d}:{int(x)%60:02d}:00" if pd.notna(x) else None)
+    df["category"] = df.apply(gtfs_category, axis=1)
+    df["carrier"] = df["agency_id"]
+    df["capacity"] = df["category"].map(M.train_capacity)
+    df["relation"] = df["origin"].fillna("?") + " – " + df["destination"].fillna("?")
+    df["source"] = "GTFS mkuran.pl"
+    return df
+
+
 def load_planned_trains() -> pd.DataFrame:
+    if not list((RAW / "plk").glob("schedules_*.json*")) and (DATA / "trains_gtfs_ilawa.csv").exists():
+        return load_gtfs_trains()
     st = load_json(DATA / "plk_station.json")
     sid = int(st["id"])
     rows = []
@@ -61,6 +88,7 @@ def load_planned_trains() -> pd.DataFrame:
     df["dep_min"] = df["dep_time"].map(to_min)
     df["capacity"] = df["category"].map(M.train_capacity)
     df["relation"] = df["origin"].fillna("?") + " – " + df["destination"].fillna("?")
+    df["source"] = "PKP PLK API"
     return df
 
 

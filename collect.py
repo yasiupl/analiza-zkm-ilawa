@@ -7,17 +7,25 @@ Output (in data/raw):
   plk/operations_<timestamp>.json.gz  real-time snapshot: planned, actual, delay
   plk/history_probe.json              test: how far back /operations/train gives data
   spoznienia/<date>.json              historical station board, PKP Intercity only
+  gtfs/polish_trains.zip              GTFS of all Polish rail operators (mkuran.pl)
+and data/trains_gtfs_ilawa.csv       planned calls at the station from the GTFS feed
 """
 from __future__ import annotations
 
 import argparse
+import csv
 import datetime as dt
+import json
 import sys
+import zipfile
 import time
 import urllib.parse
 
-from ilawa.common import (RAW, SPOZNIENIA_BASE, STATION_NAME, find_station_id, http_get,
+from ilawa.common import (DATA, RAW, SPOZNIENIA_BASE, STATION_NAME, find_station_id, http_get,
                           plk_get, save_json)
+from ilawa.gtfs import extract_station
+
+GTFS_URL = "https://mkuran.pl/gtfs/polish_trains.zip"
 
 SPOZNIENIA_FIRST_DAY = dt.date(2025, 10, 23)
 
@@ -91,11 +99,39 @@ def collect_spoznienia(days_back: int) -> None:
     print(f"  spoznienia.me: {n_new} new days in {out}")
 
 
+def collect_gtfs(days_back: int, days_ahead: int = 35) -> None:
+    out = RAW / "gtfs"
+    out.mkdir(parents=True, exist_ok=True)
+    z = out / "polish_trains.zip"
+    status, body, headers = http_get(GTFS_URL, timeout=600)
+    if status != 200:
+        print(f"  GTFS download HTTP {status}")
+        return
+    z.write_bytes(body)
+    print(f"  GTFS: {len(body) / 1e6:.1f} MB, Last-Modified {headers.get('Last-Modified')}")
+    with zipfile.ZipFile(z) as zf:
+        info = {"files": zf.namelist(), "last_modified": headers.get("Last-Modified")}
+        for name in ("routes.txt", "trips.txt", "stop_times.txt", "stops.txt", "agency.txt"):
+            if name in zf.namelist():
+                with zf.open(name) as f:
+                    info[name] = f.readline().decode("utf-8-sig").strip()
+    save_json(info, out / "feed_info.json")
+    today = dt.date.today()
+    rows = extract_station(z, STATION_NAME, today - dt.timedelta(days=days_back), today + dt.timedelta(days=days_ahead))
+    if rows:
+        with (DATA / "trains_gtfs_ilawa.csv").open("w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=list(rows[0]))
+            w.writeheader()
+            w.writerows(rows)
+    print(f"  GTFS: {len(rows)} calls at {STATION_NAME} -> data/trains_gtfs_ilawa.csv")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--days-back", type=int, default=90)
     ap.add_argument("--skip-plk", action="store_true")
     ap.add_argument("--skip-spoznienia", action="store_true")
+    ap.add_argument("--skip-gtfs", action="store_true")
     a = ap.parse_args()
     if not a.skip_plk:
         print("PKP PLK open data API")
@@ -103,6 +139,12 @@ def main() -> None:
             collect_plk(min(a.days_back, 62))
         except Exception as e:  # continue with the other source
             print(f"  PLK FAILED: {e}")
+    if not a.skip_gtfs:
+        print("GTFS polish_trains (mkuran.pl)")
+        try:
+            collect_gtfs(min(a.days_back, 31))
+        except Exception as e:
+            print(f"  GTFS FAILED: {e}")
     if not a.skip_spoznienia:
         print("spoznienia.me (PKP Intercity history)")
         collect_spoznienia(a.days_back)
