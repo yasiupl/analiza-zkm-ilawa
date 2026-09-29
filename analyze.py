@@ -243,7 +243,10 @@ def per_line_for_date(tr: pd.DataFrame, d: dt.date, m1: float, m2: float, n_null
                     rr = fn(t, bus + rng.uniform(-30, 30), m)
                     nm[i], gd[i] = rr["near_miss"].mean(), rr["good"].mean()
                 row.update({"null_near_miss": float(nm.mean()), "near_miss_pct": float((nm <= row["near_miss"]).mean()),
-                            "null_good": float(gd.mean()), "good_pct": float((gd <= row["good"]).mean())})
+                            "null_near_miss_p05": float(np.percentile(nm, 5)),
+                            "null_near_miss_p95": float(np.percentile(nm, 95)),
+                            "null_good": float(gd.mean()), "good_pct": float((gd <= row["good"]).mean()),
+                            "null_good_p05": float(np.percentile(gd, 5)), "null_good_p95": float(np.percentile(gd, 95))})
             out.append(row)
     return out
 
@@ -413,7 +416,10 @@ def main() -> None:
             "near_miss": float(g["near_miss"].mean()), "good": float(g["good"].mean()),
             "median_wait": float(g["median_wait"].median()), "mean_wait": float(g["mean_wait"].mean()),
             "n_trains_per_day": float(g["n_trains"].mean()), "n_buses_per_day": float(g["n_buses"].mean()),
-            **({k: float(rep[k].iloc[0]) for k in ("null_near_miss", "near_miss_pct", "null_good", "good_pct")}
+            "rep_date": str(reps.get(dtp)),
+            **({("rep_" + k if k in ("near_miss", "good") else k): float(rep[k].iloc[0]) for k in ("near_miss", "good", "null_near_miss", "near_miss_pct",
+                                                   "null_near_miss_p05", "null_near_miss_p95", "null_good",
+                                                   "good_pct", "null_good_p05", "null_good_p95")}
                if len(rep) and "null_near_miss" in rep else {})}
 
     # Sensitivity to walking time (all dates pooled).

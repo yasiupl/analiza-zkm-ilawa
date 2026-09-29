@@ -3973,10 +3973,17 @@
      "mean_wait": 46.481818181818184,
      "n_trains_per_day": 44.0,
      "n_buses_per_day": 6.0,
+     "rep_date": "2026-10-04",
+     "rep_near_miss": 0.022727272727272728,
+     "rep_good": 0.13636363636363635,
      "null_near_miss": 0.08181818181818182,
      "near_miss_pct": 0.053,
+     "null_near_miss_p05": 0.022727272727272728,
+     "null_near_miss_p95": 0.13636363636363635,
      "null_good": 0.11034090909090906,
-     "good_pct": 0.878
+     "good_pct": 0.878,
+     "null_good_p05": 0.045454545454545456,
+     "null_good_p95": 0.18181818181818182
     },
     "pociąg→autobus": {
      "near_miss": 0.08,
@@ -3985,10 +3992,17 @@
      "mean_wait": 36.725520833333334,
      "n_trains_per_day": 50.0,
      "n_buses_per_day": 12.0,
+     "rep_date": "2026-10-04",
+     "rep_near_miss": 0.08,
+     "rep_good": 0.16,
      "null_near_miss": 0.11240000000000001,
      "near_miss_pct": 0.269,
+     "null_near_miss_p05": 0.06,
+     "null_near_miss_p95": 0.18,
      "null_good": 0.17996000000000004,
-     "good_pct": 0.459
+     "good_pct": 0.459,
+     "null_good_p05": 0.12,
+     "null_good_p95": 0.24
     }
    },
    "2": {
@@ -3999,10 +4013,17 @@
      "mean_wait": 63.645138888888894,
      "n_trains_per_day": 73.0,
      "n_buses_per_day": 8.0,
+     "rep_date": "2026-10-04",
+     "rep_near_miss": 0.0410958904109589,
+     "rep_good": 0.0958904109589041,
      "null_near_miss": 0.06965753424657532,
      "near_miss_pct": 0.234,
+     "null_near_miss_p05": 0.0273972602739726,
+     "null_near_miss_p95": 0.1095890410958904,
      "null_good": 0.09116438356164383,
-     "good_pct": 0.64
+     "good_pct": 0.64,
+     "null_good_p05": 0.0410958904109589,
+     "null_good_p95": 0.136986301369863
     },
     "pociąg→autobus": {
      "near_miss": 0.0821917808219178,
@@ -4011,10 +4032,17 @@
      "mean_wait": 62.55068493150685,
      "n_trains_per_day": 73.0,
      "n_buses_per_day": 8.0,
+     "rep_date": "2026-10-04",
+     "rep_near_miss": 0.0821917808219178,
+     "rep_good": 0.136986301369863,
      "null_near_miss": 0.06752054794520547,
      "near_miss_pct": 0.867,
+     "null_near_miss_p05": 0.0410958904109589,
+     "null_near_miss_p95": 0.0958904109589041,
      "null_good": 0.10352054794520547,
-     "good_pct": 0.923
+     "good_pct": 0.923,
+     "null_good_p05": 0.0410958904109589,
+     "null_good_p95": 0.1506849315068493
     }
    },
    "3": {
@@ -4025,10 +4053,17 @@
      "mean_wait": 48.594905533063425,
      "n_trains_per_day": 79.0,
      "n_buses_per_day": 12.0,
+     "rep_date": "2026-10-04",
+     "rep_near_miss": 0.10126582278481013,
+     "rep_good": 0.1518987341772152,
      "null_near_miss": 0.08348101265822785,
      "near_miss_pct": 0.823,
+     "null_near_miss_p05": 0.05063291139240506,
+     "null_near_miss_p95": 0.12658227848101267,
      "null_good": 0.12546835443037974,
-     "good_pct": 0.874
+     "good_pct": 0.874,
+     "null_good_p05": 0.0759493670886076,
+     "null_good_p95": 0.16455696202531644
     },
     "pociąg→autobus": {
      "near_miss": 0.071875,
@@ -4037,10 +4072,17 @@
      "mean_wait": 44.96772151898735,
      "n_trains_per_day": 80.0,
      "n_buses_per_day": 13.0,
+     "rep_date": "2026-10-04",
+     "rep_near_miss": 0.075,
+     "rep_good": 0.125,
      "null_near_miss": 0.0728625,
      "near_miss_pct": 0.578,
+     "null_near_miss_p05": 0.0375,
+     "null_near_miss_p95": 0.1125,
      "null_good": 0.12716249999999998,
-     "good_pct": 0.468
+     "good_pct": 0.468,
+     "null_good_p05": 0.075,
+     "null_good_p95": 0.175
     }
    }
   },
@@ -4053,10 +4095,17 @@
      "mean_wait": 40.36363370253165,
      "n_trains_per_day": 81.2,
      "n_buses_per_day": 15.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.13580246913580246,
+     "rep_good": 0.18518518518518517,
      "null_near_miss": 0.10719753086419752,
      "near_miss_pct": 0.806,
+     "null_near_miss_p05": 0.06172839506172839,
+     "null_near_miss_p95": 0.17345679012345622,
      "null_good": 0.14654320987654318,
-     "good_pct": 0.815
+     "good_pct": 0.815,
+     "null_good_p05": 0.08641975308641975,
+     "null_good_p95": 0.2222222222222222
     },
     "pociąg→autobus": {
      "near_miss": 0.22759051186017482,
@@ -4065,10 +4114,17 @@
      "mean_wait": 33.20557615480649,
      "n_trains_per_day": 89.2,
      "n_buses_per_day": 31.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.2247191011235955,
+     "rep_good": 0.24719101123595505,
      "null_near_miss": 0.1611011235955056,
      "near_miss_pct": 0.955,
+     "null_near_miss_p05": 0.0898876404494382,
+     "null_near_miss_p95": 0.2247191011235955,
      "null_good": 0.26008988764044944,
-     "good_pct": 0.437
+     "good_pct": 0.437,
+     "null_good_p05": 0.15730337078651685,
+     "null_good_p95": 0.33707865168539325
     }
    },
    "2": {
@@ -4079,10 +4135,17 @@
      "mean_wait": 22.63570588235294,
      "n_trains_per_day": 84.2,
      "n_buses_per_day": 31.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.19047619047619047,
+     "rep_good": 0.35714285714285715,
      "null_near_miss": 0.2174404761904762,
      "near_miss_pct": 0.231,
+     "null_near_miss_p05": 0.16666666666666666,
+     "null_near_miss_p95": 0.27380952380952384,
      "null_good": 0.3187738095238095,
-     "good_pct": 0.92
+     "good_pct": 0.92,
+     "null_good_p05": 0.27380952380952384,
+     "null_good_p95": 0.38095238095238093
     },
     "pociąg→autobus": {
      "near_miss": 0.16168577312823504,
@@ -4091,10 +4154,17 @@
      "mean_wait": 25.217009337561663,
      "n_trains_per_day": 87.2,
      "n_buses_per_day": 30.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.16279069767441862,
+     "rep_good": 0.313953488372093,
      "null_near_miss": 0.17691860465116274,
      "near_miss_pct": 0.317,
+     "null_near_miss_p05": 0.12790697674418605,
+     "null_near_miss_p95": 0.22093023255813954,
      "null_good": 0.2948488372093024,
-     "good_pct": 0.73
+     "good_pct": 0.73,
+     "null_good_p05": 0.23255813953488372,
+     "null_good_p95": 0.3488372093023256
     }
    },
    "3": {
@@ -4105,10 +4175,17 @@
      "mean_wait": 24.705438385458432,
      "n_trains_per_day": 86.2,
      "n_buses_per_day": 36.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.13953488372093023,
+     "rep_good": 0.23255813953488372,
      "null_near_miss": 0.24096511627906977,
      "near_miss_pct": 0.151,
+     "null_near_miss_p05": 0.12790697674418605,
+     "null_near_miss_p95": 0.3488372093023256,
      "null_good": 0.3300930232558139,
-     "good_pct": 0.255
+     "good_pct": 0.255,
+     "null_good_p05": 0.1744186046511628,
+     "null_good_p95": 0.46511627906976744
     },
     "pociąg→autobus": {
      "near_miss": 0.14835291113381005,
@@ -4117,10 +4194,17 @@
      "mean_wait": 23.987562563840655,
      "n_trains_per_day": 88.3,
      "n_buses_per_day": 36.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.14772727272727273,
+     "rep_good": 0.3181818181818182,
      "null_near_miss": 0.19727272727272724,
      "near_miss_pct": 0.166,
+     "null_near_miss_p05": 0.14772727272727273,
+     "null_near_miss_p95": 0.2840909090909091,
      "null_good": 0.31157954545454547,
-     "good_pct": 0.65
+     "good_pct": 0.65,
+     "null_good_p05": 0.23863636363636365,
+     "null_good_p95": 0.3977272727272727
     }
    },
    "4": {
@@ -4131,10 +4215,17 @@
      "mean_wait": 37.88931372549019,
      "n_trains_per_day": 51.0,
      "n_buses_per_day": 7.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.0196078431372549,
+     "rep_good": 0.1568627450980392,
      "null_near_miss": 0.07968627450980392,
      "near_miss_pct": 0.143,
+     "null_near_miss_p05": 0.0196078431372549,
+     "null_near_miss_p95": 0.1568627450980392,
      "null_good": 0.11725490196078431,
-     "good_pct": 0.812
+     "good_pct": 0.812,
+     "null_good_p05": 0.0392156862745098,
+     "null_good_p95": 0.21568627450980393
     },
     "pociąg→autobus": {
      "near_miss": 0.041304347826086954,
@@ -4143,10 +4234,17 @@
      "mean_wait": 39.03141304347825,
      "n_trains_per_day": 46.0,
      "n_buses_per_day": 7.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.043478260869565216,
+     "rep_good": 0.13043478260869565,
      "null_near_miss": 0.07045652173913043,
      "near_miss_pct": 0.254,
+     "null_near_miss_p05": 0.021739130434782608,
+     "null_near_miss_p95": 0.13043478260869565,
      "null_good": 0.13082608695652176,
-     "good_pct": 0.662
+     "good_pct": 0.662,
+     "null_good_p05": 0.06521739130434782,
+     "null_good_p95": 0.2391304347826087
     }
    },
    "7": {
@@ -4157,10 +4255,17 @@
      "mean_wait": 57.17500000000001,
      "n_trains_per_day": 39.0,
      "n_buses_per_day": 2.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.07692307692307693,
+     "rep_good": 0.07692307692307693,
      "null_near_miss": 0.020384615384615386,
      "near_miss_pct": 1.0,
+     "null_near_miss_p05": 0.0,
+     "null_near_miss_p95": 0.07692307692307693,
      "null_good": 0.028717948717948718,
-     "good_pct": 0.947
+     "good_pct": 0.947,
+     "null_good_p05": 0.0,
+     "null_good_p95": 0.10256410256410256
     },
     "pociąg→autobus": {
      "near_miss": 0.026315789473684202,
@@ -4169,10 +4274,17 @@
      "mean_wait": 46.4265,
      "n_trains_per_day": 38.0,
      "n_buses_per_day": 2.0,
+     "rep_date": "2026-09-30",
+     "rep_near_miss": 0.02631578947368421,
+     "rep_good": 0.07894736842105263,
      "null_near_miss": 0.02476315789473684,
      "near_miss_pct": 0.703,
+     "null_near_miss_p05": 0.0,
+     "null_near_miss_p95": 0.07894736842105263,
      "null_good": 0.05249999999999999,
-     "good_pct": 0.775
+     "good_pct": 0.775,
+     "null_good_p05": 0.0,
+     "null_good_p95": 0.10526315789473684
     }
    }
   },
@@ -4185,10 +4297,17 @@
      "mean_wait": 47.172,
      "n_trains_per_day": 50.0,
      "n_buses_per_day": 7.0,
+     "rep_date": "2026-10-03",
+     "rep_near_miss": 0.04,
+     "rep_good": 0.16,
      "null_near_miss": 0.07672,
      "near_miss_pct": 0.248,
+     "null_near_miss_p05": 0.02,
+     "null_near_miss_p95": 0.12,
      "null_good": 0.10510000000000003,
-     "good_pct": 0.984
+     "good_pct": 0.984,
+     "null_good_p05": 0.06,
+     "null_good_p95": 0.16
     },
     "pociąg→autobus": {
      "near_miss": 0.16,
@@ -4197,10 +4316,17 @@
      "mean_wait": 37.74,
      "n_trains_per_day": 50.0,
      "n_buses_per_day": 14.0,
+     "rep_date": "2026-10-03",
+     "rep_near_miss": 0.16,
+     "rep_good": 0.2,
      "null_near_miss": 0.13114,
      "near_miss_pct": 0.705,
+     "null_near_miss_p05": 0.04,
+     "null_near_miss_p95": 0.2,
      "null_good": 0.21178000000000002,
-     "good_pct": 0.437
+     "good_pct": 0.437,
+     "null_good_p05": 0.08,
+     "null_good_p95": 0.28
     }
    },
    "2": {
@@ -4211,10 +4337,17 @@
      "mean_wait": 34.37466666666666,
      "n_trains_per_day": 77.0,
      "n_buses_per_day": 17.0,
+     "rep_date": "2026-10-03",
+     "rep_near_miss": 0.11688311688311688,
+     "rep_good": 0.2597402597402597,
      "null_near_miss": 0.12193506493506492,
      "near_miss_pct": 0.404,
+     "null_near_miss_p05": 0.03896103896103896,
+     "null_near_miss_p95": 0.19480519480519481,
      "null_good": 0.17574025974025975,
-     "good_pct": 0.964
+     "good_pct": 0.964,
+     "null_good_p05": 0.07792207792207792,
+     "null_good_p95": 0.2597402597402597
     },
     "pociąg→autobus": {
      "near_miss": 0.13333333333333333,
@@ -4223,10 +4356,17 @@
      "mean_wait": 39.60666666666667,
      "n_trains_per_day": 75.0,
      "n_buses_per_day": 16.0,
+     "rep_date": "2026-10-03",
+     "rep_near_miss": 0.13333333333333333,
+     "rep_good": 0.17333333333333334,
      "null_near_miss": 0.10268,
      "near_miss_pct": 0.915,
+     "null_near_miss_p05": 0.06666666666666667,
+     "null_near_miss_p95": 0.14666666666666667,
      "null_good": 0.16970666666666664,
-     "good_pct": 0.682
+     "good_pct": 0.682,
+     "null_good_p05": 0.13333333333333333,
+     "null_good_p95": 0.2
     }
    },
    "3": {
@@ -4237,10 +4377,17 @@
      "mean_wait": 35.371428571428574,
      "n_trains_per_day": 78.0,
      "n_buses_per_day": 21.0,
+     "rep_date": "2026-10-03",
+     "rep_near_miss": 0.15384615384615385,
+     "rep_good": 0.2692307692307692,
      "null_near_miss": 0.1508076923076923,
      "near_miss_pct": 0.614,
+     "null_near_miss_p05": 0.08974358974358974,
+     "null_near_miss_p95": 0.23076923076923078,
      "null_good": 0.21457692307692305,
-     "good_pct": 0.907
+     "good_pct": 0.907,
+     "null_good_p05": 0.14102564102564102,
+     "null_good_p95": 0.2948717948717949
     },
     "pociąg→autobus": {
      "near_miss": 0.13253012048192772,
@@ -4249,10 +4396,17 @@
      "mean_wait": 36.625,
      "n_trains_per_day": 83.0,
      "n_buses_per_day": 21.0,
+     "rep_date": "2026-10-03",
+     "rep_near_miss": 0.13253012048192772,
+     "rep_good": 0.24096385542168675,
      "null_near_miss": 0.12040963855421688,
      "near_miss_pct": 0.641,
+     "null_near_miss_p05": 0.060240963855421686,
+     "null_near_miss_p95": 0.1927710843373494,
      "null_good": 0.19286746987951806,
-     "good_pct": 0.886
+     "good_pct": 0.886,
+     "null_good_p05": 0.12048192771084337,
+     "null_good_p95": 0.2891566265060241
     }
    }
   }
