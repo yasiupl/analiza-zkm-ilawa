@@ -74,10 +74,10 @@
     "group": 2,
     "who": {
      "gain": [
-      "z R 90221 (08:55, z Jamielnik)",
-      "z IC 1511 (08:57, z Działdowo)",
-      "z IC 5116 (08:58, z Prabuty)",
-      "na R 90751 (09:15, do Iława Miasto)"
+      "z R 90221 (08:55, Inowrocław – Olsztyn Główny)",
+      "z IC 1511 (08:57, Łódź Fabryczna – Gdynia Główna)",
+      "z IC 5116 (08:58, Gdynia Główna – Łódź Fabryczna)",
+      "na R 90751 (09:15, Iława Główna – Malbork)"
      ],
      "lose": []
     }
@@ -105,9 +105,9 @@
     "group": 4,
     "who": {
      "gain": [
-      "z EIP 4509 (11:02, z Warszawa Wschodnia)",
-      "na TLK 8328 (11:17, do Działdowo)",
-      "na IC 6115 (11:17, do Ostróda)"
+      "z EIP 4509 (11:02, Gliwice – Gdynia Główna)",
+      "na TLK 8328 (11:17, Kołobrzeg – Kraków Główny)",
+      "na IC 6115 (11:17, Wrocław Główny – Białystok)"
      ],
      "lose": []
     }
@@ -128,9 +128,9 @@
     "group": 44,
     "who": {
      "gain": [
-      "z EIP 3503 (21:02, z Warszawa Wschodnia)",
-      "z R 90113 (21:03, z Samborowo)",
-      "z TLK 53170 (21:06, z Prabuty)"
+      "z EIP 3503 (21:02, Kraków Główny – Gdynia Główna)",
+      "z R 90113 (21:03, Olsztyn Główny – Gdynia Główna)",
+      "z TLK 53170 (21:06, Gdynia Główna – Zakopane)"
      ],
      "lose": []
     }
@@ -158,13 +158,13 @@
     "group": 193,
     "who": {
      "gain": [
-      "z IC 1511 (08:57, z Działdowo)",
-      "z IC 5116 (08:58, z Prabuty)",
-      "na R 90751 (09:15, do Iława Miasto)",
-      "na IC 7503 (09:17, do Ostróda)"
+      "z IC 1511 (08:57, Łódź Fabryczna – Gdynia Główna)",
+      "z IC 5116 (08:58, Gdynia Główna – Łódź Fabryczna)",
+      "na R 90751 (09:15, Iława Główna – Malbork)",
+      "na IC 7503 (09:17, Poznań Główny – Olsztyn Główny)"
      ],
      "lose": [
-      "z R 90730 (09:10, z Rudzienice Suskie)"
+      "z R 90730 (09:10, Olsztyn Główny – Iława Główna)"
      ]
     }
    },
@@ -191,8 +191,8 @@
     "group": 12,
     "who": {
      "gain": [
-      "na IC 5110 (19:03, do Działdowo)",
-      "na EIP 4503 (19:03, do Malbork)"
+      "na IC 5110 (19:03, Gdynia Główna – Łódź Fabryczna)",
+      "na EIP 4503 (19:03, Gliwice – Gdynia Główna)"
      ],
      "lose": []
     }
@@ -213,8 +213,8 @@
     "group": 137,
     "who": {
      "gain": [
-      "na IC 5110 (19:03, do Działdowo)",
-      "na EIP 4503 (19:03, do Malbork)"
+      "na IC 5110 (19:03, Gdynia Główna – Łódź Fabryczna)",
+      "na EIP 4503 (19:03, Gliwice – Gdynia Główna)"
      ],
      "lose": []
     }
@@ -235,8 +235,8 @@
     "group": 80,
     "who": {
      "gain": [
-      "z TLK 35171 (06:59, z Działdowo)",
-      "z TLK 53104 (06:59, z Prabuty)"
+      "z TLK 35171 (06:59, Zakopane – Gdynia Główna)",
+      "z TLK 53104 (06:59, Gdynia Główna – Zakopane)"
      ],
      "lose": []
     }
@@ -257,8 +257,8 @@
     "group": 90,
     "who": {
      "gain": [
-      "z IC 1815 (12:58, z Działdowo)",
-      "z IC 5114 (12:58, z Prabuty)"
+      "z IC 1815 (12:58, Łódź Fabryczna – Kołobrzeg)",
+      "z IC 5114 (12:58, Gdynia Główna – Łódź Fabryczna)"
      ],
      "lose": []
     }
@@ -279,8 +279,8 @@
     "group": 127,
     "who": {
      "gain": [
-      "na EIP 3553 (15:03, do Malbork)",
-      "na R 55205 (15:03, do Rudzienice Suskie)"
+      "na EIP 3553 (15:03, Zakopane – Gdynia Główna)",
+      "na R 55205 (15:03, Gdynia Chylonia – Olsztyn Główny)"
      ],
      "lose": []
     }
@@ -301,8 +301,8 @@
     "group": 66,
     "who": {
      "gain": [
-      "na IC 1614 (16:36, do Jabłonowo Pomorskie)",
-      "na R 90225 (16:39, do Rudzienice Suskie)"
+      "na IC 1614 (16:36, Białystok – Wrocław Główny)",
+      "na R 90225 (16:39, Bydgoszcz Główna – Olsztyn Główny)"
      ],
      "lose": []
     }
@@ -371,9 +371,9 @@
     "group": 51,
     "who": {
      "gain": [
-      "z R 90625 (16:34, z Smolniki)",
-      "z IC 1614 (16:35, z Ostróda)",
-      "z R 90225 (16:38, z Jamielnik)"
+      "z R 90625 (16:34, Działdowo – Iława Główna)",
+      "z IC 1614 (16:35, Białystok – Wrocław Główny)",
+      "z R 90225 (16:38, Bydgoszcz Główna – Olsztyn Główny)"
      ],
      "lose": []
     }
@@ -401,8 +401,8 @@
     "group": 4,
     "who": {
      "gain": [
-      "z IC 1815 (12:58, z Działdowo)",
-      "z IC 5114 (12:58, z Prabuty)"
+      "z IC 1815 (12:58, Łódź Fabryczna – Kołobrzeg)",
+      "z IC 5114 (12:58, Gdynia Główna – Łódź Fabryczna)"
      ],
      "lose": []
     }
@@ -423,8 +423,8 @@
     "group": 48,
     "who": {
      "gain": [
-      "z IC 1815 (12:58, z Działdowo)",
-      "z IC 5114 (12:58, z Prabuty)"
+      "z IC 1815 (12:58, Łódź Fabryczna – Kołobrzeg)",
+      "z IC 5114 (12:58, Gdynia Główna – Łódź Fabryczna)"
      ],
      "lose": []
     }
@@ -445,8 +445,8 @@
     "group": 19,
     "who": {
      "gain": [
-      "z IC 1515 (14:57, z Działdowo)",
-      "z IC 8114 (14:58, z Prabuty)"
+      "z IC 1515 (14:57, Łódź Fabryczna – Gdynia Główna)",
+      "z IC 8114 (14:58, Kołobrzeg – Łódź Fabryczna)"
      ],
      "lose": []
     }
@@ -467,8 +467,8 @@
     "group": 29,
     "who": {
      "gain": [
-      "na TLK 8328 (11:17, do Działdowo)",
-      "na IC 6115 (11:17, do Ostróda)"
+      "na TLK 8328 (11:17, Kołobrzeg – Kraków Główny)",
+      "na IC 6115 (11:17, Wrocław Główny – Białystok)"
      ],
      "lose": []
     }
@@ -496,8 +496,8 @@
     "group": 5,
     "who": {
      "gain": [
-      "z R 55205 (14:38, z Iława Miasto)",
-      "na EIP 5304 (14:53, do Warszawa Wschodnia)"
+      "z R 55205 (14:38, Gdynia Chylonia – Olsztyn Główny)",
+      "na EIP 5304 (14:53, Gdynia Główna – Kraków Główny)"
      ],
      "lose": []
     }
@@ -518,8 +518,8 @@
     "group": 31,
     "who": {
      "gain": [
-      "na R 90632 (13:01, do Smolniki)",
-      "na EIP 4507 (13:03, do Malbork)"
+      "na R 90632 (13:01, Iława Główna – Działdowo)",
+      "na EIP 4507 (13:03, Bielsko-Biała Główna – Gdynia Główna)"
      ],
      "lose": []
     }
@@ -540,12 +540,12 @@
     "group": 95,
     "who": {
      "gain": [
-      "z EIP 3503 (21:02, z Warszawa Wschodnia)",
-      "z R 90113 (21:03, z Samborowo)",
-      "z TLK 53170 (21:06, z Prabuty)"
+      "z EIP 3503 (21:02, Kraków Główny – Gdynia Główna)",
+      "z R 90113 (21:03, Olsztyn Główny – Gdynia Główna)",
+      "z TLK 53170 (21:06, Gdynia Główna – Zakopane)"
      ],
      "lose": [
-      "z EIC 5100 (20:52, z Malbork)"
+      "z EIC 5100 (20:52, Gdynia Główna – Warszawa Zachodnia)"
      ]
     }
    },
@@ -565,8 +565,8 @@
     "group": 60,
     "who": {
      "gain": [
-      "na R 90751 (09:15, do Iława Miasto)",
-      "na IC 7503 (09:17, do Ostróda)"
+      "na R 90751 (09:15, Iława Główna – Malbork)",
+      "na IC 7503 (09:17, Poznań Główny – Olsztyn Główny)"
      ],
      "lose": []
     }
@@ -594,7 +594,7 @@
     "group": 0,
     "who": {
      "gain": [
-      "z IC 1521 (07:55, z Działdowo)"
+      "z IC 1521 (07:55, Warszawa Zachodnia – Olsztyn Główny)"
      ],
      "lose": []
     }
@@ -663,8 +663,8 @@
     "group": 26,
     "who": {
      "gain": [
-      "z R 90623 (06:50, z Smolniki)",
-      "z EIP 5300 (06:52, z Malbork)"
+      "z R 90623 (06:50, Działdowo – Iława Główna)",
+      "z EIP 5300 (06:52, Gdynia Główna – Kraków Główny)"
      ],
      "lose": []
     }
@@ -685,8 +685,8 @@
     "group": 35,
     "who": {
      "gain": [
-      "na IC 5116 (09:00, do Działdowo)",
-      "na EIP 1503 (09:03, do Malbork)"
+      "na IC 5116 (09:00, Gdynia Główna – Łódź Fabryczna)",
+      "na EIP 1503 (09:03, Warszawa Zachodnia – Gdynia Główna)"
      ],
      "lose": []
     }
@@ -714,7 +714,7 @@
     "group": 1,
     "who": {
      "gain": [
-      "na EIP 4509 (11:03, do Malbork)"
+      "na EIP 4509 (11:03, Gliwice – Gdynia Główna)"
      ],
      "lose": []
     }
@@ -742,7 +742,7 @@
     "group": 5,
     "who": {
      "gain": [
-      "na R 90636 (17:13, do Smolniki)"
+      "na R 90636 (17:13, Iława Główna – Działdowo)"
      ],
      "lose": []
     }
@@ -763,7 +763,7 @@
     "group": 39,
     "who": {
      "gain": [
-      "na EIP 5352 (12:53, do Warszawa Wschodnia)"
+      "na EIP 5352 (12:53, Gdynia Główna – Zakopane)"
      ],
      "lose": []
     }
@@ -784,7 +784,7 @@
     "group": 47,
     "who": {
      "gain": [
-      "z IC 1521 (07:55, z Działdowo)"
+      "z IC 1521 (07:55, Warszawa Zachodnia – Olsztyn Główny)"
      ],
      "lose": []
     }
@@ -812,7 +812,7 @@
     "group": 3,
     "who": {
      "gain": [
-      "z EIP 5404 (13:52, z Malbork)"
+      "z EIP 5404 (13:52, Gdynia Główna – Gliwice)"
      ],
      "lose": []
     }
@@ -833,7 +833,7 @@
     "group": 10,
     "who": {
      "gain": [
-      "z IC 1513 (10:55, z Działdowo)"
+      "z IC 1513 (10:55, Łódź Fabryczna – Gdynia Główna)"
      ],
      "lose": []
     }
@@ -854,7 +854,7 @@
     "group": 16,
     "who": {
      "gain": [
-      "z R 90244 (15:38, z Rudzienice Suskie)"
+      "z R 90244 (15:38, Olsztyn Główny – Toruń Główny)"
      ],
      "lose": []
     }
@@ -875,7 +875,7 @@
     "group": 22,
     "who": {
      "gain": [
-      "na R 90634 (15:21, do Smolniki)"
+      "na R 90634 (15:21, Iława Główna – Działdowo)"
      ],
      "lose": []
     }

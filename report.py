@@ -134,6 +134,12 @@ def main() -> None:
                 for (ln, c), g in y.groupby(["line", "category"]) if len(g) >= 5}
     data["dynamic"] = dyn
 
+    # Timetable key and ranked changes (optimize.py).
+    for name, key in (("key.json", "key"), ("optimize.json", "opt"), ("optimize_extra.json", "opt_extra")):
+        f = RES / name
+        if f.exists():
+            data[key] = json.loads(f.read_text(encoding="utf-8"))
+
     # Counts for the header.
     data["counts"] = {dtp: {"trains": int(((tr["arr_date"] == d) | (tr["dep_date"] == d)).sum()),
                             "bus_dep": sum(len(v) for v in A.bus_sets(d)["dep"].values()),

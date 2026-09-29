@@ -154,8 +154,8 @@ class Scorer:
         a = tr[(tr.arr_date == d) & tr.arr_min.notna()].sort_values("arr_min")
         b = tr[(tr.dep_date == d) & tr.dep_min.notna()].sort_values("dep_min")
         arr, dep = a.arr_min.to_numpy(), b.dep_min.to_numpy()
-        la = (a.category + " " + a.number.astype(str) + " (" + a.arr_time.str[:5] + ", z " + a.prev_station.fillna("?") + ")").to_numpy()
-        lb = (b.category + " " + b.number.astype(str) + " (" + b.dep_time.str[:5] + ", do " + b.next_station.fillna("?") + ")").to_numpy()
+        la = (a.category + " " + a.number.astype(str) + " (" + a.arr_time.str[:5] + ", " + a.relation + ")").to_numpy()
+        lb = (b.category + " " + b.number.astype(str) + " (" + b.dep_time.str[:5] + ", " + b.relation + ")").to_numpy()
         self.ta, self.td, self.la, self.lb = {}, {}, {}, {}
         for ln, g in df.groupby("line"):  # service windows from the current timetable
             bd = g[g.kind == "dep"].t.to_numpy()
