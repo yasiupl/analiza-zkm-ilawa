@@ -13,3 +13,6 @@ data/*.sqlite-*
 logs/
 data/raw/gtfs/*.zip
 data/raw/zkm/cache/
+
+# Local test scripts
+/_*.py

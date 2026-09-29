@@ -90,7 +90,9 @@ def plan_dates(feed: Feed, tr: pd.DataFrame, start: dt.date, horizon: int) -> di
 
 def make_blocks(feed, trips, blc, duc, depot, interline, station_name):
     blocks = build_blocks(feed, trips, int(blc["min_layover"]), blc["terminal_radius_m"],
-                          interline=interline, interline_at={station_name})
+                          interline=interline, interline_at={station_name},
+                          max_deadhead_km=blc["max_deadhead_km"], road_factor=blc["road_factor"],
+                          deadhead_kmh=blc["deadhead_kmh"])
     duties = cut_duties(feed, blocks, {x.strip() for x in str(duc["relief_points"]).split(",")},
                         int(duc["max_duty"]), int(duc["prep_minutes"]))
     return blocks, duties
@@ -118,8 +120,12 @@ def by_line(trips, station):
 
 
 def realised(hist: pd.DataFrame, feed: Feed, proposed: dict, station: set, dtp: str, m1: float) -> dict:
-    """Train -> bus good transfers with actual train arrivals, current and proposed timetable."""
-    out = {"pairs": 0, "before": 0, "after": 0, "days": 0}
+    """Train -> bus good transfers with actual train arrivals, current and proposed timetable.
+
+    The same trains are also counted with their planned arrivals (plan_before,
+    plan_after), so the effect of the delays can be told apart from the choice of trains.
+    """
+    out = {"pairs": 0, "before": 0, "after": 0, "plan_before": 0, "plan_after": 0, "days": 0, "trains": 0}
     if hist is None or hist.empty:
         return out
     from ilawa import model as M
@@ -132,9 +138,11 @@ def realised(hist: pd.DataFrame, feed: Feed, proposed: dict, station: set, dtp: 
             continue
         g = hist[(hist["date_arr"] == date_s) & np.isfinite(hist["arr_min"]) & np.isfinite(hist["arr_delay"])]
         act = (g["arr_min"] + g["arr_delay"]).to_numpy(float)
+        pln = g["arr_min"].to_numpy(float)
         if not len(act):
             continue
         out["days"] += 1
+        out["trains"] += len(act)
         new = [proposed.get(t.id, t) for t in trips]
         d0, _ = by_line(trips, station)
         d1, _ = by_line(new, station)
@@ -142,6 +150,8 @@ def realised(hist: pd.DataFrame, feed: Feed, proposed: dict, station: set, dtp: 
             out["pairs"] += len(act)
             out["before"] += int(M.train_to_bus(act, np.sort(d0[r]), m1)["good"].sum())
             out["after"] += int(M.train_to_bus(act, np.sort(d1[r]), m1)["good"].sum())
+            out["plan_before"] += int(M.train_to_bus(pln, np.sort(d0[r]), m1)["good"].sum())
+            out["plan_after"] += int(M.train_to_bus(pln, np.sort(d1[r]), m1)["good"].sum())
     return out
 
 
@@ -152,6 +162,8 @@ def main() -> None:
     ap.add_argument("--from-date", default=None, help="first planning date (default: tomorrow)")
     ap.add_argument("--gtfs", default=str(DATA / "zkm_gtfs.zip"), help="ZKM GTFS feed (zip or folder)")
     ap.add_argument("--day-types", default="Roboczy,Sobota,Niedziela")
+    ap.add_argument("--variants", default=None, help="single, interlined or both (overrides the config)")
+    ap.add_argument("--time-limit", type=int, default=None, help="solver seconds (overrides the config)")
     a = ap.parse_args()
     cfg = load_config(Path(a.config))
     gen, trc, shc, blc, duc, coc, dmc = (section(cfg, s) for s in
@@ -177,8 +189,11 @@ def main() -> None:
     dates = plan_dates(feed, tr, start, int(gen["horizon_days"]))
     dates = {k: v for k, v in dates.items() if k in a.day_types.split(",")}
     variants = {"single": False, "interlined": True}
-    if blc["variants"] in variants:
-        variants = {blc["variants"]: variants[blc["variants"]]}
+    vsel = a.variants or blc["variants"]
+    if vsel in variants:
+        variants = {vsel: variants[vsel]}
+    if a.time_limit:
+        shc["time_limit"] = a.time_limit
     m1, m2, good = trc["walk_train_to_bus"], trc["walk_bus_to_train"], trc["good_window"]
     unit_km = C.daily_cost({"total_km": 1, "duty_hours": 0, "peak_vehicles": 0}, coc)["energy"] + coc["maintenance_pln_per_km"]
     run_dir = DATA / "plan" / dt.date.today().isoformat()
@@ -206,13 +221,20 @@ def main() -> None:
             cost0 = C.daily_cost(ind0, coc)
             p = O.Params(station_stops=station, m_t2b=m1, m_b2t=m2, good=good, max_shift=int(shc["max_shift"]),
                          school_max_shift=int(shc["school_max_shift"]), max_extra_dwell=int(shc["max_extra_dwell"]),
-                         min_layover=int(blc["min_layover"]), habit_penalty=shc["habit_penalty"],
+                         min_layover=int(blc["min_layover"]), habit_penalty=shc["habit_penalty"], trip_change_penalty=shc["trip_change_penalty"],
                          dwell_penalty=shc["dwell_penalty"], break_part=int(duc["break_part"]),
                          need_6h=int(duc["break_after_6h"]), need_8h=int(duc["break_after_8h"]),
                          buffers=buffers, time_limit=int(shc["time_limit"]))
             print(f"3. {dtp} / {vname}: {len(blocks)} blocks, {len(duties)} duties")
-            opt = O.optimise(trips, blocks, duties, trains, p)
+            stages = [int(float(x)) for x in str(shc.get("stages") or "").replace(" ", "").split(",") if x]
+            opt = O.optimise_stages(trips, blocks, duties, trains, p, stages)
             new_trips = opt["trips"]
+            nd_all = max(1, len(all_trains))
+            curve = [{"stage": 0, "limit": 0, "changes": 0,
+                      "good_per_day": O.count_good(trips, all_trains, station, m1, m2, good)["total"] / nd_all}]
+            for s in opt["stages"]:
+                curve.append({"stage": s["stage"], "limit": s["limit"], "changes": s["changes"], "status": s["status"],
+                              "good_per_day": O.count_good(s["trips"], all_trains, station, m1, m2, good)["total"] / nd_all})
             nblocks, nduties = O.rebuild_blocks(blocks, new_trips), O.rebuild_duties(duties, new_trips)
             ind1 = C.indicators(feed, nblocks, nduties, depot, blc["road_factor"], blc["deadhead_kmh"])
             cost1 = C.daily_cost(ind1, coc)
@@ -226,10 +248,13 @@ def main() -> None:
             w1 = DM.mean_waits(ta, td, *by_line(new_trips, station), m1, m2, dmc["wait_cap"])
             eff = DM.ridership_effect(w0["all"], w1["all"], dmc)
             gp = G.candidates(feed, nblocks, station, all_trains[rep], m1, m2, good, int(blc["min_layover"]),
-                              blc["road_factor"], unit_km)
+                              blc["road_factor"], unit_km, duties=nduties, driver_pln_per_hour=coc["driver_pln_per_hour"],
+                              overhead_share=coc["overhead_share"], max_duty=int(duc["max_duty"]),
+                              rules={"part": int(duc["break_part"]), "need_6h": int(duc["break_after_6h"]),
+                                     "need_8h": int(duc["break_after_8h"]), "max_driving": int(duc["max_driving"])})
             real = realised(hist, feed, {t.id: t for t in new_trips}, station, dtp, m1)
             res["variants"][vname] = {
-                "status": opt["status"], "changes": opt["changes"],
+                "status": opt["status"], "changes": opt["changes"], "curve": curve,
                 "indicators_before": ind0, "indicators_after": ind1, "cost_before": cost0, "cost_after": cost1,
                 "breaks_before": breaks_summary(duties, duc), "breaks_after": breaks_summary(nduties, duc),
                 "good_before": g0, "good_after": g1, "good_buffered_before": gb0, "good_buffered_after": gb1,
@@ -253,7 +278,7 @@ def main() -> None:
             for dtp, r in result["day_types"].items():
                 v = r["variants"][vname]
                 per[dtp] = {**v[f"indicators_{when}"], **{f"cost_{k}": x for k, x in v[f"cost_{when}"].items()}}
-            result.setdefault("annual", {}).setdefault(vname, {})[when] = C.annual(per, year)
+            result.setdefault("annual", {}).setdefault(vname, {})[when] = C.annual(per, year, coc)
     write_outputs(feed, proposed, result, run_dir)
     (run_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     from ilawa.plan import report
@@ -265,13 +290,13 @@ def write_outputs(feed: Feed, proposed: dict, result: dict, run_dir: Path) -> No
     fm = lambda x: hhmm(x) if x is not None else ""
     with (run_dir / "zmiany.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["typ_dnia", "wariant_obiegow", "kurs", "linia", "kierunek", "rodzaj", "zmiana_przed_dworcowa_min",
+        w.writerow(["typ_dnia", "wariant_obiegow", "etap", "kurs", "linia", "kierunek", "rodzaj", "zmiana_przed_dworcowa_min",
                     "zmiana_po_dworcowej_min", "przyjazd_dworcowa", "nowy_przyjazd", "odjazd_dworcowa", "nowy_odjazd",
                     "pierwszy_przystanek", "nowy", "ostatni_przystanek", "nowy"])
         for dtp, r in result["day_types"].items():
             for vname, v in r["variants"].items():
                 for c in v["changes"]:
-                    w.writerow([dtp, vname, c["trip"], c["route"], c["headsign"], c["kind"], c["shift_before"],
+                    w.writerow([dtp, vname, c.get("stage", ""), c["trip"], c["route"], c["headsign"], c["kind"], c["shift_before"],
                                 c["shift_after"], fm(c["station_arr"][0]), fm(c["station_arr"][1]),
                                 fm(c["station_dep"][0]), fm(c["station_dep"][1]), fm(c["first_stop"][0]),
                                 fm(c["first_stop"][1]), fm(c["last_stop"][0]), fm(c["last_stop"][1])])

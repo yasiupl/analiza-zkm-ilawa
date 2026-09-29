@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
+"ilawa-transport (nieoficjalny, dane z rozklad.com)",https://rozklad.com/maps/index.php?IDKlienta=ILAWA_ZKM,pl,20260901,20270831,4aad5903cd

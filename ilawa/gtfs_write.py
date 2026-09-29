@@ -23,6 +23,36 @@ def school_breaks(year_from: int) -> list[tuple[dt.date, dt.date]]:
     return [(dt.date(year_from + 1, 6, 27), dt.date(year_from + 1, 8, 31))]
 
 
+def fill_positions(stops: dict, patterns: dict) -> dict:
+    """Stops without coordinates: the mean of stops with the same name, else a point
+    between the neighbouring stops of a pattern (in proportion to their order)."""
+    out = {k: dict(v) for k, v in stops.items()}
+    for p in patterns.values():
+        for x in p["stops"]:
+            out.setdefault(x["id"], {"id": x["id"], "name": x["name"], "lat": float("nan"), "lon": float("nan")})
+    known = lambda sid: sid in out and not math.isnan(out[sid]["lat"])
+    for sid, s in out.items():
+        if not known(sid):
+            same = [x for x in out.values() if x["name"] == s["name"] and not math.isnan(x["lat"])]
+            if same:
+                s["lat"] = sum(x["lat"] for x in same) / len(same)
+                s["lon"] = sum(x["lon"] for x in same) / len(same)
+    for _ in range(3):
+        for p in patterns.values():
+            ids = [x["id"] for x in p["stops"]]
+            for i, sid in enumerate(ids):
+                if known(sid):
+                    continue
+                a = next((j for j in range(i - 1, -1, -1) if known(ids[j])), None)
+                b = next((j for j in range(i + 1, len(ids)) if known(ids[j])), None)
+                if a is not None and b is not None:
+                    f = (i - a) / (b - a)
+                    out[sid]["lat"] = out[ids[a]]["lat"] + f * (out[ids[b]]["lat"] - out[ids[a]]["lat"])
+                    out[sid]["lon"] = out[ids[a]]["lon"] + f * (out[ids[b]]["lon"] - out[ids[a]]["lon"])
+                    out[sid]["estimated"] = True
+    return out
+
+
 def build(trips: list, stops: dict, patterns: dict, valid_from: dt.date, days: int = 365,
           agency: dict | None = None, extra_breaks: list[tuple[dt.date, dt.date]] | None = None) -> dict[str, list[dict]]:
     agency = agency or {"agency_id": "ZKM", "agency_name": "ZKM Iława",
@@ -30,6 +60,7 @@ def build(trips: list, stops: dict, patterns: dict, valid_from: dt.date, days: i
                         "agency_lang": "pl"}
     end = valid_from + dt.timedelta(days=days - 1)
     used = {s for tr in trips for s, _, _ in tr.stops}
+    stops = fill_positions(stops, patterns)
     # Stops without coordinates get the mean of stops with the same name.
     rows_stops = []
     for sid in sorted(used):
@@ -52,7 +83,8 @@ def build(trips: list, stops: dict, patterns: dict, valid_from: dt.date, days: i
             dir_of[pid] = "0" if i == 0 else "1"
     rows_trips, rows_st, count = [], [], {}
     for tr in trips:
-        svc = SERVICE[tr.lpday] + ("_S" if "s" in tr.flags else "")
+        # "s" = only on school days; it matters on working days only.
+        svc = SERVICE[tr.lpday] + ("_S" if "s" in tr.flags and tr.lpday == 1 else "")
         base = f"{tr.line}_{svc}_{_t(tr.stops[0][1])[:5].replace(':', '')}_{tr.stops[0][0]}"
         count[base] = count.get(base, 0) + 1
         tid = base if count[base] == 1 else f"{base}_{count[base]}"

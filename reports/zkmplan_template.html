@@ -54,7 +54,7 @@ section { padding-block: 2rem; border-top: 1px solid var(--rule); }
 .tabs button + button { border-left: 1px solid var(--rule); }
 .tabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .tabs button:focus-visible, summary:focus-visible { outline: 2px solid var(--l1); outline-offset: 2px; }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 1rem; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 1rem; }
 .tile { background: var(--paper); padding: .9rem 1rem 1rem; display: flex; flex-direction: column; gap: .3rem; min-width: 0; }
 .tile .k { font-size: .78rem; color: var(--ink-2); font-weight: 600; line-height: 1.3; }
 .tile .v { font: 800 1.8rem/1.05 var(--f-display); letter-spacing: -.01em; }
@@ -113,6 +113,14 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
   </section>
 
   <section>
+    <div class="label">Etapy</div>
+    <h2>Ile zmian, tyle zysku</h2>
+    <p class="prose" id="stage-text"></p>
+    <div class="chart" id="stage-chart"></div>
+    <div class="tbl" id="stage-tbl"></div>
+  </section>
+
+  <section>
     <div class="label">Przystanek Dworcowa</div>
     <h2>Odjazdy po korekcie</h2>
     <p class="prose">Odjazdy z Dworcowej w dniu planowania. Przekreślona godzina to obecna, wyróżniona to proponowana.</p>
@@ -123,6 +131,7 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     <div class="label">Zmiany kurs po kursie</div>
     <h2>Zmienione kursy</h2>
     <p class="prose" id="chg-text"></p>
+    <div class="tabs" id="f-stage" role="group" aria-label="Etap" style="margin-bottom:.6rem"></div>
     <div class="tbl" id="chg-tbl"></div>
   </section>
 
@@ -197,7 +206,7 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
   function hover(node, html) { node.addEventListener("mousemove", e => { tip.innerHTML = html; tip.style.opacity = 1; tip.style.left = Math.min(e.clientX + 14, innerWidth - 290) + "px"; tip.style.top = (e.clientY + 14) + "px"; }); node.addEventListener("mouseleave", () => tip.style.opacity = 0); }
   function tabs(id, items, st, key, cb) { const box = $(id); box.innerHTML = ""; items.forEach(([v, l]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = l; b.setAttribute("aria-pressed", String(st[key] === v)); b.onclick = () => { st[key] = v; [...box.children].forEach(c => c.setAttribute("aria-pressed", String(c === b))); cb(); }; box.appendChild(b); }); }
   function table(cols, rows) { return `<table><thead><tr>${cols.map(c => `<th class="${c.num ? "num" : ""}">${c.h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${cols.map(c => `<td class="${c.num ? "num" : ""}">${c.f ? c.f(r) : esc(r[c.k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`; }
-  const st = { day: DAYS[0], v: VARS[0], when: "after" };
+  const st = { day: DAYS[0], v: VARS[0], when: "after", stage: 99 };
   const cfg = D.config || {};
 
   function V() { return D.day_types[st.day].variants[st.v]; }
@@ -225,11 +234,36 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     const tiles = [
       { k: "Dobre przesiadki na dzień (plan)", v: `${num(g0)} → ${num(g1)}`, s: `${pct((g1 - g0) / g0)}; pary pociąg–linia w obu kierunkach` },
       { k: "Z zapasem na typowe opóźnienie", v: `${num(gb0)} → ${num(gb1)}`, s: `${pct((gb1 - gb0) / gb0)}; zapas: ${Object.entries(D.buffers || {}).map(([k, x]) => `${k} ${num(x)} min`).join(", ") || "brak danych"}` },
-      { k: "Przy rzeczywistych opóźnieniach (pociąg → autobus)", v: re.pairs ? `${num(re.before)} → ${num(re.after)}` : "–", s: re.pairs ? `${pct((re.after - re.before) / re.before)}; ${re.days} dni z danymi` : "brak danych o opóźnieniach dla tego typu dnia" },
+      { k: "Rzeczywiste przyjazdy pociągów z historią (pociąg → autobus)", v: re.pairs ? `${num(re.before)} → ${num(re.after)}` : "–", s: re.pairs ? `${pct((re.after - re.before) / re.before)} na ${re.days} minionych dniach (${num(re.trains)} przyjazdów). Te same pociągi według planu: ${num(re.plan_before)} → ${num(re.plan_after)} (${pct((re.plan_after - re.plan_before) / re.plan_before)})` : "brak danych o opóźnieniach dla tego typu dnia" },
       { k: "Zmienione kursy", v: `${v.changes.length}`, s: `na ${r.trips} kursów; najwyżej ${maxOther} min zmiany poza Dworcową` },
       { k: "Koszt dnia", v: `${num(v.cost_before.total)} → ${num(v.cost_after.total)} <small>zł</small>`, s: `${num(v.indicators_before.total_km)} → ${num(v.indicators_after.total_km)} km, ${num(v.indicators_before.vehicle_hours, 1)} → ${num(v.indicators_after.vehicle_hours, 1)} wozogodz.` },
       { k: "Przerwy kierowców zgodne z ustawą", v: `${v.breaks_before.ok_breaks}/${v.breaks_before.duties} → ${v.breaks_after.ok_breaks}/${v.breaks_after.duties}`, s: "służby z wymaganą przerwą (≥15 min części)" }];
     $("tiles").innerHTML = tiles.map(t => `<div class="tile"><div class="k">${t.k}</div><div class="v">${t.v}</div><div class="s">${t.s}</div></div>`).join("");
+  }
+
+  function drawStages() {
+    const v = V(), c = v.curve || [];
+    if (c.length < 2) { $("stage-text").textContent = "Jeden etap: wszystkie zmiany razem."; $("stage-chart").innerHTML = ""; $("stage-tbl").innerHTML = ""; return; }
+    const last = c[c.length - 1], g0 = c[0].good_per_day;
+    $("stage-text").textContent = `Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to ${c[1].changes} najbardziej opłacalnych zmian. Pełna propozycja zmienia ${last.changes} kursów i daje ${num(last.good_per_day - g0)} dobrych przesiadek dziennie więcej.`;
+    const W = 640, H = 220, L = 46, B = 34, T = 14, Rr = 16;
+    const xm = Math.max(...c.map(p => p.changes)) || 1, ymn = Math.floor(g0 / 10) * 10, ymx = Math.ceil(last.good_per_day / 10) * 10 || 1;
+    const X = x => L + (W - L - Rr) * x / xm, Y = y => H - B - (H - B - T) * (y - ymn) / Math.max(1, ymx - ymn);
+    const box = $("stage-chart"); box.innerHTML = "";
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, role: "img", "aria-label": "Dobre przesiadki na dzień a liczba zmienionych kursów" }, box);
+    for (let k = 0; k <= 4; k++) { const y = ymn + (ymx - ymn) * k / 4; el("line", { x1: L, x2: W - Rr, y1: Y(y), y2: Y(y), stroke: "var(--rule)", "stroke-width": 1 }, svg); const t = el("text", { x: L - 6, y: Y(y) + 4, "text-anchor": "end" }, svg); t.textContent = num(y); }
+    const stp = [5, 10, 20, 25, 50, 100].find(q => xm / q <= 6) || 200;
+    for (let x = 0; x <= xm; x += stp) { const t = el("text", { x: X(x), y: H - B + 16, "text-anchor": "middle" }, svg); t.textContent = x; }
+    const tx = el("text", { x: (L + W - Rr) / 2, y: H - 4, "text-anchor": "middle" }, svg); tx.textContent = "zmienione kursy";
+    el("polyline", { points: c.map(p => `${X(p.changes)},${Y(p.good_per_day)}`).join(" "), fill: "none", stroke: "var(--l1)", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+    c.forEach(p => { const d = el("circle", { cx: X(p.changes), cy: Y(p.good_per_day), r: 5, fill: "var(--l1)", stroke: "var(--paper)", "stroke-width": 2 }, svg); hover(d, `${p.stage ? `Etap ${p.stage}` : "Obecny rozkład"}: ${p.changes} zmian, ${num(p.good_per_day)} dobrych przesiadek dziennie`); const endp = p === last; const t = el("text", { x: X(p.changes) + (endp ? -8 : 8), y: Y(p.good_per_day) - 8, "text-anchor": endp ? "end" : "start" }, svg); t.textContent = p.stage ? `etap ${p.stage}` : "dziś"; });
+    $("stage-tbl").innerHTML = table([
+      { h: "Etap", f: p => p.stage ? `Etap ${p.stage}` : "Obecny rozkład" },
+      { h: "Limit zmian", num: 1, f: p => p.stage ? (p.limit ? num(p.limit) : "bez limitu") : "–" },
+      { h: "Zmienione kursy", num: 1, f: p => num(p.changes) },
+      { h: "Dobre przesiadki / dzień", num: 1, f: p => num(p.good_per_day) },
+      { h: "Zysk", num: 1, f: p => p.stage ? `+${num(p.good_per_day - g0)} (${pct((p.good_per_day - g0) / g0)})` : "–" },
+      { h: "Zysk na zmianę", num: 1, f: (p, i) => p.changes ? num((p.good_per_day - g0) / p.changes, 2) : "–" }], c);
   }
 
   function drawBoards() {
@@ -244,12 +278,15 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
 
   function drawChanges() {
     const v = V();
-    const rows = [...v.changes].sort((a, b) => ((a.station_dep[0] ?? a.station_arr[0] ?? a.first_stop[0]) - (b.station_dep[0] ?? b.station_arr[0] ?? b.first_stop[0])));
+    const nst = (v.curve || []).length - 1;
+    tabs("f-stage", [[99, "Wszystkie etapy"], ...Array.from({ length: Math.max(0, nst - 1) }, (_, i) => [i + 1, `Do etapu ${i + 1}`])], st, "stage", drawChanges);
+    const rows = [...v.changes].filter(c => (c.stage || 1) <= st.stage).sort((a, b) => ((a.station_dep[0] ?? a.station_arr[0] ?? a.first_stop[0]) - (b.station_dep[0] ?? b.station_arr[0] ?? b.first_stop[0])));
     const kind = { through: "przez Dworcową", start: "od Dworcowej", end: "do Dworcowej", loop: "pętla", none: "bez Dworcowej" };
     const t = (p) => p[0] == null ? "–" : p[0] === p[1] ? hm(p[0]) : `<span class="old">${hm(p[0])}</span><span class="new">${hm(p[1])}</span>`;
     const sh = x => x === 0 ? "0" : `${x > 0 ? "+" : "−"}${Math.abs(x)}`;
-    $("chg-text").textContent = rows.length ? `${rows.length} kursów zmienia godziny. Kolumna „inne przystanki” podaje zmianę na przystankach przed Dworcową i po niej (w minutach).` : "Brak zmian: w tych warunkach obecny rozkład jest najlepszy.";
+    $("chg-text").textContent = rows.length ? `${rows.length} kursów zmienia godziny${st.stage < 99 ? ` do etapu ${st.stage}` : ""}. Kolumna „inne przystanki” podaje zmianę na przystankach przed Dworcową i po niej (w minutach).` : "Brak zmian: w tych warunkach obecny rozkład jest najlepszy.";
     $("chg-tbl").innerHTML = rows.length ? table([
+      { h: "Etap", num: 1, f: r => esc(r.stage || 1) },
       { h: "Linia", f: r => `<span class="sw" style="background:${LC(r.route)}"></span>${esc(r.route)}` },
       { h: "Kierunek", f: r => esc(r.headsign) }, { h: "Kurs", f: r => kind[r.kind] || r.kind },
       { h: "Dworcowa przyjazd", f: r => t(r.station_arr) }, { h: "Dworcowa odjazd", f: r => t(r.station_dep) },
@@ -286,12 +323,15 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
 
   function drawGaps() {
     const v = V(), g = v.gaps || [];
-    $("gap-text").textContent = g.length ? `Autobusy, które czekają na Dworcowej dłużej niż jeden kurs tam i z powrotem, mogą wykonać dodatkowy kurs tej samej linii bez nowego autobusu i bez nowej służby. Koszt krańcowy to energia i obsługa za dodatkowe kilometry. Kolumna „luka” to odstęp między sąsiednimi odjazdami linii, który kurs wypełnia.` : "Brak takich możliwości w tym wariancie.";
+    const tot = g.reduce((a, r) => a + r.new_transfers, 0), cost = g.reduce((a, r) => a + r.marginal_cost, 0);
+    $("gap-text").textContent = g.length ? `Autobusy, które czekają na Dworcowej dłużej niż jeden kurs tam i z powrotem, mogą wykonać dodatkowy kurs tej samej linii bez nowego autobusu. Gdy postój wypada w środku służby, kierowca jest już opłacony, a kurs przechodzi tylko wtedy, gdy zostaje przerwa wymagana ustawą. Gdy służba kończy się na początku postoju, kurs wydłuża ją o podany czas. Koszt krańcowy to energia, obsługa i dodatkowy czas kierowcy z narzutem. Każdy kurs sprawdzono osobno. Razem ${g.length} kursów daje około +${num(tot)} dobrych przesiadek dziennie za ${num(cost)} zł dziennie (${num(cost / Math.max(1, tot), 1)} zł za przesiadkę).` : "Brak takich możliwości w tym wariancie.";
     $("gap-tbl").innerHTML = g.length ? table([{ h: "Linia", f: r => `<span class="sw" style="background:${LC(r.line)}"></span>${esc(r.line)}` },
       { h: "Odjazd", f: r => `<span class="mono">${r.depart}</span>` }, { h: "Powrót", f: r => `<span class="mono">${r.return}</span>` },
       { h: "Postój autobusu", f: r => `${r.idle_from}–${r.idle_to} (${r.idle_min} min)` }, { h: "Nowe dobre przesiadki", num: 1, f: r => `+${r.new_transfers}` },
       { h: "Luka w linii", num: 1, f: r => r.line_gap_min ? `${num(r.line_gap_min)} min (${r.prev_dep}–${r.next_dep})` : "–" },
-      { h: "km", num: 1, f: r => num(r.km, 1) }, { h: "Koszt krańcowy", num: 1, f: r => `${num(r.marginal_cost)} zł` }], g.slice(0, 15)) : "";
+      { h: "km", num: 1, f: r => num(r.km, 1) },
+      { h: "Kierowca", f: r => r.inside_duty === false ? `+${num(r.extra_driver_h, 1)} godz.` : "w służbie" },
+      { h: "Koszt krańcowy", num: 1, f: r => `${num(r.marginal_cost)} zł` }], g.slice(0, 15)) : "";
   }
 
   function drawCosts() {
@@ -321,7 +361,10 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
 
   function drawDemand() {
     const v = V(), d = v.demand, dm = cfg.demand || {};
-    $("dem-text").innerHTML = `<p>Na stacji Iława Główna wsiada i wysiada średnio ${num(+dm.station_daily_exchange)} osób na dobę (Urząd Transportu Kolejowego, 2025). Nie wiadomo, ilu z nich jedzie dalej autobusem ZKM, bo ZKM nie publikuje takich danych. Dlatego liczymy trzy warianty: udział autobusu, wrażliwość na czas czekania i średni przychód z przejazdu to założenia, nie pomiar.</p><p>Średni czas czekania na przesiadkę (pociąg–linia, w obu kierunkach) zmienia się z ${num(d.wait_before, 1)} do ${num(d.wait_after, 1)} min (${pct(d.wait_change, 1)}). Przy elastyczności ujemnej krótsze czekanie oznacza więcej pasażerów.</p>`;
+    const mid = d.mid || {}, rev = +dm.revenue_per_trip_mid || 0;
+    const market = mid.base_trips_day * rev * 365;
+    const cb = v.cost_before.total, ca = v.cost_after.total;
+    $("dem-text").innerHTML = `<p>Na stacji Iława Główna wsiada i wysiada średnio ${num(+dm.station_daily_exchange)} osób na dobę (Urząd Transportu Kolejowego, 2025), czyli około ${num(dm.station_daily_exchange / 2)} wysiadających. Nie wiadomo, ilu z nich jedzie dalej autobusem ZKM, bo ZKM nie publikuje takich danych. Dlatego liczymy trzy warianty: udział autobusu, wrażliwość na czas czekania i średni przychód z przejazdu to założenia, nie pomiar. W wariancie średnim to ${num(mid.base_trips_day)} przejazdów autobusem dziennie w obu kierunkach i około ${num(market)} zł przychodu rocznie: tyle jest wart „rynek dworcowy” ZKM.</p><p>Średni czas czekania na przesiadkę (pociąg–linia, w obu kierunkach) zmienia się z ${num(d.wait_before, 1)} do ${num(d.wait_after, 1)} min (${pct(d.wait_change, 1)}). Przy elastyczności ujemnej krótsze czekanie oznacza więcej pasażerów.</p><p><b>Bilans:</b> korekta nie podnosi kosztu (${num(cb)} → ${num(ca)} zł dziennie), a w wariancie średnim daje ${num(mid.extra_trips_day)} przejazdów dziennie więcej. Zysk jest mały, bo przesunięcie o kilka minut zmienia czekanie tylko przy części par pociąg–linia. Większy efekt dałyby dodatkowe kursy z sekcji „Luki w rozkładzie” albo częstsze kursowanie, ale to już kosztuje.</p>`;
     const rows = ["low", "mid", "high"].map(k => ({ k, ...d[k] }));
     const nm = { low: "ostrożny", mid: "średni", high: "optymistyczny" };
     $("dem-tbl").innerHTML = table([{ h: "Wariant", f: r => nm[r.k] }, { h: "Udział autobusu", num: 1, f: r => `${num(100 * r.bus_share)}%` },
@@ -334,14 +377,16 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     const s = cfg.shifts || {}, b = cfg.blocks || {};
     $("method").innerHTML = `<ul>
       <li><b>Rozkład ZKM</b> pochodzi z rozklad.com, przetworzony do formatu GTFS (zkm_gtfs.py). <b>Rozkład PKP</b> z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.</li>
-      <li><b>Przesunięcia:</b> kurs zmienia się najwyżej o ${s.max_shift} min na innych przystankach (kursy szkolne o ${s.school_max_shift} min). Na Dworcowej autobus może stać dłużej o maksymalnie ${s.max_extra_dwell} min. Każda minuta zmiany ma małą karę, więc optymalizator zmienia tylko te kursy, które coś dają.</li>
-      <li><b>Obiegi:</b> postój między kursami autobusu co najmniej ${b.min_layover} min. Obieg odtworzony z rozkładu, wariant „${VARNAME.single}” i „${VARNAME.interlined}”.</li>
-      <li><b>Koszt:</b> łączny czas pracy autobusów nie może wzrosnąć, kilometry są te same. Przerwy kierowców, które dziś istnieją, zostają.</li>
+      <li><b>Przesunięcia:</b> kurs zmienia się najwyżej o ${s.max_shift} min na innych przystankach (kursy szkolne o ${s.school_max_shift} min). Na Dworcowej autobus może stać dłużej o maksymalnie ${s.max_extra_dwell} min. Każdy zmieniony kurs i każda minuta zmiany mają karę (${s.trip_change_penalty} i ${s.habit_penalty} dobrej przesiadki), więc optymalizator zmienia tylko te kursy, które coś dają.</li>
+      <li><b>Etapy:</b> limity zmian ${esc(s.stages || "brak")}; każdy etap zachowuje zmiany poprzedniego, ostatni etap nie ma limitu.</li>
+      <li><b>Obiegi:</b> postój między kursami autobusu co najmniej ${b.min_layover} min. Obieg odtworzony z rozkładu, wariant „${VARNAME.single}” i „${VARNAME.interlined}”. Kolejność kursów linii na Dworcowej zostaje ta sama.</li>
+      <li><b>Koszt:</b> łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą, w częściach po co najmniej 15 min.</li>
+      <li><b>Pociągi:</b> wszystkie pociągi mają tę samą wagę. Przy przesiadce z pociągu na autobus doliczany jest zapas na typowe opóźnienie kategorii pociągu (mediana z danych, najwyżej ${(cfg.transfers || {}).delay_buffer_cap} min).</li>
       <li><b>Ograniczenia:</b> obiegi i służby ZKM są odtworzone, a nie pobrane z ZKM; koszty to szacunek; brak danych o faktycznych odjazdach autobusów. Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.</li></ul>`;
     $("foot").textContent = `Wygenerowano ${D.generated} narzędziem zkmplan.py z repozytorium ilawa-transport.`;
   }
 
-  function drawAll() { drawSummary(); drawBoards(); drawChanges(); drawGantt(); drawDuties(); drawGaps(); drawCosts(); drawDemand(); }
+  function drawAll() { drawSummary(); drawStages(); drawBoards(); drawChanges(); drawGantt(); drawDuties(); drawGaps(); drawCosts(); drawDemand(); }
   tabs("f-day", DAYS.map(d => [d, DAYNAME[d]]), st, "day", drawAll);
   tabs("f-var", VARS.map(v => [v, v === "single" ? "Obiegi jednej linii" : "Obiegi mieszane"]), st, "v", drawAll);
   tabs("f-when", [["before", "Obecny rozkład"], ["after", "Po korekcie"]], st, "when", drawGantt);

@@ -9,11 +9,15 @@ Model (mixed integer program, solved with CBC through PuLP):
 - Vehicle blocks stay as they are: the layover between two trips of one bus stays
   at least min_layover. Layovers that are driver breaks (>= break_part minutes)
   stay breaks, and each duty keeps at least the break time the law requires.
-- The first departure and the last arrival of each block may not move so that the
-  total vehicle time grows (cost does not increase).
+- The first departure and the last arrival of each block and of each duty may not
+  move so that the total vehicle time or the total driver time grows (the cost
+  does not increase).
 - Trips of one line keep their order at the station.
-- Objective: the number of good transfers (train, line) on the chosen dates, minus
-  a small penalty for each minute of change at other stops and of extra dwell.
+- Objective: the mean number of good transfers (train, line) per day over the chosen
+  dates, minus a penalty for each changed trip, for each minute of change at other
+  stops and for each minute of extra dwell. A trip moves only when this pays.
+  An optional limit on the number of changed trips gives the best proposal with
+  at most that many changes (use it to draw the gain curve).
 A good transfer: the bus leaves the station m_t2b + buffer .. m_t2b + buffer + good
 minutes after the train arrives, or arrives m_b2t + good .. m_b2t minutes before
 the train leaves. The buffer covers the usual delay of the train category.
@@ -41,12 +45,15 @@ class Params:
     max_extra_dwell: int = 10
     min_layover: int = 2
     habit_penalty: float = 0.02
+    trip_change_penalty: float = 0.25
     dwell_penalty: float = 0.005
     break_part: int = 15
     need_6h: int = 30
     need_8h: int = 45
     buffers: dict = field(default_factory=dict)
     keep_cost: bool = True
+    max_changes: int | None = None     # largest number of changed trips (None = no limit)
+    fixed: dict = field(default_factory=dict)   # trip id -> (a, b): shifts kept from an earlier stage
     time_limit: int = 120
 
 
@@ -102,13 +109,13 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
         key = (tid, part)
         if key not in X:
             X[key] = {v: pulp.LpVariable(f"x_{len(X)}_{v + lim}", cat="Binary") for v in range(-lim, lim + 1)}
-            prob += pulp.lpSum(X[key].values()) == 1
+            prob.addConstraint(pulp.lpSum(X[key].values()) == 1)
         return X[key]
 
     def val(d):
         return pulp.lpSum(v * x for v, x in d.items())
 
-    parts, penalty = {}, []
+    parts, penalty, changed = {}, [], []
     for t in trips:
         sh = shapes[t.id]
         lim = p.school_max_shift if "s" in (t.flags or "") else p.max_shift
@@ -122,7 +129,21 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
         else:
             A = B = var(t.id, "a", lim)
             penalty.append(p.habit_penalty * pulp.lpSum(abs(v) * x for v, x in A.items()))
+        if sh.kind == "through":                 # changed when either part moves
+            z = pulp.LpVariable(f"z_{len(changed)}", 0, 1)
+            prob += z >= 1 - A[0]
+            prob += z >= 1 - B[0]
+        else:
+            z = 1 - A[0]
+        changed.append(z)
+        penalty.append(p.trip_change_penalty * z)
         parts[t.id] = (A, B)
+        if t.id in p.fixed:
+            fa, fb = p.fixed[t.id]
+            prob += A[fa] == 1
+            prob += B[fb] == 1
+    if p.max_changes is not None:
+        prob += pulp.lpSum(changed) <= p.max_changes
 
     def s_start(t):
         return parts[t.id][0]
@@ -130,20 +151,24 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
     def s_end(t):
         return parts[t.id][1]
 
-    for b in blocks:  # layovers of each bus
-        for i, j in zip(b.trips, b.trips[1:]):
+    for b in blocks:  # layovers of each bus (plus the empty run, if any)
+        req = b.req or [p.min_layover] * (len(b.trips) - 1)
+        for (i, j), r in zip(zip(b.trips, b.trips[1:]), req):
             cur = j.start - i.end
-            prob += val(s_start(j)) - val(s_end(i)) >= min(p.min_layover, cur) - cur
-    for d in duties:  # driver breaks
+            prob += val(s_start(j)) - val(s_end(i)) >= min(r, cur) - cur
+    for d in duties:  # driver breaks (rest time = gap minus empty run)
         chk = check_breaks(d, p.break_part, p.need_6h, p.need_8h)
-        brk = [(i, j, j.start - i.end) for i, j in zip(d.trips, d.trips[1:]) if j.start - i.end >= p.break_part]
+        dh = d.dh or [0] * (len(d.trips) - 1)
+        brk = [(i, j, j.start - i.end - x) for (i, j), x in zip(zip(d.trips, d.trips[1:]), dh)
+               if j.start - i.end - x >= p.break_part]
         for i, j, c in brk:
             prob += val(s_start(j)) - val(s_end(i)) >= p.break_part - c
         if chk["break_needed"] and brk:
             need = min(chk["break_needed"], chk["break_total"])
             prob += pulp.lpSum(c + val(s_start(j)) - val(s_end(i)) for i, j, c in brk) >= need
-    if p.keep_cost:  # total vehicle time does not grow
+    if p.keep_cost:  # total vehicle time and total driver time do not grow
         prob += pulp.lpSum(val(s_end(b.trips[-1])) - val(s_start(b.trips[0])) for b in blocks) <= 0
+        prob += pulp.lpSum(val(s_end(d.trips[-1])) - val(s_start(d.trips[0])) for d in duties) <= 0
     by_dep, by_arr = {}, {}
     for t in trips:
         arr, dep = station_times(t, shapes[t.id])
@@ -159,13 +184,14 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
                     prob += val(parts[a2.id][which]) - val(parts[a1.id][which]) >= 1 - (t2 - t1)
 
     t2b_w, b2t_w = {}, {}
+    nd = max(1, len(trains_by_date))           # weights: good transfers per day
     for d, (tarr, tdep) in trains_by_date.items():
         for tr in tarr:
             k = round(tr["t"] + p.buffers.get(tr["cat"], 0.0), 1)
-            t2b_w[k] = t2b_w.get(k, 0) + 1
+            t2b_w[k] = t2b_w.get(k, 0) + 1 / nd
         for tr in tdep:
             k = round(tr["t"], 1)
-            b2t_w[k] = b2t_w.get(k, 0) + 1
+            b2t_w[k] = b2t_w.get(k, 0) + 1 / nd
     routes = sorted({t.route for t in trips})
     dep_list, arr_list = {r: [] for r in routes}, {r: [] for r in routes}
     for t in trips:
@@ -200,13 +226,14 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
     def chosen(d):
         return max(d.items(), key=lambda kv: kv[1].value() or 0)[0]
 
-    new_trips, changes = [], []
+    new_trips, changes, shifts = [], [], {}
     for t in trips:
         A, B = parts[t.id]
         a, b = chosen(A), chosen(B)
         sh = shapes[t.id]
         nt = apply_shifts(t, sh, a, b)
         new_trips.append(nt)
+        shifts[t.id] = (a, b)
         if a or b:
             arr0, dep0 = station_times(t, sh)
             arr1, dep1 = station_times(nt, sh)
@@ -216,17 +243,44 @@ def optimise(trips: list[Trip], blocks: list[Block], duties: list[Duty], trains_
                             "station_arr": (arr0, arr1), "station_dep": (dep0, dep1),
                             "first_stop": (t.stops[0][1], nt.stops[0][1]), "last_stop": (t.stops[-1][1], nt.stops[-1][1])})
     return {"status": pulp.LpStatus[status], "objective": pulp.value(prob.objective), "trips": new_trips,
-            "changes": changes}
+            "changes": changes, "shifts": {k: v for k, v in shifts.items() if v != (0, 0)}}
+
+
+def optimise_stages(trips, blocks, duties, trains_by_date, p: Params, stages: list[int], log=print) -> dict:
+    """Solve in stages that build on each other.
+
+    Stage k may change at most stages[k] trips and keeps every change of the stages
+    before it, so the operator can bring in the changes step by step. The last stage
+    has no limit (other than the penalties). Each change gets the number of the
+    stage that brings it in.
+    """
+    import dataclasses
+    fixed, first, curve, res = {}, {}, [], None
+    limits = [k for k in sorted(set(stages)) if k > 0] + [None]
+    for n, k in enumerate(limits, 1):
+        q = dataclasses.replace(p, max_changes=k, fixed=dict(fixed))
+        res = optimise(trips, blocks, duties, trains_by_date, q, log=log if n == 1 else (lambda *a: None))
+        for tid, v in res["shifts"].items():
+            fixed[tid] = v
+            first.setdefault(tid, n)
+        curve.append({"stage": n, "limit": k, "changes": len(res["changes"]), "status": res["status"],
+                      "trips": res["trips"]})
+        if k is not None and len(res["changes"]) < k:
+            break                               # the limit does not bind: later stages add nothing
+    for c in res["changes"]:
+        c["stage"] = first.get(c["trip"], len(curve))
+    res["stages"] = curve
+    return res
 
 
 def rebuild_blocks(blocks: list[Block], new_trips: list[Trip]) -> list[Block]:
     by_id = {t.id: t for t in new_trips}
-    return [Block(b.id, [by_id[t.id] for t in b.trips]) for b in blocks]
+    return [Block(b.id, [by_id[t.id] for t in b.trips], list(b.dh), list(b.req)) for b in blocks]
 
 
 def rebuild_duties(duties: list[Duty], new_trips: list[Trip]) -> list[Duty]:
     by_id = {t.id: t for t in new_trips}
-    return [Duty(d.block, [by_id[t.id] for t in d.trips], d.prep) for d in duties]
+    return [Duty(d.block, [by_id[t.id] for t in d.trips], d.prep, list(d.dh)) for d in duties]
 
 
 def count_good(trips: list[Trip], trains_by_date: dict, station: set, m1: float, m2: float, good: float,

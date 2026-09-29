@@ -1,0 +1,492 @@
+{
+ "day_types": {
+  "Roboczy": {
+   "trips": 188,
+   "added_from_coverage": 40,
+   "added_from_timetables": 0,
+   "unexplained": [],
+   "n_unexplained": 0,
+   "requests": 11,
+   "per_line": {
+    "1": 31,
+    "2": 61,
+    "3": 73,
+    "4": 14,
+    "7": 9
+   },
+   "first_stop_check": [
+    {
+     "pattern": "00/0/WAP-A-1",
+     "line": "1",
+     "first_stop": "002-01",
+     "timetable": 15,
+     "trips": 15
+    },
+    {
+     "pattern": "00/0/WAP-B-1",
+     "line": "1",
+     "first_stop": "005-01",
+     "timetable": 16,
+     "trips": 16
+    },
+    {
+     "pattern": "00/0/WAP-A-2A",
+     "line": "2",
+     "first_stop": "039-01",
+     "timetable": 32,
+     "trips": 31
+    },
+    {
+     "pattern": "00/0/WAP-B-2",
+     "line": "2",
+     "first_stop": "005-01",
+     "timetable": 30,
+     "trips": 30
+    },
+    {
+     "pattern": "00/0/WAP-A-3",
+     "line": "3",
+     "first_stop": "031-01",
+     "timetable": 1,
+     "trips": 1
+    },
+    {
+     "pattern": "00/0/WAP-B-3",
+     "line": "3",
+     "first_stop": "005-01",
+     "timetable": 36,
+     "trips": 36
+    },
+    {
+     "pattern": "00/0/WAP-A-4",
+     "line": "4",
+     "first_stop": "005-01",
+     "timetable": 7,
+     "trips": 7
+    },
+    {
+     "pattern": "00/0/WAP-B-4",
+     "line": "4",
+     "first_stop": "051-01",
+     "timetable": 7,
+     "trips": 7
+    },
+    {
+     "pattern": "00/0/WAP-B-7",
+     "line": "7",
+     "first_stop": "005-01",
+     "timetable": 2,
+     "trips": 2
+    },
+    {
+     "pattern": "00/0/WAP-A-7",
+     "line": "7",
+     "first_stop": "028-01",
+     "timetable": 3,
+     "trips": 3
+    }
+   ]
+  },
+  "Sobota": {
+   "trips": 89,
+   "added_from_coverage": 21,
+   "added_from_timetables": 0,
+   "unexplained": [],
+   "n_unexplained": 0,
+   "requests": 11,
+   "per_line": {
+    "1": 14,
+    "2": 33,
+    "3": 42
+   },
+   "first_stop_check": [
+    {
+     "pattern": "00/0/WAP-A-1",
+     "line": "1",
+     "first_stop": "002-01",
+     "timetable": 7,
+     "trips": 7
+    },
+    {
+     "pattern": "00/0/WAP-B-1",
+     "line": "1",
+     "first_stop": "005-01",
+     "timetable": 7,
+     "trips": 7
+    },
+    {
+     "pattern": "00/0/WAP-A-2A",
+     "line": "2",
+     "first_stop": "039-01",
+     "timetable": 17,
+     "trips": 17
+    },
+    {
+     "pattern": "00/0/WAP-B-2",
+     "line": "2",
+     "first_stop": "005-01",
+     "timetable": 16,
+     "trips": 16
+    },
+    {
+     "pattern": "00/0/WAP-A-3",
+     "line": "3",
+     "first_stop": "031-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-B-3",
+     "line": "3",
+     "first_stop": "005-01",
+     "timetable": 21,
+     "trips": 21
+    },
+    {
+     "pattern": "00/0/WAP-A-4",
+     "line": "4",
+     "first_stop": "005-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-B-4",
+     "line": "4",
+     "first_stop": "051-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-B-7",
+     "line": "7",
+     "first_stop": "005-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-A-7",
+     "line": "7",
+     "first_stop": "028-01",
+     "timetable": 0,
+     "trips": 0
+    }
+   ]
+  },
+  "Niedziela": {
+   "trips": 54,
+   "added_from_coverage": 13,
+   "added_from_timetables": 0,
+   "unexplained": [],
+   "n_unexplained": 0,
+   "requests": 11,
+   "per_line": {
+    "1": 12,
+    "2": 16,
+    "3": 26
+   },
+   "first_stop_check": [
+    {
+     "pattern": "00/0/WAP-A-1",
+     "line": "1",
+     "first_stop": "002-01",
+     "timetable": 6,
+     "trips": 6
+    },
+    {
+     "pattern": "00/0/WAP-B-1",
+     "line": "1",
+     "first_stop": "005-01",
+     "timetable": 6,
+     "trips": 6
+    },
+    {
+     "pattern": "00/0/WAP-A-2A",
+     "line": "2",
+     "first_stop": "039-01",
+     "timetable": 8,
+     "trips": 8
+    },
+    {
+     "pattern": "00/0/WAP-B-2",
+     "line": "2",
+     "first_stop": "005-01",
+     "timetable": 8,
+     "trips": 8
+    },
+    {
+     "pattern": "00/0/WAP-A-3",
+     "line": "3",
+     "first_stop": "031-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-B-3",
+     "line": "3",
+     "first_stop": "005-01",
+     "timetable": 13,
+     "trips": 13
+    },
+    {
+     "pattern": "00/0/WAP-A-4",
+     "line": "4",
+     "first_stop": "005-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-B-4",
+     "line": "4",
+     "first_stop": "051-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-B-7",
+     "line": "7",
+     "first_stop": "005-01",
+     "timetable": 0,
+     "trips": 0
+    },
+    {
+     "pattern": "00/0/WAP-A-7",
+     "line": "7",
+     "first_stop": "028-01",
+     "timetable": 0,
+     "trips": 0
+    }
+   ]
+  }
+ },
+ "valid_from": "2026-09-01",
+ "trips": 331,
+ "stops": 95,
+ "feed_version": "4aad5903cd",
+ "patterns": {
+  "00/0/WAP-A-1": {
+   "line": "1",
+   "headsign": "Dworcowa",
+   "stops": [
+    "002-01",
+    "069-01",
+    "004-01",
+    "054-01",
+    "051-01",
+    "050-02",
+    "095-01",
+    "024-01",
+    "023-01",
+    "022-01",
+    "056-01",
+    "046-02",
+    "078-02",
+    "010-02",
+    "007-02",
+    "006-01",
+    "085-02",
+    "084-02",
+    "079-00"
+   ]
+  },
+  "00/0/WAP-B-1": {
+   "line": "1",
+   "headsign": "Długa",
+   "stops": [
+    "005-01",
+    "084-01",
+    "085-01",
+    "006-02",
+    "007-01",
+    "009-02",
+    "011-02",
+    "077-02",
+    "012-02",
+    "046-01",
+    "056-02",
+    "022-02",
+    "023-02",
+    "024-02",
+    "050-01",
+    "051-01",
+    "088-01",
+    "054-02",
+    "004-02",
+    "003-02",
+    "002-00"
+   ]
+  },
+  "00/0/WAP-A-2A": {
+   "line": "2",
+   "headsign": "Dworcowa",
+   "stops": [
+    "039-01",
+    "040-01",
+    "041-01",
+    "043-01",
+    "044-01",
+    "045-01",
+    "022-02",
+    "021-02",
+    "020-02",
+    "094-02",
+    "008-02",
+    "007-02",
+    "006-01",
+    "087-02",
+    "063-02",
+    "049-01",
+    "079-00"
+   ]
+  },
+  "00/0/WAP-B-2": {
+   "line": "2",
+   "headsign": "Iława ul. Lipowy Dwór (ogrody)",
+   "stops": [
+    "005-01",
+    "087-01",
+    "006-02",
+    "007-01",
+    "008-01",
+    "094-01",
+    "020-01",
+    "021-01",
+    "022-01",
+    "045-02",
+    "043-02",
+    "040-02",
+    "039-00"
+   ]
+  },
+  "00/0/WAP-A-3": {
+   "line": "3",
+   "headsign": "Dworcowa",
+   "stops": [
+    "031-01",
+    "030-01",
+    "060-01",
+    "029-01",
+    "035-01",
+    "027-01",
+    "082-02",
+    "081-02",
+    "025-01",
+    "024-01",
+    "023-01",
+    "021-02",
+    "020-02",
+    "094-02",
+    "008-02",
+    "007-02",
+    "006-01",
+    "087-02",
+    "079-00"
+   ]
+  },
+  "00/0/WAP-B-3": {
+   "line": "3",
+   "headsign": "Nowa Wieś",
+   "stops": [
+    "005-01",
+    "087-01",
+    "006-02",
+    "007-01",
+    "008-01",
+    "094-01",
+    "020-01",
+    "021-01",
+    "023-02",
+    "024-02",
+    "083-01",
+    "081-01",
+    "082-01",
+    "035-00",
+    "027-02",
+    "028-00"
+   ]
+  },
+  "00/0/WAP-A-4": {
+   "line": "4",
+   "headsign": "Piaskowa",
+   "stops": [
+    "005-01",
+    "087-01",
+    "006-02",
+    "007-01",
+    "008-01",
+    "090-01",
+    "091-01",
+    "092-01",
+    "093-01",
+    "046-01",
+    "056-02",
+    "075-01",
+    "077-01",
+    "050-01",
+    "051-00"
+   ]
+  },
+  "00/0/WAP-B-4": {
+   "line": "4",
+   "headsign": "Dworcowa",
+   "stops": [
+    "051-01",
+    "050-02",
+    "095-01",
+    "076-02",
+    "086-02",
+    "045-01",
+    "056-01",
+    "046-02",
+    "093-02",
+    "092-02",
+    "091-02",
+    "090-02",
+    "008-02",
+    "007-02",
+    "006-01",
+    "087-02",
+    "079-00"
+   ]
+  },
+  "00/0/WAP-B-7": {
+   "line": "7",
+   "headsign": "Nowa Wieś",
+   "stops": [
+    "005-01",
+    "087-01",
+    "006-02",
+    "007-01",
+    "009-02",
+    "011-02",
+    "077-02",
+    "012-02",
+    "046-01",
+    "056-02",
+    "022-02",
+    "023-02",
+    "024-02",
+    "025-02",
+    "026-02",
+    "027-02",
+    "028-00"
+   ]
+  },
+  "00/0/WAP-A-7": {
+   "line": "7",
+   "headsign": "Smolki",
+   "stops": [
+    "028-01",
+    "029-01",
+    "030-02",
+    "031-02",
+    "042-01",
+    "043-01",
+    "044-01",
+    "045-01",
+    "021-02",
+    "020-02",
+    "006-02"
+   ]
+  }
+ }
+}

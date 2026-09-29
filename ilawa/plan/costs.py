@@ -27,6 +27,12 @@ def indicators(feed: Feed, blocks: list[Block], duties: list[Duty], depot: dict,
             km = 0 if math.isnan(d) else d * road_factor / 1000
             dead_km += km
             dead_min += km / deadhead_kmh * 60
+    for b in blocks:  # empty runs between trips inside a block
+        for a, c, d in zip(b.trips, b.trips[1:], b.dh or []):
+            if d:
+                sa, sc = feed.stops.get(a.last), feed.stops.get(c.first)
+                dd = dist_m(sa, sc) if sa and sc else float("nan")
+                dead_km += 0 if math.isnan(dd) else dd * road_factor / 1000
     vehicle_min = sum(b.end - b.start for b in blocks) + dead_min
     service_min = sum(t.end - t.start for b in blocks for t in b.trips)
     return {"trips": sum(len(b.trips) for b in blocks), "blocks": len(blocks), "peak_vehicles": peak_vehicles(blocks),
@@ -50,13 +56,26 @@ def daily_cost(ind: dict, c: dict) -> dict:
             "overhead": over, "total": direct + over, "per_km": (direct + over) / km if km else float("nan")}
 
 
-def annual(per_day_type: dict[str, dict], year: int) -> dict:
-    """Sum of daily values times the number of days of each type in a year."""
+def annual(per_day_type: dict[str, dict], year: int, c: dict | None = None) -> dict:
+    """Year totals: daily values times the number of days of each type in the year.
+
+    The fleet is paid for every day, so the vehicle cost of the year uses the
+    largest peak of all day types on all days (when the unit costs `c` are given).
+    """
     n = day_counts(year)
-    out = {}
+    out: dict = {}
     for dtp, vals in per_day_type.items():
         for k, v in vals.items():
-            if isinstance(v, (int, float)):
+            if isinstance(v, (int, float)) and k not in ("peak_vehicles", "blocks", "cost_per_km"):
                 out[k] = out.get(k, 0) + v * n.get(dtp, 0)
+    out["peak_vehicles"] = max((v.get("peak_vehicles", 0) for v in per_day_type.values()), default=0)
+    if c is not None and "cost_energy" in out:
+        days = sum(n.get(d, 0) for d in per_day_type)
+        veh = out["peak_vehicles"] * (1 + c["reserve_share"]) * c["vehicle_fixed_pln_per_day"] * days
+        direct = out["cost_energy"] + out["cost_maintenance"] + out["cost_drivers"] + veh
+        out["cost_vehicles"], out["cost_overhead"] = veh, direct * c["overhead_share"]
+        out["cost_total"] = direct * (1 + c["overhead_share"])
+    if out.get("total_km"):
+        out["cost_per_km"] = out.get("cost_total", 0) / out["total_km"]
     out["days"] = n
     return out

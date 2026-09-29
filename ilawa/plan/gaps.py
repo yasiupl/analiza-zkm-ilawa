@@ -1,18 +1,25 @@
 """Extra trips that fill gaps with buses and drivers that already wait at the station.
 
 A bus that waits at the station longer than one round trip of its line (plus
-two minimum layovers) can run one extra round trip without a new vehicle and
-without a new duty. The marginal cost is the energy and maintenance of the extra
-kilometres. The value is the number of new good transfers (train, line) that the
-extra departure and the extra arrival give, and the gap in the line timetable
-that the trip fills.
+two minimum layovers) can run one extra round trip without a new vehicle.
+- When the wait is inside one driver duty, the driver is already paid. The trip
+  is accepted only when the duty still has the break that the law requires.
+- When a duty ends at the start of the wait, the first driver runs the extra trip:
+  the duty becomes longer (paid driver time) and must stay within the longest duty.
+The marginal cost is the energy and maintenance of the extra kilometres plus the
+extra driver time. The value is the number of new good transfers (train, line)
+that the extra departure and the extra arrival give, and the gap in the line
+timetable that the trip fills. One candidate is kept for each gap of a line.
 """
 from __future__ import annotations
+
+from types import SimpleNamespace
 
 import numpy as np
 
 from .. import model as M
 from .blocks import Block
+from .duties import Duty, check_breaks
 from .optimize import shape, station_times
 from .timetable import Feed, hhmm
 
@@ -37,9 +44,23 @@ def round_trips(blocks: list[Block], station: set) -> dict[str, dict]:
     return res
 
 
+def _duty_with(d: Duty, after, start: int, back: int) -> Duty:
+    """Copy of duty d with an extra trip start..back after the trip `after`."""
+    trips, dh = list(d.trips), list(d.dh or [0] * (len(d.trips) - 1))
+    k = trips.index(after)
+    extra = SimpleNamespace(start=start, end=back)
+    trips.insert(k + 1, extra)
+    if k < len(dh):
+        dh.insert(k, 0)
+    else:
+        dh.append(0)
+    return Duty(d.block, trips, d.prep, dh)
+
+
 def candidates(feed: Feed, blocks: list[Block], station: set, trains: tuple[list, list], m1: float, m2: float,
                good: float, min_layover: int, road_factor: float, unit_km_cost: float,
-               min_gap_in_line: int = 40) -> list[dict]:
+               min_gap_in_line: int = 40, duties: list[Duty] | None = None, driver_pln_per_hour: float = 0.0,
+               overhead_share: float = 0.0, max_duty: int = 510, rules: dict | None = None) -> list[dict]:
     tarr, tdep = trains
     ta = np.array([x["t"] for x in tarr])
     td = np.array([x["t"] for x in tdep])
@@ -52,12 +73,15 @@ def candidates(feed: Feed, blocks: list[Block], station: set, trains: tuple[list
                 dep_by.setdefault(t.route, []).append(dep)
             if arr is not None:
                 arr_by.setdefault(t.route, []).append(arr)
+    rules = rules or {}
+    duty_of = {id(t): d for d in (duties or []) for t in d.trips}
     out = []
     for b in blocks:
         for i, j in zip(b.trips, b.trips[1:]):
             if not (i.last in station and j.first in station):
                 continue
             idle = j.start - i.end
+            d = duty_of.get(id(i))
             for r, rt in rts.items():
                 dur = rt["duration"]
                 if idle < dur + 2 * min_layover or r not in (i.route, j.route):
@@ -81,16 +105,35 @@ def candidates(feed: Feed, blocks: list[Block], station: set, trains: tuple[list
                 if best is None or best[3] <= 0:
                     continue
                 _, start, back, gain, gap, prev, nxt = best
+                inside, extra_driver = True, 0.0
+                if d is not None:
+                    nd = _duty_with(d, i, start, back)
+                    inside = j in d.trips
+                    if not inside:                       # the duty of the first driver gets longer
+                        extra_driver = (back - i.end) / 60
+                        if nd.length > max_duty:
+                            continue
+                    chk = check_breaks(nd, **rules)
+                    if not (chk["ok_breaks"] and chk["ok_driving"]):
+                        continue
                 km = feed.trip_km(rt["out"], road_factor) + feed.trip_km(rt["back"], road_factor)
+                cost = (km * unit_km_cost + extra_driver * driver_pln_per_hour) * (1 + overhead_share)
                 out.append({"block": b.id, "line": r, "idle_from": hhmm(i.end), "idle_to": hhmm(j.start),
                             "idle_min": idle, "depart": hhmm(start), "return": hhmm(back), "new_transfers": gain,
                             "line_gap_min": gap, "prev_dep": hhmm(prev) if prev is not None else None,
                             "next_dep": hhmm(nxt) if nxt is not None else None, "km": km,
-                            "marginal_cost": km * unit_km_cost,
+                            "marginal_cost": cost, "extra_driver_h": extra_driver, "inside_duty": inside,
                             "fills_gap": bool(gap and gap >= min_gap_in_line)})
+    # One candidate per block idle window (the best line), then one per gap of a line.
+    rank = lambda c: (c["new_transfers"], c["fills_gap"], -c["marginal_cost"])
     best = {}
-    for c in out:  # one proposal per idle window: the best line
+    for c in out:
         k = (c["block"], c["idle_from"])
-        if k not in best or (c["new_transfers"], c["fills_gap"]) > (best[k]["new_transfers"], best[k]["fills_gap"]):
+        if k not in best or rank(c) > rank(best[k]):
             best[k] = c
-    return sorted(best.values(), key=lambda c: (-c["new_transfers"], c["marginal_cost"]))
+    per_gap = {}
+    for c in best.values():
+        k = (c["line"], c["prev_dep"], c["next_dep"])
+        if k not in per_gap or rank(c) > rank(per_gap[k]):
+            per_gap[k] = c
+    return sorted(per_gap.values(), key=lambda c: (-c["new_transfers"], c["marginal_cost"]))

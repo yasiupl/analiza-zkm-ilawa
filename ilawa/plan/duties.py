@@ -23,6 +23,7 @@ class Duty:
     block: int
     trips: list = field(default_factory=list)
     prep: int = 15                                   # minutes before the first trip
+    dh: list = field(default_factory=list)           # empty-run minutes between trips
 
     @property
     def start(self) -> int:
@@ -41,7 +42,9 @@ class Duty:
         return sum(t.end - t.start for t in self.trips)
 
     def layovers(self) -> list[int]:
-        return [b.start - a.end for a, b in zip(self.trips, self.trips[1:])]
+        """Rest time between trips (the gap minus the empty run)."""
+        dh = self.dh or [0] * (len(self.trips) - 1)
+        return [b.start - a.end - d for (a, b), d in zip(zip(self.trips, self.trips[1:]), dh)]
 
 
 def cut_duties(feed: Feed, blocks: list[Block], relief: set[str], max_duty: int = 510,
@@ -49,19 +52,21 @@ def cut_duties(feed: Feed, blocks: list[Block], relief: set[str], max_duty: int 
     relief = {norm(r) for r in relief}
     duties = []
     for b in blocks:
-        cur = Duty(b.id, [b.trips[0]], prep)
-        last_cut = None                               # index in cur.trips after which we may cut
-        for t in b.trips[1:]:
-            prev = cur.trips[-1]
+        dh = b.dh or [0] * (len(b.trips) - 1)
+        cur, cur_dh = [b.trips[0]], []
+        last_cut = None                               # index in cur after which we may cut
+        for t, d in zip(b.trips[1:], dh):
+            prev = cur[-1]
             if norm(feed.stops.get(prev.last, {}).get("name", "")) in relief:
-                last_cut = len(cur.trips)
-            if t.end - cur.start > max_duty and last_cut:
-                duties.append(Duty(b.id, cur.trips[:last_cut], prep))
-                cur = Duty(b.id, cur.trips[last_cut:] + [t], prep)
+                last_cut = len(cur)
+            if t.end - (cur[0].start - prep) > max_duty and last_cut:
+                duties.append(Duty(b.id, cur[:last_cut], prep, cur_dh[:last_cut - 1]))
+                cur, cur_dh = cur[last_cut:] + [t], cur_dh[last_cut:] + [d]
                 last_cut = None
             else:
-                cur.trips.append(t)
-        duties.append(cur)
+                cur.append(t)
+                cur_dh.append(d)
+        duties.append(Duty(b.id, cur, prep, cur_dh))
     return duties
 
 

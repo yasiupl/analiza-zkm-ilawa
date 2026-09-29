@@ -15,6 +15,7 @@ the middle of a route are found too. Pages are kept in a cache folder.
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import math
 import re
@@ -31,9 +32,15 @@ BASE = "https://rozklad.com/maps"
 DAY_TYPES = {1: "Roboczy", 2: "Sobota", 3: "Niedziela"}
 
 
+def clean(s: str) -> str:
+    """Stop name as shown to passengers. The source has broken entities such as 'Wyszy&ńskiego'."""
+    s = html.unescape(unicodedata.normalize("NFC", s or ""))
+    s = re.sub(r"&(?=[^\x00-\x7f])", "", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
 def norm(s: str) -> str:
-    s = unicodedata.normalize("NFC", s or "")
-    return re.sub(r"\s+", " ", s).strip().lower()
+    return clean(s).lower()
 
 
 def hm(t: int) -> str:
@@ -75,7 +82,7 @@ def parse_stops(text: str) -> dict[str, dict]:
             lat, lon = float(r.get("Lat") or "nan"), float(r.get("Lng") or "nan")
         except ValueError:
             lat = lon = float("nan")
-        out[r["ID"]] = {"id": r["ID"], "name": re.sub(r"\s+", " ", r.get("Nazwa", "")).strip(),
+        out[r["ID"]] = {"id": r["ID"], "name": clean(r.get("Nazwa", "")),
                         "lat": lat, "lon": lon, "lines": r.get("Linie", "")}
     return out
 
@@ -86,8 +93,8 @@ def parse_patterns(text: str) -> dict[str, dict]:
     for r in json.loads(text):
         pid = r["IDKursu"]
         p = out.setdefault(pid, {"id": pid, "line": str(r["IDLinii"]), "dir": r.get("KierAB", ""),
-                                 "headsign": re.sub(r"\s+", " ", r.get("Opis", "")).strip(), "stops": []})
-        p["stops"].append({"id": r["ID"], "name": re.sub(r"\s+", " ", r.get("Nazwa", "")).strip()})
+                                 "headsign": clean(r.get("Opis", "")), "stops": []})
+        p["stops"].append({"id": r["ID"], "name": clean(r.get("Nazwa", ""))})
     return out
 
 
@@ -107,7 +114,7 @@ def parse_rozqr(html: str) -> list[dict]:
         info = tr.text(" ") if tr is not None else ""
         m = re.search(r"\bo\s+(\d{1,2}):(\d{2})\s*([a-z]*)", info)
         heads = tr.find_all("span", cls="text-danger") if tr is not None else []
-        headsign = heads[-1].text().strip() if heads else ""
+        headsign = clean(heads[-1].text()) if heads else ""
         rows = []
         for row in div.find_all("tr"):
             tds = row.find_all("td")
@@ -116,8 +123,10 @@ def parse_rozqr(html: str) -> list[dict]:
             tm = TIME_RE.search(tds[1].text())
             if not tm:
                 continue
-            rows.append({"t": int(tm.group(1)) * 60 + int(tm.group(2)), "flags": tm.group(3),
-                         "name": re.sub(r"\s+", " ", tds[2].text()).strip()})
+            name = clean(tds[2].text())
+            if not name:
+                continue            # a row without a stop name (seen after some terminals)
+            rows.append({"t": int(tm.group(1)) * 60 + int(tm.group(2)), "flags": tm.group(3), "name": name})
         if not rows:
             continue
         t0 = int(m.group(1)) * 60 + int(m.group(2)) if m else rows[0]["t"]
@@ -261,6 +270,46 @@ class Scraper:
     def stop_timetable(self, stop: str, line: str) -> dict:
         return parse_stop_timetable(self.c.get("r7xp.php", {"cmd": "rozID", "ID": stop, "IDLinii": line}))
 
+    def _chain_orphans(self, trips: dict, unexplained: list, lpday: int, tol: int = 2) -> list[Trip]:
+        out = []
+        by_line: dict = {}
+        for line, stop, t, flags in unexplained:
+            by_line.setdefault(line, []).append((stop, int(t[:2]) * 60 + int(t[3:]), flags))
+        for line, items in by_line.items():
+            pool = set(items)
+            for pid, p in self.patterns.items():
+                if p["line"] != line:
+                    continue
+                ids = [x["id"] for x in p["stops"]]
+                # Median running time between consecutive stops of this pattern.
+                seg = {}
+                for tr in trips.values():
+                    if tr.line != line:
+                        continue
+                    pos = {sid: t for sid, t, _ in tr.stops}
+                    for a, b in zip(ids, ids[1:]):
+                        if a in pos and b in pos and pos[b] >= pos[a]:
+                            seg.setdefault((a, b), []).append(pos[b] - pos[a])
+                med = {k: sorted(v)[len(v) // 2] for k, v in seg.items()}
+                for k0, sid in enumerate(ids):
+                    for item in sorted(x for x in pool if x[0] == sid):
+                        if item not in pool:
+                            continue
+                        chain, t_exp = [item], item[1]
+                        for a, b in zip(ids[k0:], ids[k0 + 1:]):
+                            t_exp += med.get((a, b), 2)
+                            hit = [x for x in pool if x[0] == b and abs(x[1] - t_exp) <= tol and x not in chain]
+                            if hit:
+                                h = min(hit, key=lambda x: abs(x[1] - t_exp))
+                                chain.append(h)
+                                t_exp = h[1]
+                        if len(chain) >= 2:
+                            for x in chain:
+                                pool.discard(x)
+                            out.append(Trip(line, pid, lpday, chain[0][2], p["headsign"],
+                                            [(x[0], x[1], x[2]) for x in chain], partial_start=True))
+        return out
+
     def trips(self, lpday: int) -> tuple[list[Trip], dict]:
         trips: dict = {}
         firsts = sorted({p["stops"][0]["id"] for p in self.patterns.values()})
@@ -278,13 +327,20 @@ class Scraper:
                 for s in p["stops"][1:-1]:
                     if s["id"] not in order:
                         order.append(s["id"])
+            for p in pats:  # the last stops too: their timetables list the arrivals
+                if p["stops"][-1]["id"] not in order:
+                    order.append(p["stops"][-1]["id"])
             for s in order:
                 tt = self.stop_timetable(s, line)["days"].get(DAY_TYPES[lpday], [])
                 have = {st[1] for tr in trips.values() if tr.line == line for st in tr.stops if st[0] == s}
                 for t, flags in tt:
-                    if t in have:
+                    # The trip lists and the stop timetables can differ by 1 min at a stop.
+                    if any(abs(t - h) <= 1 for h in have):
                         continue
                     deps = [d for d in self.departures(s, lpday, t) if d["line"] == line and d["t"] == t]
+                    if not deps:
+                        deps = [d for d in self.departures(s, lpday, max(0, t - 1))
+                                if d["line"] == line and abs(d["t"] - t) <= 1]
                     tr = self._trip_from(deps[0], s, lpday) if deps else None
                     if tr and tr.key not in trips:
                         tr.partial_start = True
@@ -293,6 +349,13 @@ class Scraper:
                         added += 1
                     else:
                         unexplained.append((line, s, hm(t), flags))
-        stats = {"trips": len(trips), "added_from_coverage": added, "unexplained": unexplained[:50],
-                 "n_unexplained": len(unexplained), "requests": self.c.requests}
+        # Departures that only the stop timetables show (the trip lists miss some trips):
+        # chain them along each pattern with the usual running times.
+        orphans = self._chain_orphans(trips, unexplained, lpday)
+        for tr in orphans:
+            trips.setdefault(tr.key, tr)
+        used = {(tr.line, sid, t) for tr in orphans for sid, t, _ in tr.stops}
+        left = [u for u in unexplained if (u[0], u[1], int(u[2][:2]) * 60 + int(u[2][3:])) not in used]
+        stats = {"trips": len(trips), "added_from_coverage": added, "added_from_timetables": len(orphans),
+                 "unexplained": left[:50], "n_unexplained": len(left), "requests": self.c.requests}
         return sorted(trips.values(), key=lambda x: (x.line, x.stops[0][1])), stats
