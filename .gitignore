@@ -1,0 +1,13 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Live monitoring stream (large; daily CSV exports in data/monitor are versioned)
+data/raw/plk/ops/
+data/*.sqlite
+data/*.sqlite-*
+logs/
