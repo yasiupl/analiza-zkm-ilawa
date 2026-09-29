@@ -1,0 +1,351 @@
+<title>Korekty rozkładu ZKM Iława</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;800&family=Overpass+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a working report. Yellow timetable-poster header, one filter row that scopes
+   every section below it, then tables and two charts that read like timetable sheets. */
+:root {
+  --paper: #fbfbf9; --panel: #f1f2ef; --ink: #15171b; --ink-2: #4a4d55; --muted: #767a84;
+  --rule: #dfe0dc; --band: rgba(21, 23, 27, .09); --band-2: rgba(21, 23, 27, .05);
+  --poster: #f3c400; --poster-ink: #15171b; --poster-rule: rgba(21, 23, 27, .35);
+  --l1: #2a78d6; --l2: #eb6834; --l3: #1baf7a; --l4: #eda100; --l7: #e87ba4;
+  --bad: #d03b3b; --good: #0ca30c; --hi: rgba(243, 196, 0, .28);
+  --f-display: "Overpass", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono: "Overpass Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #15171b; --panel: #1d2026; --ink: #ecebe6; --ink-2: #b9bbc2; --muted: #8e929c;
+  --rule: #2d3037; --band: rgba(236, 235, 230, .12); --band-2: rgba(236, 235, 230, .06);
+  --poster: #e3b600; --poster-ink: #15171b; --poster-rule: rgba(21, 23, 27, .35);
+  --l1: #3987e5; --l2: #d95926; --l3: #199e70; --l4: #c98500; --l7: #d55181;
+  --bad: #e66767; --good: #3cc13c; --hi: rgba(227, 182, 0, .25); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #15171b; --panel: #1d2026; --ink: #ecebe6; --ink-2: #b9bbc2; --muted: #8e929c;
+  --rule: #2d3037; --band: rgba(236, 235, 230, .12); --band-2: rgba(236, 235, 230, .06);
+  --poster: #e3b600; --poster-ink: #15171b; --poster-rule: rgba(21, 23, 27, .35);
+  --l1: #3987e5; --l2: #d95926; --l3: #199e70; --l4: #c98500; --l7: #d55181;
+  --bad: #e66767; --good: #3cc13c; --hi: rgba(227, 182, 0, .25); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 400 16px/1.55 var(--f-body); margin: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; }
+.prose { max-width: 70ch; }
+h1, h2, h3, .label, .tabs button, th, .tile .k { font-family: var(--f-display); }
+h2 { font-size: 1.45rem; line-height: 1.2; margin: 0 0 .4rem; font-weight: 800; text-wrap: balance; }
+h3 { font-size: 1.05rem; margin: 1.4rem 0 .4rem; font-weight: 600; }
+p { margin: 0 0 .8rem; }
+section { padding-block: 2rem; border-top: 1px solid var(--rule); }
+.label { font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.mono, td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.poster { background: var(--poster); color: var(--poster-ink); }
+.poster .wrap { padding-block: 2rem 1.6rem; display: grid; gap: 1.2rem; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: end; }
+.poster .kicker { font: 800 .8rem/1 var(--f-display); letter-spacing: .14em; text-transform: uppercase; border-bottom: 3px solid var(--poster-ink); padding-bottom: .5rem; display: inline-block; }
+.poster h1 { font-size: clamp(2.1rem, 5.5vw, 3.5rem); line-height: 1; margin: .8rem 0 .6rem; font-weight: 800; letter-spacing: -.02em; }
+.poster .q { font: 400 1.08rem/1.45 var(--f-body); max-width: 40ch; margin: 0; }
+.board { border-top: 3px solid var(--poster-ink); font-family: var(--f-mono); font-size: .9rem; }
+.board .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem; padding: .45rem 0; border-bottom: 1px solid var(--poster-rule); }
+.board .row b { font-weight: 600; }
+.poster .meta { grid-column: 1 / -1; font: 400 .84rem/1.4 var(--f-display); display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; border-top: 1px solid var(--poster-rule); padding-top: .8rem; }
+.filters { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.filters .wrap { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; padding-block: .7rem; align-items: center; }
+.tabs { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.tabs button { font-size: .85rem; font-weight: 600; background: transparent; color: var(--ink-2); border: 0; padding: .42rem .8rem; cursor: pointer; }
+.tabs button + button { border-left: 1px solid var(--rule); }
+.tabs button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.tabs button:focus-visible, summary:focus-visible { outline: 2px solid var(--l1); outline-offset: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 1rem; }
+.tile { background: var(--paper); padding: .9rem 1rem 1rem; display: flex; flex-direction: column; gap: .3rem; min-width: 0; }
+.tile .k { font-size: .78rem; color: var(--ink-2); font-weight: 600; line-height: 1.3; }
+.tile .v { font: 800 1.8rem/1.05 var(--f-display); letter-spacing: -.01em; }
+.tile .v small { font-size: .95rem; font-weight: 600; color: var(--ink-2); }
+.tile .s { font: 400 .8rem/1.35 var(--f-display); color: var(--ink-2); }
+.tbl { overflow-x: auto; margin-top: .6rem; }
+table { border-collapse: collapse; width: 100%; font: 400 .86rem/1.35 var(--f-display); }
+th { text-align: left; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: .5rem .55rem; border-bottom: 2px solid var(--ink); }
+td { padding: .42rem .55rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td.num, th.num { text-align: right; }
+.old { color: var(--muted); text-decoration: line-through; margin-right: .3rem; }
+.new { font-weight: 600; background: var(--hi); border-radius: 3px; padding: 0 .2rem; }
+.chip { display: inline-flex; align-items: center; gap: .3rem; font: 600 .74rem/1 var(--f-display); padding: .22rem .45rem; border-radius: 4px; background: var(--band-2); white-space: nowrap; }
+.chip.ok::before { content: "✓"; color: var(--good); }
+.chip.no::before { content: "✗"; color: var(--bad); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: .35rem; }
+.chart { width: 100%; overflow-x: auto; }
+.chart svg { display: block; max-width: none; }
+.chart svg text { font-family: var(--f-display); fill: var(--ink-2); font-size: 11px; }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font: 400 .82rem/1.3 var(--f-display); color: var(--ink-2); margin-top: .5rem; }
+.legend i { display: inline-block; width: 14px; height: 8px; border-radius: 2px; vertical-align: 0; margin-right: .35rem; }
+.note { font: 400 .85rem/1.5 var(--f-display); color: var(--ink-2); max-width: 78ch; }
+.boards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-top: .8rem; }
+.boards > div { min-width: 0; border-top: 3px solid var(--ink); padding-top: .4rem; }
+.boards h4 { margin: 0 0 .3rem; font: 800 .95rem var(--f-display); }
+.boards .times { font-family: var(--f-mono); font-size: .82rem; line-height: 1.7; display: flex; flex-wrap: wrap; gap: 0 .6rem; }
+details { margin-top: .8rem; } summary { cursor: pointer; font: 600 .85rem var(--f-display); color: var(--ink-2); }
+pre { background: var(--panel); padding: .8rem 1rem; border-radius: 6px; overflow-x: auto; font: 400 .82rem/1.5 var(--f-mono); }
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--ink); color: var(--paper); font: 400 .8rem/1.35 var(--f-display); padding: .45rem .6rem; border-radius: 6px; max-width: 280px; opacity: 0; }
+footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 .82rem/1.5 var(--f-display); color: var(--muted); }
+@media (max-width: 720px) { .poster .wrap { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<header class="poster"><div class="wrap">
+  <div>
+    <span class="kicker">Narzędzie · korekty rozkładu</span>
+    <h1>Korekty rozkładu ZKM Iława</h1>
+    <p class="q">Przesunięcia kursów o kilka minut, które dają więcej przesiadek z pociągów i do pociągów na przystanku Dworcowa. Obiegi autobusów, przerwy kierowców i koszt zostają zachowane.</p>
+  </div>
+  <div class="board" id="board"></div>
+  <div class="meta" id="meta"></div>
+</div></header>
+
+<nav class="filters" aria-label="Zakres raportu"><div class="wrap">
+  <span class="label">Pokaż</span>
+  <div class="tabs" id="f-day" role="group" aria-label="Typ dnia"></div>
+  <div class="tabs" id="f-var" role="group" aria-label="Wariant obiegów"></div>
+</div></nav>
+
+<main class="wrap">
+  <section style="border-top:0">
+    <div class="label">Wynik</div>
+    <h2 id="sum-title"></h2>
+    <p class="prose" id="sum-text"></p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <div class="label">Przystanek Dworcowa</div>
+    <h2>Odjazdy po korekcie</h2>
+    <p class="prose">Odjazdy z Dworcowej w dniu planowania. Przekreślona godzina to obecna, wyróżniona to proponowana.</p>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section>
+    <div class="label">Zmiany kurs po kursie</div>
+    <h2>Zmienione kursy</h2>
+    <p class="prose" id="chg-text"></p>
+    <div class="tbl" id="chg-tbl"></div>
+  </section>
+
+  <section>
+    <div class="label">Obiegi</div>
+    <h2>Obiegi autobusów</h2>
+    <p class="prose">Każdy wiersz to jeden autobus, każdy pasek to kurs. Obiegi odtworzono z rozkładu, bo ZKM ich nie publikuje: autobus bierze najbliższy kurs z tego samego przystanku końcowego, najpierw tej samej linii.</p>
+    <div class="tabs" id="f-when" role="group" aria-label="Rozkład" style="margin-bottom:.6rem"></div>
+    <div class="chart" id="gantt"></div>
+    <div class="legend" id="gantt-legend"></div>
+  </section>
+
+  <section>
+    <div class="label">Kierowcy</div>
+    <h2>Służby i przerwy</h2>
+    <p class="prose" id="duty-text"></p>
+    <details><summary>Pokaż wszystkie służby</summary><div class="tbl" id="duty-tbl"></div></details>
+  </section>
+
+  <section>
+    <div class="label">Luki w rozkładzie</div>
+    <h2>Dodatkowe kursy bez dodatkowego autobusu</h2>
+    <p class="prose" id="gap-text"></p>
+    <div class="tbl" id="gap-tbl"></div>
+  </section>
+
+  <section>
+    <div class="label">Koszty</div>
+    <h2>Koszt obecnego i proponowanego rozkładu</h2>
+    <p class="prose" id="cost-text"></p>
+    <div class="tbl" id="cost-tbl"></div>
+    <h3>Rok, wszystkie typy dni</h3>
+    <div class="tbl" id="annual-tbl"></div>
+  </section>
+
+  <section>
+    <div class="label">Pasażerowie i bilety</div>
+    <h2>Ile pasażerów i przychodu mogą dać lepsze przesiadki</h2>
+    <div class="prose" id="dem-text"></div>
+    <div class="tbl" id="dem-tbl"></div>
+  </section>
+
+  <section>
+    <div class="label">Metoda</div>
+    <h2>Założenia i uruchamianie</h2>
+    <div class="prose" id="method"></div>
+    <pre>python3 zkmplan.py               # pobiera rozkłady ZKM i PKP, liczy, tworzy raport
+python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
+# parametry: zkmplan.ini, wyniki: data/plan/RRRR-MM-DD/, raport: reports/korekty-zkm.html</pre>
+  </section>
+</main>
+<footer><div class="wrap" id="foot"></div></footer>
+<div id="tip" role="tooltip"></div>
+
+<script>const DATA = /*__DATA__*/null;</script>
+<script>
+(function () {
+  const D = DATA, $ = id => document.getElementById(id);
+  const DAYS = ["Roboczy", "Sobota", "Niedziela"].filter(d => D.day_types[d]);
+  const DAYNAME = { Roboczy: "Dzień roboczy", Sobota: "Sobota", Niedziela: "Niedziela" };
+  const VARS = Object.keys(D.day_types[DAYS[0]].variants);
+  const VARNAME = { single: "Obiegi jednej linii", interlined: "Obiegi mieszane (zmiana linii na Dworcowej)" };
+  const hm = m => m == null ? "–" : `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(Math.round(m) % 60).padStart(2, "0")}`;
+  const num = (x, d = 0) => x == null ? "–" : Number(x).toLocaleString("pl-PL", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const pct = (x, d = 0) => x == null ? "–" : `${x > 0 ? "+" : ""}${num(100 * x, d)}%`;
+  const fdate = s => { const [y, m, d] = s.split("-"); return `${+d}.${m}.${y}`; };
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const LC = l => ["1", "2", "3", "4", "7"].includes(String(l)) ? `var(--l${l})` : "var(--muted)";
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  const tip = $("tip");
+  function hover(node, html) { node.addEventListener("mousemove", e => { tip.innerHTML = html; tip.style.opacity = 1; tip.style.left = Math.min(e.clientX + 14, innerWidth - 290) + "px"; tip.style.top = (e.clientY + 14) + "px"; }); node.addEventListener("mouseleave", () => tip.style.opacity = 0); }
+  function tabs(id, items, st, key, cb) { const box = $(id); box.innerHTML = ""; items.forEach(([v, l]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = l; b.setAttribute("aria-pressed", String(st[key] === v)); b.onclick = () => { st[key] = v; [...box.children].forEach(c => c.setAttribute("aria-pressed", String(c === b))); cb(); }; box.appendChild(b); }); }
+  function table(cols, rows) { return `<table><thead><tr>${cols.map(c => `<th class="${c.num ? "num" : ""}">${c.h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${cols.map(c => `<td class="${c.num ? "num" : ""}">${c.f ? c.f(r) : esc(r[c.k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`; }
+  const st = { day: DAYS[0], v: VARS[0], when: "after" };
+  const cfg = D.config || {};
+
+  function V() { return D.day_types[st.day].variants[st.v]; }
+  function R() { return D.day_types[st.day]; }
+
+  // header (weekday, first variant)
+  (function () {
+    const r = D.day_types[DAYS[0]], v = r.variants[VARS[0]];
+    const g0 = v.good_before.total, g1 = v.good_after.total;
+    $("board").innerHTML = `<div class="row"><span>Dobre przesiadki, ${DAYNAME[DAYS[0]].toLowerCase()}</span><b>${num(g0 / v.good_before.n_dates)} → ${num(g1 / v.good_after.n_dates)}</b></div>
+      <div class="row"><span>Zmienione kursy</span><b>${v.changes.length}</b></div>
+      <div class="row"><span>Koszt dnia</span><b>${num(v.cost_before.total)} → ${num(v.cost_after.total)} zł</b></div>
+      <div class="row"><span>Autobusy w szczycie</span><b>${v.indicators_before.peak_vehicles} → ${v.indicators_after.peak_vehicles}</b></div>`;
+    $("meta").innerHTML = `<span>Rozkład ZKM: ${esc((D.feed || {}).feed_version || "")}, od ${esc((D.feed || {}).feed_start_date || "")}</span><span>Przystanki: ${D.station_stops.join(", ")}</span><span>Wygenerowano ${esc(D.generated)}</span>`;
+  })();
+
+  function drawSummary() {
+    const r = R(), v = V();
+    const nd = v.good_before.n_dates, g0 = v.good_before.total / nd, g1 = v.good_after.total / nd;
+    const gb0 = v.good_buffered_before.total / nd, gb1 = v.good_buffered_after.total / nd;
+    const re = v.realised_t2b || {};
+    const maxOther = Math.max(0, ...v.changes.map(c => Math.max(Math.abs(c.shift_before), Math.abs(c.shift_after))));
+    $("sum-title").textContent = `${DAYNAME[st.day]}: ${num(g0)} → ${num(g1)} dobrych przesiadek dziennie`;
+    $("sum-text").textContent = `Plan na ${fdate(r.date)}, sprawdzony na ${nd} dniach tego typu (${r.all_dates.map(fdate).slice(0, 6).join(", ")}${r.all_dates.length > 6 ? "…" : ""}). ${VARNAME[st.v]}. Przesiadka jest dobra, gdy po dojściu z peronu (${cfg.transfers?.walk_train_to_bus} min) lub na peron (${cfg.transfers?.walk_bus_to_train} min) czeka się najwyżej ${cfg.transfers?.good_window} min. Liczone są pary pociąg–linia.`;
+    const tiles = [
+      { k: "Dobre przesiadki na dzień (plan)", v: `${num(g0)} → ${num(g1)}`, s: `${pct((g1 - g0) / g0)}; pary pociąg–linia w obu kierunkach` },
+      { k: "Z zapasem na typowe opóźnienie", v: `${num(gb0)} → ${num(gb1)}`, s: `${pct((gb1 - gb0) / gb0)}; zapas: ${Object.entries(D.buffers || {}).map(([k, x]) => `${k} ${num(x)} min`).join(", ") || "brak danych"}` },
+      { k: "Przy rzeczywistych opóźnieniach (pociąg → autobus)", v: re.pairs ? `${num(re.before)} → ${num(re.after)}` : "–", s: re.pairs ? `${pct((re.after - re.before) / re.before)}; ${re.days} dni z danymi` : "brak danych o opóźnieniach dla tego typu dnia" },
+      { k: "Zmienione kursy", v: `${v.changes.length}`, s: `na ${r.trips} kursów; najwyżej ${maxOther} min zmiany poza Dworcową` },
+      { k: "Koszt dnia", v: `${num(v.cost_before.total)} → ${num(v.cost_after.total)} <small>zł</small>`, s: `${num(v.indicators_before.total_km)} → ${num(v.indicators_after.total_km)} km, ${num(v.indicators_before.vehicle_hours, 1)} → ${num(v.indicators_after.vehicle_hours, 1)} wozogodz.` },
+      { k: "Przerwy kierowców zgodne z ustawą", v: `${v.breaks_before.ok_breaks}/${v.breaks_before.duties} → ${v.breaks_after.ok_breaks}/${v.breaks_after.duties}`, s: "służby z wymaganą przerwą (≥15 min części)" }];
+    $("tiles").innerHTML = tiles.map(t => `<div class="tile"><div class="k">${t.k}</div><div class="v">${t.v}</div><div class="s">${t.s}</div></div>`).join("");
+  }
+
+  function drawBoards() {
+    const r = R(), v = V();
+    const after = Object.fromEntries(v.bus_after.map(b => [b.id, b]));
+    const lines = [...new Set(r.bus_rep.filter(b => b.dep != null).map(b => b.route))].sort((a, b) => a.length - b.length || a.localeCompare(b));
+    $("boards").innerHTML = lines.map(l => {
+      const deps = r.bus_rep.filter(b => b.route === l && b.dep != null).map(b => ({ o: b.dep, n: after[b.id] ? after[b.id].dep : b.dep, h: b.headsign })).sort((a, b) => a.n - b.n);
+      return `<div><h4><span class="sw" style="background:${LC(l)}"></span>Linia ${esc(l)}</h4><div class="times">${deps.map(d => d.o === d.n ? `<span>${hm(d.o)}</span>` : `<span><span class="old">${hm(d.o)}</span><span class="new">${hm(d.n)}</span></span>`).join("")}</div></div>`;
+    }).join("");
+  }
+
+  function drawChanges() {
+    const v = V();
+    const rows = [...v.changes].sort((a, b) => ((a.station_dep[0] ?? a.station_arr[0] ?? a.first_stop[0]) - (b.station_dep[0] ?? b.station_arr[0] ?? b.first_stop[0])));
+    const kind = { through: "przez Dworcową", start: "od Dworcowej", end: "do Dworcowej", loop: "pętla", none: "bez Dworcowej" };
+    const t = (p) => p[0] == null ? "–" : p[0] === p[1] ? hm(p[0]) : `<span class="old">${hm(p[0])}</span><span class="new">${hm(p[1])}</span>`;
+    const sh = x => x === 0 ? "0" : `${x > 0 ? "+" : "−"}${Math.abs(x)}`;
+    $("chg-text").textContent = rows.length ? `${rows.length} kursów zmienia godziny. Kolumna „inne przystanki” podaje zmianę na przystankach przed Dworcową i po niej (w minutach).` : "Brak zmian: w tych warunkach obecny rozkład jest najlepszy.";
+    $("chg-tbl").innerHTML = rows.length ? table([
+      { h: "Linia", f: r => `<span class="sw" style="background:${LC(r.route)}"></span>${esc(r.route)}` },
+      { h: "Kierunek", f: r => esc(r.headsign) }, { h: "Kurs", f: r => kind[r.kind] || r.kind },
+      { h: "Dworcowa przyjazd", f: r => t(r.station_arr) }, { h: "Dworcowa odjazd", f: r => t(r.station_dep) },
+      { h: "Inne przystanki", num: 1, f: r => `${sh(r.shift_before)} / ${sh(r.shift_after)}` },
+      { h: "Pierwszy przystanek", f: r => t(r.first_stop) }], rows) : "";
+  }
+
+  function drawGantt() {
+    const v = V(), blocks = st.when === "after" ? v.blocks_after : v.blocks_before;
+    const box = $("gantt"); box.innerHTML = "";
+    const w = Math.max(box.clientWidth, 900), ml = 42, mr = 10, rowH = 16, top = 22, h = top + rowH * blocks.length + 10;
+    const lo = 4.5 * 60, hi = 23.5 * 60, X = m => ml + (w - ml - mr) * (m - lo) / (hi - lo);
+    const svg = el("svg", { width: w, height: h, viewBox: `0 0 ${w} ${h}`, role: "img", "aria-label": "Obiegi autobusów" }, box);
+    for (let hr = 5; hr <= 23; hr++) { el("line", { x1: X(hr * 60), x2: X(hr * 60), y1: top - 6, y2: h - 6, stroke: "var(--rule)" }, svg); if (hr % 2 === 1) { const t = el("text", { x: X(hr * 60), y: 12, "text-anchor": "middle" }, svg); t.textContent = `${hr}:00`; } }
+    blocks.forEach((b, i) => {
+      const y = top + i * rowH;
+      const lab = el("text", { x: 0, y: y + 11 }, svg); lab.textContent = `#${i + 1}`;
+      b.forEach(t => {
+        const r = el("rect", { x: X(t.start), y: y + 2, width: Math.max(2, X(t.end) - X(t.start) - 1), height: rowH - 5, rx: 2, fill: LC(t.route) }, svg);
+        hover(r, `<b>Linia ${esc(t.route)}</b> ${hm(t.start)}–${hm(t.end)}<br>autobus #${i + 1}`);
+      });
+    });
+    const routes = [...new Set(blocks.flat().map(t => t.route))].sort();
+    $("gantt-legend").innerHTML = routes.map(r => `<span><i style="background:${LC(r)}"></i>linia ${esc(r)}</span>`).join("") + `<span>${blocks.length} autobusów</span>`;
+  }
+
+  function drawDuties() {
+    const v = V(), b0 = v.breaks_before, b1 = v.breaks_after;
+    $("duty-text").textContent = `Obiegi podzielono na służby kierowców na Dworcowej (najdłużej ${Math.round((+cfg.duties?.max_duty || 510) / 60 * 10) / 10} godz. z przygotowaniem). Przerwa: przy ponad 6 godz. jazdy co najmniej ${cfg.duties?.break_after_6h} min, przy ponad 8 godz. ${cfg.duties?.break_after_8h} min, w częściach po co najmniej ${cfg.duties?.break_part} min w rozkładzie. Zgodnych służb: ${b0.ok_breaks} z ${b0.duties} obecnie, ${b1.ok_breaks} z ${b1.duties} po korekcie.`;
+    $("duty-tbl").innerHTML = table([{ h: "Autobus", f: r => `#${r.block}` }, { h: "Od", f: r => r.start }, { h: "Do", f: r => r.end },
+      { h: "Jazda [h]", num: 1, f: r => num(r.driving_h, 1) }, { h: "Przerwy [min]", f: r => r.breaks.join(", ") || "–" },
+      { h: "Wymagane", num: 1, f: r => r.needed || "–" }, { h: "", f: r => `<span class="chip ${r.ok ? "ok" : "no"}">${r.ok ? "zgodna" : "za krótka przerwa"}</span>` }], b1.list);
+  }
+
+  function drawGaps() {
+    const v = V(), g = v.gaps || [];
+    $("gap-text").textContent = g.length ? `Autobusy, które czekają na Dworcowej dłużej niż jeden kurs tam i z powrotem, mogą wykonać dodatkowy kurs tej samej linii bez nowego autobusu i bez nowej służby. Koszt krańcowy to energia i obsługa za dodatkowe kilometry. Kolumna „luka” to odstęp między sąsiednimi odjazdami linii, który kurs wypełnia.` : "Brak takich możliwości w tym wariancie.";
+    $("gap-tbl").innerHTML = g.length ? table([{ h: "Linia", f: r => `<span class="sw" style="background:${LC(r.line)}"></span>${esc(r.line)}` },
+      { h: "Odjazd", f: r => `<span class="mono">${r.depart}</span>` }, { h: "Powrót", f: r => `<span class="mono">${r.return}</span>` },
+      { h: "Postój autobusu", f: r => `${r.idle_from}–${r.idle_to} (${r.idle_min} min)` }, { h: "Nowe dobre przesiadki", num: 1, f: r => `+${r.new_transfers}` },
+      { h: "Luka w linii", num: 1, f: r => r.line_gap_min ? `${num(r.line_gap_min)} min (${r.prev_dep}–${r.next_dep})` : "–" },
+      { h: "km", num: 1, f: r => num(r.km, 1) }, { h: "Koszt krańcowy", num: 1, f: r => `${num(r.marginal_cost)} zł` }], g.slice(0, 15)) : "";
+  }
+
+  function drawCosts() {
+    const r = R();
+    const rows = [];
+    for (const vn of VARS) {
+      const v = r.variants[vn];
+      for (const [when, lab] of [["before", "obecny"], ["after", "proponowany"]]) {
+        const i = v[`indicators_${when}`], c = v[`cost_${when}`];
+        rows.push({ vn, lab, i, c });
+      }
+    }
+    $("cost-text").textContent = `Koszt jednego dnia (${DAYNAME[st.day].toLowerCase()}) z parametrów w pliku zkmplan.ini. Domyślne stawki to szacunek dla małego miasta, a nie dane ZKM: zamień je na dane przewoźnika. Wozokilometry obejmują dojazdy z zajezdni.`;
+    $("cost-tbl").innerHTML = table([{ h: "Obiegi", f: x => VARNAME[x.vn] }, { h: "Rozkład", f: x => x.lab },
+      { h: "Autobusy", num: 1, f: x => x.i.peak_vehicles }, { h: "km", num: 1, f: x => num(x.i.total_km) },
+      { h: "Wozogodz.", num: 1, f: x => num(x.i.vehicle_hours, 1) }, { h: "Służby", num: 1, f: x => x.i.duties },
+      { h: "Godz. kierowców", num: 1, f: x => num(x.i.duty_hours, 1) }, { h: "Koszt dnia", num: 1, f: x => `${num(x.c.total)} zł` },
+      { h: "zł/km", num: 1, f: x => num(x.c.per_km, 2) }], rows);
+    const A = D.annual || {};
+    const arows = [];
+    for (const vn of Object.keys(A)) for (const [when, lab] of [["before", "obecny"], ["after", "proponowany"]]) { const x = A[vn][when]; arows.push({ vn, lab, x }); }
+    $("annual-tbl").innerHTML = table([{ h: "Obiegi", f: r => VARNAME[r.vn] }, { h: "Rozkład", f: r => r.lab },
+      { h: "Wozokm / rok", num: 1, f: r => num(r.x.total_km) }, { h: "Energia", num: 1, f: r => `${num(r.x.cost_energy)} zł` },
+      { h: "Kierowcy", num: 1, f: r => `${num(r.x.cost_drivers)} zł` }, { h: "Autobusy", num: 1, f: r => `${num(r.x.cost_vehicles)} zł` },
+      { h: "Razem / rok", num: 1, f: r => `<b>${num(r.x.cost_total)} zł</b>` }], arows);
+  }
+
+  function drawDemand() {
+    const v = V(), d = v.demand, dm = cfg.demand || {};
+    $("dem-text").innerHTML = `<p>Na stacji Iława Główna wsiada i wysiada średnio ${num(+dm.station_daily_exchange)} osób na dobę (Urząd Transportu Kolejowego, 2025). Nie wiadomo, ilu z nich jedzie dalej autobusem ZKM, bo ZKM nie publikuje takich danych. Dlatego liczymy trzy warianty: udział autobusu, wrażliwość na czas czekania i średni przychód z przejazdu to założenia, nie pomiar.</p><p>Średni czas czekania na przesiadkę (pociąg–linia, w obu kierunkach) zmienia się z ${num(d.wait_before, 1)} do ${num(d.wait_after, 1)} min (${pct(d.wait_change, 1)}). Przy elastyczności ujemnej krótsze czekanie oznacza więcej pasażerów.</p>`;
+    const rows = ["low", "mid", "high"].map(k => ({ k, ...d[k] }));
+    const nm = { low: "ostrożny", mid: "średni", high: "optymistyczny" };
+    $("dem-tbl").innerHTML = table([{ h: "Wariant", f: r => nm[r.k] }, { h: "Udział autobusu", num: 1, f: r => `${num(100 * r.bus_share)}%` },
+      { h: "Elastyczność", num: 1, f: r => num(r.elasticity, 1) }, { h: "Przejazdy / dzień", num: 1, f: r => num(r.base_trips_day) },
+      { h: "Zmiana", num: 1, f: r => pct(r.change, 1) }, { h: "Dodatkowe przejazdy / rok", num: 1, f: r => num(r.extra_trips_year) },
+      { h: "Przychód / rok", num: 1, f: r => `${num(r.extra_revenue_year)} zł` }], rows);
+  }
+
+  function drawMethod() {
+    const s = cfg.shifts || {}, b = cfg.blocks || {};
+    $("method").innerHTML = `<ul>
+      <li><b>Rozkład ZKM</b> pochodzi z rozklad.com, przetworzony do formatu GTFS (zkm_gtfs.py). <b>Rozkład PKP</b> z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.</li>
+      <li><b>Przesunięcia:</b> kurs zmienia się najwyżej o ${s.max_shift} min na innych przystankach (kursy szkolne o ${s.school_max_shift} min). Na Dworcowej autobus może stać dłużej o maksymalnie ${s.max_extra_dwell} min. Każda minuta zmiany ma małą karę, więc optymalizator zmienia tylko te kursy, które coś dają.</li>
+      <li><b>Obiegi:</b> postój między kursami autobusu co najmniej ${b.min_layover} min. Obieg odtworzony z rozkładu, wariant „${VARNAME.single}” i „${VARNAME.interlined}”.</li>
+      <li><b>Koszt:</b> łączny czas pracy autobusów nie może wzrosnąć, kilometry są te same. Przerwy kierowców, które dziś istnieją, zostają.</li>
+      <li><b>Ograniczenia:</b> obiegi i służby ZKM są odtworzone, a nie pobrane z ZKM; koszty to szacunek; brak danych o faktycznych odjazdach autobusów. Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.</li></ul>`;
+    $("foot").textContent = `Wygenerowano ${D.generated} narzędziem zkmplan.py z repozytorium ilawa-transport.`;
+  }
+
+  function drawAll() { drawSummary(); drawBoards(); drawChanges(); drawGantt(); drawDuties(); drawGaps(); drawCosts(); drawDemand(); }
+  tabs("f-day", DAYS.map(d => [d, DAYNAME[d]]), st, "day", drawAll);
+  tabs("f-var", VARS.map(v => [v, v === "single" ? "Obiegi jednej linii" : "Obiegi mieszane"]), st, "v", drawAll);
+  tabs("f-when", [["before", "Obecny rozkład"], ["after", "Po korekcie"]], st, "when", drawGantt);
+  drawMethod(); drawAll();
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(drawGantt, 150); });
+})();
+</script>
