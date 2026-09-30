@@ -123,6 +123,7 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
 .poster .dl button:focus-visible { outline: 2px solid var(--poster-ink); outline-offset: 2px; }
 .poster .dl button:disabled { opacity: .6; cursor: progress; }
 .poster .dl .dl-msg { font: 400 .84rem/1.4 var(--f-display); }
+dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-display); margin-top: .6rem; } dl.gloss dd { margin: .1rem 0 0; }
 </style>
 
 <header class="poster">
@@ -144,6 +145,13 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     <p class="lead" id="lead"></p>
     <div class="tiles" id="tiles"></div>
   </div>
+
+  <section id="method">
+    <div class="label">Jak czytać ten raport</div>
+    <h2>Słowniczek, metoda i założenia</h2>
+    <div class="prose" id="method-text"></div>
+    <details><summary>Wrażliwość na czas dojścia z peronu na przystanek</summary><div class="tbl" id="sens-tbl"></div></details>
+  </section>
 
   <section id="test">
     <div class="label">Test tezy</div>
@@ -234,13 +242,6 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     <div class="label">Monitoring</div>
     <h2>Pomiar faktycznych przyjazdów</h2>
     <div class="prose" id="mon-text"></div>
-  </section>
-
-  <section id="method">
-    <div class="label">Metoda i założenia</div>
-    <h2>Jak liczono</h2>
-    <div class="prose" id="method-text"></div>
-    <details><summary>Wrażliwość na czas dojścia z peronu na przystanek</summary><div class="tbl" id="sens-tbl"></div></details>
   </section>
 
   <section id="sources">
@@ -523,7 +524,18 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
   </ol>`;
 
   // ---------- method
-  $("method-text").innerHTML = `<ul>
+  $("method-text").innerHTML = `<h3>Słowniczek</h3><dl class="gloss">
+    <dt>Para pociąg–linia</dt><dd>Jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.</dd>
+    <dt>Czas dojścia</dt><dd>${P.m_t2b} min z peronu na przystanek Dworcowa i ${P.m_b2t} min z przystanku na peron.</dd>
+    <dt>Czekanie</dt><dd>Czas od dojścia na przystanek do odjazdu autobusu albo od dojścia na peron do odjazdu pociągu.</dd>
+    <dt>Dobra przesiadka</dt><dd>Czekanie po dojściu najwyżej ${P.good_window} min.</dd>
+    <dt>Ciasna przesiadka</dt><dd>Według rozkładu czekanie na linię najwyżej ${P.m_t2b + P.good_window} min od przyjazdu pociągu. Takie przesiadki najłatwiej zrywa opóźnienie.</dd>
+    <dt>Autobus „ucieka”</dt><dd>Odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. W drugą stronę: autobus przyjeżdża tak późno, że podróżni „nie zdążą” na pociąg.</dd>
+    <dt>Rozkład losowy</dt><dd>Rozkład ZKM, w którym każdą linię przesunięto o losowy czas od −30 do +30 min. Kursy i odstępy są takie same, znika tylko związek z pociągami. Porównanie z nim pokazuje, czy rozkład jest dopasowany do pociągów.</dd>
+    <dt>90% wyników losowych, percentyl</dt><dd>Zakres, w którym mieści się 90% wyników rozkładów losowych. Wynik poza nim jest lepszy albo gorszy niż przypadek.</dd>
+    <dt>Kategorie pociągów</dt><dd>EIP, EIC, IC i TLK to pociągi PKP Intercity; R to pociągi regionalne POLREGIO.</dd>
+    <dt>Typ dnia</dt><dd>Dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.</dd></dl>
+    <h3>Metoda i założenia</h3><ul>
     <li><b>Przystanki.</b> Dworcowa 005-01 to odjazdy do miasta (linie 1, 2, 3, 4, 7). Dworcowa 079-00 to przyjazdy z miasta: linie 2, 3, 4 kończą tu bieg, a linia 1 jedzie dalej na Piaskową (odjazd minutę później). Linia 7 jest linią okrężną i zatrzymuje się tylko na 005-01.</li>
     <li><b>Czas dojścia.</b> Z peronu na przystanek ${P.m_t2b} min, z przystanku na peron ${P.m_b2t} min. Wyniki dla 2–8 min są w tabeli poniżej.</li>
     <li><b>Autobus „ucieka”.</b> Odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. W drugą stronę: autobus przyjeżdża tak późno, że podróżni nie zdążą na pociąg (do 2 min po jego odjeździe).</li>

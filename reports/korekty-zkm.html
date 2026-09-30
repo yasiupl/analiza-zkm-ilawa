@@ -92,6 +92,7 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
 .poster .dl button:focus-visible { outline: 2px solid var(--poster-ink); outline-offset: 2px; }
 .poster .dl button:disabled { opacity: .6; cursor: progress; }
 .poster .dl .dl-msg { font: 400 .84rem/1.4 var(--f-display); }
+dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-display); margin-top: .6rem; } dl.gloss dd { margin: .1rem 0 0; }
 </style>
 
 <header class="poster"><div class="wrap">
@@ -117,6 +118,15 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     <h2 id="sum-title"></h2>
     <p class="prose" id="sum-text"></p>
     <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <div class="label">Jak czytać ten raport</div>
+    <h2>Słowniczek, metoda i założenia</h2>
+    <div class="prose" id="method"></div>
+    <pre>python3 zkmplan.py               # pobiera rozkłady ZKM i PKP, liczy, tworzy raport
+python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
+# parametry: zkmplan.ini, wyniki: data/plan/RRRR-MM-DD/, raport: reports/korekty-zkm.html</pre>
   </section>
 
   <section>
@@ -181,14 +191,6 @@ footer { padding-block: 2rem 3rem; border-top: 1px solid var(--rule); font: 400 
     <div class="tbl" id="dem-tbl"></div>
   </section>
 
-  <section>
-    <div class="label">Metoda</div>
-    <h2>Założenia i uruchamianie</h2>
-    <div class="prose" id="method"></div>
-    <pre>python3 zkmplan.py               # pobiera rozkłady ZKM i PKP, liczy, tworzy raport
-python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
-# parametry: zkmplan.ini, wyniki: data/plan/RRRR-MM-DD/, raport: reports/korekty-zkm.html</pre>
-  </section>
 </main>
 <footer><div class="wrap" id="foot"></div></footer>
 <div id="tip" role="tooltip"></div>
@@ -400,7 +402,21 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
 
   function drawMethod() {
     const s = cfg.shifts || {}, b = cfg.blocks || {};
-    $("method").innerHTML = `<ul>
+    const t = cfg.transfers || {};
+    $("method").innerHTML = `<h3>Słowniczek</h3><dl class="gloss">
+      <dt>Para pociąg–linia</dt><dd>Jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.</dd>
+      <dt>Dobra przesiadka</dt><dd>Czekanie po dojściu najwyżej ${t.good_window} min. Dojście trwa ${t.walk_train_to_bus} min z peronu na przystanek i ${t.walk_bus_to_train} min z przystanku na peron.</dd>
+      <dt>Zapas na opóźnienie</dt><dd>Do przyjazdu pociągu doliczana jest mediana opóźnienia jego kategorii: ${Object.entries(D.buffers || {}).map(([k, x]) => `${k} ${num(x)} min`).join(", ") || "brak danych"}.</dd>
+      <dt>Przesunięcie kursu</dt><dd>Zmiana godzin kursu na wszystkich jego przystankach o tyle samo minut.</dd>
+      <dt>Etap</dt><dd>Grupa zmian do wprowadzenia razem: etap 1 to 20 najskuteczniejszych zmian, etap 2 to łącznie 40, ostatni etap to wszystkie. Każdy etap zachowuje zmiany poprzedniego.</dd>
+      <dt>Zmiana towarzysząca</dt><dd>Zmiana bez własnego zysku, potrzebna do zachowania przerwy kierowcy, postoju autobusu albo kolejności kursów po innej zmianie.</dd>
+      <dt>Obieg</dt><dd>Kolejne kursy jednego autobusu w ciągu dnia. Obiegi jednej linii: autobus jeździ cały dzień na tej samej linii. Obiegi mieszane: autobus może zmienić linię na Dworcowej.</dd>
+      <dt>Postój</dt><dd>Czas między kursami jednego autobusu.</dd>
+      <dt>Służba</dt><dd>Czas pracy jednego kierowcy, od przygotowania autobusu do końca ostatniego kursu.</dd>
+      <dt>Przerwa</dt><dd>Postój kierowcy trwający co najmniej 15 min, wliczany do przerwy wymaganej ustawą o czasie pracy kierowców.</dd>
+      <dt>Wozokilometr, wozogodzina</dt><dd>Kilometr i godzina pracy autobusu, razem z dojazdami z zajezdni.</dd>
+      <dt>Wariant ostrożny, średni, optymistyczny</dt><dd>Założenia o liczbie pasażerów: udział podróżnych kolejowych, którzy jadą dalej autobusem, i wrażliwość na czas czekania.</dd></dl>
+      <h3>Metoda i założenia</h3><ul>
       <li><b>Rozkład ZKM</b> pochodzi z rozklad.com, przetworzony do formatu GTFS (zkm_gtfs.py). <b>Rozkład PKP</b> z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.</li>
       <li><b>Przesunięcia:</b> kurs zmienia się najwyżej o ${s.max_shift} min na innych przystankach (kursy szkolne o ${s.school_max_shift} min). Na Dworcowej autobus może stać dłużej o maksymalnie ${s.max_extra_dwell} min. Każdy zmieniony kurs i każda minuta zmiany mają karę (${s.trip_change_penalty} i ${s.habit_penalty} dobrej przesiadki), więc optymalizator zmienia tylko te kursy, które coś dają.</li>
       <li><b>Etapy:</b> limity zmian ${esc(s.stages || "brak")}; każdy etap zachowuje zmiany poprzedniego, ostatni etap nie ma limitu.</li>

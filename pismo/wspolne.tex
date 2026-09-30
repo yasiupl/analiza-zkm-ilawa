@@ -1,7 +1,8 @@
-% Wspólna część obu pism: preambuła, dane nadawcy, uzasadnienie i załączniki.
-% Pisma: pismo-burmistrz.tex i pismo-zkm.tex. Kompilacja (dwa razy):
-%   xelatex pismo-burmistrz.tex
-%   xelatex pismo-zkm.tex
+% Wspólna część obu pism: preambuła, dane nadawcy, adresaci, uzasadnienie i załączniki.
+% Pisma (oba do tych samych adresatów, odsyłają do siebie nawzajem):
+%   pismo-1-wniosek-korekty.tex        wniosek w sprawie korekt rozkładu (z załącznikami 1-3)
+%   pismo-2-informacja-publiczna.tex   wniosek o udostępnienie informacji publicznej
+% Kompilacja (dwa razy): xelatex pismo-1-wniosek-korekty.tex, xelatex pismo-2-informacja-publiczna.tex
 % Załącznik nr 1 (zalacznik-1-zmiany.tex) tworzy narzędzie zkmplan.py:
 %   cp ../data/plan/<data>/zmiany.tex zalacznik-1-zmiany.tex
 % Załączniki nr 2 i 3 (raporty do druku) tworzy print_reports.py:
@@ -37,8 +38,8 @@
 \newcommand{\Czesc}[1]{\par\medskip{\large\bfseries #1}\par\smallskip}
 \newcommand{\Tytul}[1]{\par\smallskip{\bfseries #1}\par}
 
-% Nagłówek: nadawca po lewej, miejscowość i data po prawej, adresat niżej po prawej.
-\newcommand{\Naglowek}[1]{%
+% Nagłówek: nadawca po lewej, miejscowość i data po prawej, adresaci niżej po prawej.
+\newcommand{\Naglowek}{%
 \thispagestyle{empty}
 \begin{minipage}[t]{0.52\textwidth}
 \Nadawca\\
@@ -49,11 +50,20 @@ e-mail: \EmailNadawcy
 Iława, dnia \Data{} 2026 r.
 \end{minipage}
 
-\vspace{1.1cm}
+\vspace{1.0cm}
 \hfill\begin{minipage}[t]{0.55\textwidth}
-#1
+\textbf{Burmistrz Miasta Iławy}\\
+Urząd Miasta Iławy\\
+ul. Niepodległości 13\\
+14-200 Iława
+
+\medskip
+\textbf{Zarząd\\
+„Zakład Komunikacji Miejskiej” Sp.\ z~o.o. w~Iławie}\\
+ul. Wojska Polskiego 29\\
+14-200 Iława
 \end{minipage}
-\vspace{0.9cm}}
+\vspace{0.8cm}}
 
 \newcommand{\Wstep}{%
 Przeanalizowałem rozkład jazdy autobusów ZKM Iława obowiązujący od 1 września 2026 r. na tle rozkładu jazdy pociągów na stacji Iława Główna (dane PKP Polskich Linii Kolejowych S.A.). Wyniki i metoda są opisane w raportach załączonych do pisma (załączniki nr~2 i~3).}

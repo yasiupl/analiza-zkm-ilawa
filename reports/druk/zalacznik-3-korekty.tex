@@ -49,6 +49,32 @@ Godziny pracy kierowców dziennie & 197,3 → 196,8 & 69,8 → 69,8 & 53,5 → 5
 Autobusy w szczycie & 18 → 18 & 6 → 6 & 5 → 5 \\
 Służby z przerwą zgodną z ustawą & 34/34 → 34/34 & 11/11 → 11/11 & 10/10 → 10/10 \\
 \bottomrule\end{tabular}\end{center}}
+\section*{Jak czytać ten raport}
+\subsection*{Słowniczek}
+\begin{description}[itemsep=1pt, leftmargin=0pt]
+\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.
+\item[Dobra przesiadka] czekanie po dojściu najwyżej 10 min. Dojście trwa 4 min z peronu na przystanek i 5 min z przystanku na peron.
+\item[Zapas na opóźnienie] do przyjazdu pociągu doliczana jest mediana opóźnienia jego kategorii: EIC 3 min, EIP 3 min, IC 3 min, R 0 min, TLK 3 min.
+\item[Przesunięcie kursu] zmiana godzin kursu na wszystkich jego przystankach o tyle samo minut.
+\item[Etap] grupa zmian do wprowadzenia razem: etap 1 to 20 najskuteczniejszych zmian, etap 2 to łącznie 40, ostatni etap to wszystkie. Każdy etap zachowuje zmiany poprzedniego.
+\item[Zmiana towarzysząca] zmiana bez własnego zysku, potrzebna do zachowania przerwy kierowcy, postoju autobusu albo kolejności kursów po innej zmianie.
+\item[Obieg] kolejne kursy jednego autobusu w ciągu dnia. Obiegi jednej linii: autobus jeździ cały dzień na tej samej linii. Obiegi mieszane: autobus może zmienić linię na Dworcowej.
+\item[Postój] czas między kursami jednego autobusu.
+\item[Służba] czas pracy jednego kierowcy, od przygotowania autobusu do końca ostatniego kursu.
+\item[Przerwa] postój kierowcy trwający co najmniej 15 min, wliczany do przerwy wymaganej ustawą o czasie pracy kierowców.
+\item[Wozokilometr, wozogodzina] kilometr i godzina pracy autobusu, razem z dojazdami z zajezdni.
+\item[Wariant ostrożny, średni, optymistyczny] założenia o liczbie pasażerów: udział podróżnych kolejowych, którzy jadą dalej autobusem, i wrażliwość na czas czekania.
+\end{description}
+\subsection*{Metoda i założenia}
+\begin{itemize}
+\item \textbf{Dane.} Rozkład ZKM z rozklad.com, przetworzony do formatu GTFS. Rozkład pociągów z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.
+\item \textbf{Przesunięcia.} Kurs zmienia się najwyżej o 5 min (kursy szkolne o 2 min). Każdy zmieniony kurs i każda minuta zmiany mają karę, więc optymalizator (program całkowitoliczbowy) zmienia tylko te kursy, które coś dają.
+\item \textbf{Obiegi.} Postój między kursami autobusu co najmniej 2 min. Kolejność kursów linii na Dworcowej zostaje ta sama.
+\item \textbf{Koszt.} Łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą.
+\item \textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę.
+\item \textbf{Ograniczenia.} Obiegi i służby są odtworzone z rozkładu, a nie pobrane z ZKM. Brak danych o faktycznych odjazdach autobusów. Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.
+\item \textbf{Powtarzalność.} Narzędzie \texttt{zkmplan.py} można uruchomić po każdej zmianie rozkładu ZKM lub PKP; parametry są w pliku \texttt{zkmplan.ini}.
+\end{itemize}
 \section{Etapy wdrożenia}
 Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to 20 najbardziej opłacalnych zmian, etap 2 to łącznie 40 zmian, ostatni etap nie ma limitu. Liczone z zapasem na typowe opóźnienie pociągu.
 \par\medskip\noindent\begin{minipage}{\textwidth}\centering\includegraphics[width=\textwidth]{fig/korekty-etapy.pdf}\par\smallskip
@@ -207,14 +233,4 @@ ostrożny & 5\,\% & -0,2 & 235 & +1,3\,\% & 3 & 951 \\
 optymistyczny & 15\,\% & -0,7 & 705 & +4,5\,\% & 32 & 9\,980 \\
 \bottomrule\end{tabular}\end{center}}
 \mut{\footnotesize Wartości dzienne dotyczą dnia roboczego, roczne obejmują wszystkie typy dni. Elastyczność: o tyle procent zmienia się liczba pasażerów, gdy czas czekania zmienia się o 1\,\%.}
-\section{Metoda}
-\begin{itemize}
-\item \textbf{Dane.} Rozkład ZKM z rozklad.com, przetworzony do formatu GTFS. Rozkład pociągów z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.
-\item \textbf{Przesunięcia.} Kurs zmienia się najwyżej o 5 min (kursy szkolne o 2 min). Przesunięty kurs zmienia godziny na wszystkich przystankach o tyle samo. Każdy zmieniony kurs i każda minuta zmiany mają karę, więc optymalizator (program całkowitoliczbowy) zmienia tylko te kursy, które coś dają.
-\item \textbf{Obiegi.} Postój między kursami autobusu co najmniej 2 min. Kolejność kursów linii na Dworcowej zostaje ta sama.
-\item \textbf{Koszt.} Łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą o czasie pracy kierowców.
-\item \textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę.
-\item \textbf{Ograniczenia.} Obiegi i służby są odtworzone z rozkładu, a nie pobrane z ZKM. Brak danych o faktycznych odjazdach autobusów. Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.
-\item \textbf{Powtarzalność.} Narzędzie \texttt{zkmplan.py} można uruchomić po każdej zmianie rozkładu ZKM lub PKP; parametry są w pliku \texttt{zkmplan.ini}.
-\end{itemize}
 \end{document}

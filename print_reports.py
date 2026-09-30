@@ -365,6 +365,31 @@ def attachment_przesiadki(D: dict) -> str:
         [f"Ciasne przesiadki z IC na daną linię (czekanie do {P['m_t2b'] + P['good_window']} min), które się udają",
          pct(keep_ic), f"POLREGIO: {pct(r_keep)}"]]))
 
+    # how to read: glossary and method, before the results
+    out.append("\\section*{Jak czytać ten raport}\n")
+    out.append("\\subsection*{Słowniczek}\n\\begin{description}[itemsep=1pt, leftmargin=0pt]\n"
+               "\\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.\n"
+               f"\\item[Czas dojścia] {P['m_t2b']} min z peronu na przystanek Dworcowa i {P['m_b2t']} min z przystanku na peron.\n"
+               "\\item[Czekanie] czas od dojścia na przystanek do odjazdu autobusu albo od dojścia na peron do odjazdu pociągu.\n"
+               f"\\item[Dobra przesiadka] czekanie po dojściu najwyżej {P['good_window']} min.\n"
+               f"\\item[Ciasna przesiadka] według rozkładu czekanie na linię najwyżej {P['m_t2b'] + P['good_window']} min od przyjazdu pociągu. Takie przesiadki najłatwiej zrywa opóźnienie.\n"
+               "\\item[Autobus „ucieka”] odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. "
+               "W drugą stronę: autobus przyjeżdża tak późno, że podróżni „nie zdążą” na pociąg.\n"
+               "\\item[Rozkład losowy] rozkład ZKM, w którym każdą linię przesunięto o losowy czas od $-30$ do $+30$ min. Kursy i odstępy są takie same, "
+               "znika tylko związek z pociągami. Porównanie z nim pokazuje, czy rozkład jest dopasowany do pociągów.\n"
+               "\\item[90\\,\\% wyników losowych, percentyl] zakres, w którym mieści się 90\\,\\% wyników rozkładów losowych. Wynik poza nim jest lepszy albo gorszy niż przypadek.\n"
+               "\\item[Kategorie pociągów] EIP, EIC, IC i TLK to pociągi PKP Intercity; R to pociągi regionalne POLREGIO.\n"
+               "\\item[Przystanki Dworcowa] 005-01 to odjazdy do miasta, 079-00 to przyjazdy z miasta.\n"
+               "\\item[Typ dnia] dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.\n"
+               "\\end{description}\n")
+    out.append("\\subsection*{Metoda i założenia}\n\\begin{itemize}\n"
+               "\\item \\textbf{Dane.} Rozkład ZKM z rozklad.com, rozkład pociągów wszystkich przewoźników z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.\n"
+               "\\item \\textbf{Model losowy.} 3000 powtórzeń dla sieci, 1000 dla każdej linii osobno.\n"
+               f"\\item \\textbf{{Okres.}} Rozkład planowy: {fdate(P['dates'][0])}--{fdate(P['dates'][1])}. Dni do testu: "
+               + ", ".join(f"{DAYSHORT[d]} {fdate(D['rep_dates'][d])}" for d in days) + ".\n"
+               "\\item \\textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, "
+               "więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.\n\\end{itemize}\n")
+
     # test
     out.append("\\section{Test tezy: rozkład rzeczywisty na tle losowego}\n")
     out.append(f"Dla każdego pociągu sprawdzono, czy autobus odjeżdża w chwili, gdy podróżni jeszcze idą z peronu na przystanek: od 2 min przed "
@@ -512,25 +537,14 @@ def attachment_przesiadki(D: dict) -> str:
     out.append("Faktyczne czasy pociągów zbiera skrypt \\texttt{monitor.py}. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje "
                "potwierdzone czasy przyjazdu i odjazdu. Monitor powinien pracować co najmniej 4 tygodnie, żeby dla każdego typu dnia było po kilka dni danych. "
                "Autobusy nie mają publicznych danych o faktycznych odjazdach: potrzebne są dane GPS z ZKM, obserwacje na przystanku albo założenie tolerancji ZKM, jak w tym raporcie.\n")
-    out.append("\\section{Metoda i założenia}\n\\begin{itemize}\n"
-               "\\item \\textbf{Przystanki.} Dworcowa 005-01 to odjazdy do miasta (linie 1, 2, 3, 4, 7). Dworcowa 079-00 to przyjazdy z miasta.\n"
-               f"\\item \\textbf{{Czas dojścia.}} Z peronu na przystanek {P['m_t2b']} min, z przystanku na peron {P['m_b2t']} min. Wyniki dla innych czasów są w tabeli niżej.\n"
-               "\\item \\textbf{Autobus „ucieka”.} Odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. "
-               "W drugą stronę: autobus przyjeżdża tak późno, że podróżni nie zdążą na pociąg.\n"
-               f"\\item \\textbf{{Dobra przesiadka.}} Czekanie po dojściu wynosi najwyżej {P['good_window']} min.\n"
-               "\\item \\textbf{Model losowy.} Każdą linię przesunięto o losowy czas od $-30$ do $+30$ min (3000 powtórzeń, dla linii osobno 1000). "
-               "Częstotliwość i odstępy kursów zostają takie same; znika tylko związek z rozkładem kolejowym.\n"
-               f"\\item \\textbf{{Okres.}} Rozkład planowy: {fdate(P['dates'][0])}--{fdate(P['dates'][1])}. Dni do testu: "
-               + ", ".join(f"{DAYSHORT[d]} {fdate(D['rep_dates'][d])}" for d in days) + ".\n"
-               "\\item \\textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, "
-               "więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.\n\\end{itemize}\n")
     srow = [r for r in D["sensitivity"] if r["day_type"] == "Roboczy"]
     rows = []
     for w in sorted({r["walk"] for r in srow}):
         a = next((r for r in srow if r["walk"] == w and r["direction"] == T2B), None)
         b = next((r for r in srow if r["walk"] == w and r["direction"] == B2T), None)
         rows.append([f"{w} min", pct(a and a["near_miss_rate"]), pct(a and a["good_rate"]), pct(b and b["near_miss_rate"]), pct(b and b["good_rate"])])
-    out.append("\\subsection*{Wrażliwość na czas dojścia (dzień roboczy)}\n")
+    out.append("\\section{Wrażliwość na czas dojścia}\n")
+    out.append("Wyniki dla dnia roboczego przy innych czasach dojścia z peronu na przystanek i z przystanku na peron.\n")
     out.append(table([("Czas dojścia", "l"), ("P→A: ucieka", "r"), ("P→A: dobra", "r"), ("A→P: nie zdąży", "r"), ("A→P: dobra", "r")], rows))
     out.append("\\section*{Źródła}\n\\begin{itemize}\n"
                "\\item Rozkład jazdy ZKM Iława: \\url{https://rozklad.com/maps/index.php?IDKlienta=ILAWA_ZKM}\n"
@@ -579,6 +593,38 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
               "e": "Godziny pracy kierowców dziennie", "f": "Autobusy w szczycie", "g": "Służby z przerwą zgodną z ustawą"}
     out.append(table([("Wskaźnik", "p{5.4cm}")] + [(DAYNAME[d].split(" ")[0], "r") for d in days],
                      [[labels[k]] + rows[k] for k in labels], size="footnotesize"))
+
+    # how to read: glossary and method, before the results
+    out.append("\\section*{Jak czytać ten raport}\n")
+    out.append("\\subsection*{Słowniczek}\n\\begin{description}[itemsep=1pt, leftmargin=0pt]\n"
+               "\\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.\n"
+               f"\\item[Dobra przesiadka] czekanie po dojściu najwyżej {tr['good_window']} min. Dojście trwa {tr['walk_train_to_bus']} min z peronu na przystanek "
+               f"i {tr['walk_bus_to_train']} min z przystanku na peron.\n"
+               "\\item[Zapas na opóźnienie] do przyjazdu pociągu doliczana jest mediana opóźnienia jego kategorii: "
+               + ", ".join(f"{k} {num(v)} min" for k, v in (R.get("buffers") or {}).items()) + ".\n"
+               "\\item[Przesunięcie kursu] zmiana godzin kursu na wszystkich jego przystankach o tyle samo minut.\n"
+               "\\item[Etap] grupa zmian do wprowadzenia razem: etap 1 to 20 najskuteczniejszych zmian, etap 2 to łącznie 40, ostatni etap to wszystkie. Każdy etap zachowuje zmiany poprzedniego.\n"
+               "\\item[Zmiana towarzysząca] zmiana bez własnego zysku, potrzebna do zachowania przerwy kierowcy, postoju autobusu albo kolejności kursów po innej zmianie.\n"
+               "\\item[Obieg] kolejne kursy jednego autobusu w ciągu dnia. Obiegi jednej linii: autobus jeździ cały dzień na tej samej linii. "
+               "Obiegi mieszane: autobus może zmienić linię na Dworcowej.\n"
+               "\\item[Postój] czas między kursami jednego autobusu.\n"
+               "\\item[Służba] czas pracy jednego kierowcy, od przygotowania autobusu do końca ostatniego kursu.\n"
+               "\\item[Przerwa] postój kierowcy trwający co najmniej 15 min, wliczany do przerwy wymaganej ustawą o czasie pracy kierowców.\n"
+               "\\item[Wozokilometr, wozogodzina] kilometr i godzina pracy autobusu, razem z dojazdami z zajezdni.\n"
+               "\\item[Wariant ostrożny, średni, optymistyczny] założenia o liczbie pasażerów: udział podróżnych kolejowych, którzy jadą dalej autobusem, "
+               "i wrażliwość na czas czekania.\n"
+               "\\end{description}\n")
+    out.append("\\subsection*{Metoda i założenia}\n\\begin{itemize}\n"
+               "\\item \\textbf{Dane.} Rozkład ZKM z rozklad.com, przetworzony do formatu GTFS. Rozkład pociągów z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.\n"
+               f"\\item \\textbf{{Przesunięcia.}} Kurs zmienia się najwyżej o {sh['max_shift']} min (kursy szkolne o {sh['school_max_shift']} min). "
+               "Każdy zmieniony kurs i każda minuta zmiany mają karę, więc optymalizator (program całkowitoliczbowy) zmienia tylko te kursy, które coś dają.\n"
+               f"\\item \\textbf{{Obiegi.}} Postój między kursami autobusu co najmniej {cfg['blocks']['min_layover']} min. Kolejność kursów linii na Dworcowej zostaje ta sama.\n"
+               "\\item \\textbf{Koszt.} Łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą.\n"
+               "\\item \\textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę.\n"
+               "\\item \\textbf{Ograniczenia.} Obiegi i służby są odtworzone z rozkładu, a nie pobrane z ZKM. Brak danych o faktycznych odjazdach autobusów. "
+               "Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.\n"
+               "\\item \\textbf{Powtarzalność.} Narzędzie \\texttt{zkmplan.py} można uruchomić po każdej zmianie rozkładu ZKM lub PKP; parametry są w pliku \\texttt{zkmplan.ini}.\n"
+               "\\end{itemize}\n")
 
     # stages
     out.append("\\section{Etapy wdrożenia}\n")
@@ -687,20 +733,6 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
     out.append("\\mut{\\footnotesize Wartości dzienne dotyczą dnia roboczego, roczne obejmują wszystkie typy dni. Elastyczność: o tyle procent zmienia się "
                "liczba pasażerów, gdy czas czekania zmienia się o 1\\,\\%.}\n")
 
-    # method
-    out.append("\\section{Metoda}\n\\begin{itemize}\n"
-               "\\item \\textbf{Dane.} Rozkład ZKM z rozklad.com, przetworzony do formatu GTFS. Rozkład pociągów z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.\n"
-               f"\\item \\textbf{{Przesunięcia.}} Kurs zmienia się najwyżej o {sh['max_shift']} min (kursy szkolne o {sh['school_max_shift']} min). "
-               "Przesunięty kurs zmienia godziny na wszystkich przystankach o tyle samo. Każdy zmieniony kurs i każda minuta zmiany mają karę, "
-               "więc optymalizator (program całkowitoliczbowy) zmienia tylko te kursy, które coś dają.\n"
-               f"\\item \\textbf{{Obiegi.}} Postój między kursami autobusu co najmniej {cfg['blocks']['min_layover']} min. Kolejność kursów linii na Dworcowej zostaje ta sama.\n"
-               "\\item \\textbf{Koszt.} Łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą "
-               "ustawą o czasie pracy kierowców.\n"
-               "\\item \\textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę.\n"
-               "\\item \\textbf{Ograniczenia.} Obiegi i służby są odtworzone z rozkładu, a nie pobrane z ZKM. Brak danych o faktycznych odjazdach autobusów. "
-               "Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.\n"
-               "\\item \\textbf{Powtarzalność.} Narzędzie \\texttt{zkmplan.py} można uruchomić po każdej zmianie rozkładu ZKM lub PKP; parametry są w pliku \\texttt{zkmplan.ini}.\n"
-               "\\end{itemize}\n")
     out.append("\\end{document}\n")
     return "".join(out)
 

@@ -35,7 +35,7 @@
 {\sffamily\footnotesize\bfseries\MakeUppercase{Załącznik nr 2 · analiza rozkładów}}\par\smallskip
 {\sffamily\LARGE\bfseries Przesiadki Iława Główna}\par\medskip
 {\large Czy autobusy ZKM odjeżdżają spod dworca akurat wtedy, gdy przyjeżdżają pociągi?}\par\medskip
-{\small\mut{Dworzec Iława Główna: 106 pociągów w dzień roboczy. Przystanek Dworcowa: linie ZKM 1, 2, 3, 4, 7, 106 odjazdów w dzień roboczy. Stan na 29.09.2026.}}\par\bigskip
+{\small\mut{Dworzec Iława Główna: 106 pociągów w dzień roboczy. Przystanek Dworcowa: linie ZKM 1, 2, 3, 4, 7, 106 odjazdów w dzień roboczy. Stan na 30.09.2026.}}\par\bigskip
 \section*{Odpowiedź}
 Teza się nie potwierdza dla całej sieci. W dzień roboczy autobus odjeżdża w chwili przyjazdu pociągu przy \textbf{50\,\%} pociągów. Rozkład losowy daje \textbf{47\,\%} (90\,\% wyników losowych: 40\,\%--56\,\%). Wrażenie „uciekającego autobusu” jest prawdziwe, ale wynika z liczby kursów i skupień pociągów, a nie z ułożenia rozkładu. Rozkłady nie są jednak ze sobą skoordynowane: dobrych przesiadek jest tyle samo, ile przy losowym rozkładzie. Wyjątkiem jest \textbf{linia 1} w dni robocze, gdzie takich sytuacji jest więcej niż losowo (22\,\% wobec 16\,\%). Chodzi o kilka wieczornych odjazdów, po których następny kurs jest za 50--100 min. Sobota: wynik jest blisko górnej granicy losowości (35\,\% wobec 27\,\%), ale kursów jest mało i test nie daje pewności.
 
@@ -47,6 +47,28 @@ To samo dla linii 1 (dzień roboczy) & 22\,\% & losowo 16\,\% \\
 Mediana opóźnienia pociągów PKP Intercity w Iławie & 3 min & POLREGIO: 0 min \\
 Ciasne przesiadki z IC na daną linię (czekanie do 14 min), które się udają & 61\,\% & POLREGIO: 93\,\% \\
 \bottomrule\end{tabular}\end{center}}
+\section*{Jak czytać ten raport}
+\subsection*{Słowniczek}
+\begin{description}[itemsep=1pt, leftmargin=0pt]
+\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.
+\item[Czas dojścia] 4 min z peronu na przystanek Dworcowa i 5 min z przystanku na peron.
+\item[Czekanie] czas od dojścia na przystanek do odjazdu autobusu albo od dojścia na peron do odjazdu pociągu.
+\item[Dobra przesiadka] czekanie po dojściu najwyżej 10 min.
+\item[Ciasna przesiadka] według rozkładu czekanie na linię najwyżej 14 min od przyjazdu pociągu. Takie przesiadki najłatwiej zrywa opóźnienie.
+\item[Autobus „ucieka”] odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. W drugą stronę: autobus przyjeżdża tak późno, że podróżni „nie zdążą” na pociąg.
+\item[Rozkład losowy] rozkład ZKM, w którym każdą linię przesunięto o losowy czas od $-30$ do $+30$ min. Kursy i odstępy są takie same, znika tylko związek z pociągami. Porównanie z nim pokazuje, czy rozkład jest dopasowany do pociągów.
+\item[90\,\% wyników losowych, percentyl] zakres, w którym mieści się 90\,\% wyników rozkładów losowych. Wynik poza nim jest lepszy albo gorszy niż przypadek.
+\item[Kategorie pociągów] EIP, EIC, IC i TLK to pociągi PKP Intercity; R to pociągi regionalne POLREGIO.
+\item[Przystanki Dworcowa] 005-01 to odjazdy do miasta, 079-00 to przyjazdy z miasta.
+\item[Typ dnia] dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.
+\end{description}
+\subsection*{Metoda i założenia}
+\begin{itemize}
+\item \textbf{Dane.} Rozkład ZKM z rozklad.com, rozkład pociągów wszystkich przewoźników z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.
+\item \textbf{Model losowy.} 3000 powtórzeń dla sieci, 1000 dla każdej linii osobno.
+\item \textbf{Okres.} Rozkład planowy: 30.09.2026--27.10.2026. Dni do testu: dzień roboczy 30.09.2026, sobota 3.10.2026, niedziela 4.10.2026.
+\item \textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.
+\end{itemize}
 \section{Test tezy: rozkład rzeczywisty na tle losowego}
 Dla każdego pociągu sprawdzono, czy autobus odjeżdża w chwili, gdy podróżni jeszcze idą z peronu na przystanek: od 2 min przed przyjazdem do 4 min po przyjeździe. Ten sam wskaźnik policzono 3000 razy dla rozkładu, w którym każdą linię przesunięto o losowy czas od $-30$ do $+30$ min. Szary pas to zakres 90\,\% wyników losowych, pionowa kreska to średnia losowa. Znacznik poza pasem oznacza wynik lepszy (zielony, trójkąt w stronę lepszego wyniku) albo gorszy (czerwony) niż losowo.
 
@@ -215,17 +237,8 @@ Autobus → pociąg: dobra przesiadka & 76\,\% \mut{(64\,\%)} & 68\,\% \mut{(64\
 Propozycje zmian rozkładu przygotowuje osobne narzędzie. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej, i zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. Wyniki są w załączniku nr 3, a wykaz zmian w załączniku nr 1.
 \section{Pomiar faktycznych przyjazdów}
 Faktyczne czasy pociągów zbiera skrypt \texttt{monitor.py}. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje potwierdzone czasy przyjazdu i odjazdu. Monitor powinien pracować co najmniej 4 tygodnie, żeby dla każdego typu dnia było po kilka dni danych. Autobusy nie mają publicznych danych o faktycznych odjazdach: potrzebne są dane GPS z ZKM, obserwacje na przystanku albo założenie tolerancji ZKM, jak w tym raporcie.
-\section{Metoda i założenia}
-\begin{itemize}
-\item \textbf{Przystanki.} Dworcowa 005-01 to odjazdy do miasta (linie 1, 2, 3, 4, 7). Dworcowa 079-00 to przyjazdy z miasta.
-\item \textbf{Czas dojścia.} Z peronu na przystanek 4 min, z przystanku na peron 5 min. Wyniki dla innych czasów są w tabeli niżej.
-\item \textbf{Autobus „ucieka”.} Odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. W drugą stronę: autobus przyjeżdża tak późno, że podróżni nie zdążą na pociąg.
-\item \textbf{Dobra przesiadka.} Czekanie po dojściu wynosi najwyżej 10 min.
-\item \textbf{Model losowy.} Każdą linię przesunięto o losowy czas od $-30$ do $+30$ min (3000 powtórzeń, dla linii osobno 1000). Częstotliwość i odstępy kursów zostają takie same; znika tylko związek z rozkładem kolejowym.
-\item \textbf{Okres.} Rozkład planowy: 30.09.2026--27.10.2026. Dni do testu: dzień roboczy 30.09.2026, sobota 3.10.2026, niedziela 4.10.2026.
-\item \textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.
-\end{itemize}
-\subsection*{Wrażliwość na czas dojścia (dzień roboczy)}
+\section{Wrażliwość na czas dojścia}
+Wyniki dla dnia roboczego przy innych czasach dojścia z peronu na przystanek i z przystanku na peron.
 {\small
 \begin{center}\begin{tabular}{@{}l r r r r@{}}\toprule
 Czas dojścia & P→A: ucieka & P→A: dobra & A→P: nie zdąży & A→P: dobra \\ \midrule
