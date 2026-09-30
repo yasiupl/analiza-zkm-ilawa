@@ -76,7 +76,8 @@ Do these steps in sequence to update all results and reports. The sections below
 5. Make the transfer report: `python report.py`.
 6. Propose the timetable corrections: `python zkmplan.py`.
 7. Make the printable reports: `python print_reports.py --pdf`.
-8. If you use the letters, copy the list of changes and compile the letters (see "Letters").
+8. If you publish the report page, do the steps in "Publish the report page".
+9. If you use the letters, copy the list of changes and compile the letters (see "Letters").
 
 ## Procedures
 
@@ -275,6 +276,29 @@ The web pages of the reports have a button that downloads the printable PDF. To 
 
 The public reports do not name the scripts of this repository. This file is the reference for the operation of the tools.
 
+### Publish the report page
+
+The report page is one folder for a static web site. It contains a summary page, the two web reports, the printable reports and the data files (list of changes, past-day test, current and proposed GTFS feed).
+
+1. Make the data (see "Analyze the transfers" and "Propose timetable corrections").
+2. Make the public printable reports. They have no references to the letters, and the report on the corrections contains the full list of changes. Give the web address of the page as the header text:
+
+   ```
+   python print_reports.py --public "<site>/<path>/raport-zkm-<date>" --pdf
+   ```
+
+3. Make the page folder in the source folder of the web site:
+
+   ```
+   python publish_site.py --out <site source folder>/<path> --url https://<site>/<path>
+   ```
+
+   The script makes the folder `raport-zkm-<date>` (the date of the newest zkmplan run). It replaces the download button of the web reports with a plain link to the PDF file.
+4. Open `index.html` of the new folder and make sure that all links work.
+5. Commit the folder in the repository of the web site and publish it.
+
+The layout of the summary page is in `reports/site_template.html`.
+
 ### Letters
 
 The folder `pismo/` has two letters in LaTeX: a request for the timetable changes (with attachments 1 to 3) and a request for public information. The two letters use the common file `pismo/wspolne.tex`.
@@ -313,10 +337,12 @@ The folder `pismo/` has two letters in LaTeX: a request for the timetable change
 | `zkmplan.py` | Tool for timetable corrections |
 | `zkmplan.ini` | Parameters of the tool for timetable corrections |
 | `past_test.py` | Test of timetables on past days with the actual train times |
-| `print_reports.py` | Printable reports (LaTeX, PDF) |
+| `print_reports.py` | Printable reports (LaTeX, PDF), also the public versions |
+| `publish_site.py` | Public report page for a static web site |
 | `pismo/` | Letters (LaTeX) |
 | `reports/template.html` | Template of the transfer report |
 | `reports/zkmplan_template.html` | Template of the report of the timetable corrections |
+| `reports/site_template.html` | Layout of the summary page of the public report |
 | `reports/druk/` | Printable reports and their figures |
 | `ilawa/model.py` | Transfer metrics and null model |
 | `ilawa/zkm.py` | Bus events at the stop Dworcowa |

@@ -7,7 +7,9 @@
   data/plan/<date>/result.json, the newest run).
 
 The script writes the LaTeX files and the figures (PDF) to reports/druk/.
-With --pdf it also compiles them with xelatex (two passes).
+With --pdf it also compiles them with xelatex (two passes). With --public it makes
+the public versions instead (przesiadki-ilawa-glowna, korekty-rozkladu-zkm-ilawa):
+no references to the letters, and the list of changes at the end.
 The reports show no values in PLN: money values need the operator's data
 (see show_money in zkmplan.ini).
 
@@ -298,8 +300,19 @@ PREAMBLE = r"""\documentclass[10pt,a4paper]{article}
 """
 
 
+# Public mode (--public): the reports without the references to the letters, for
+# publication on a web page. PUBLIC["head"] is the text in the page header.
+PUBLIC = {"on": False, "head": ""}
+
+
+def att(letter_text: str, public_text: str) -> str:
+    """Text for the attachment of the letter, or for the public report."""
+    return public_text if PUBLIC["on"] else letter_text
+
+
 def header(attachment: str, title: str) -> str:
-    return (PREAMBLE + f"\\fancyhead[L]{{\\sffamily\\footnotesize {attachment} do wniosku z dnia \\makebox[2.4cm]{{\\dotfill}} 2026 r.}}\n"
+    left = PUBLIC["head"] if PUBLIC["on"] else f"{attachment} do wniosku z dnia \\makebox[2.4cm]{{\\dotfill}} 2026 r."
+    return (PREAMBLE + f"\\fancyhead[L]{{\\sffamily\\footnotesize {left}}}\n"
             f"\\fancyhead[R]{{\\sffamily\\footnotesize {title}}}\n\\fancyfoot[C]{{\\sffamily\\footnotesize \\thepage}}\n"
             "\\begin{document}\n")
 
@@ -409,7 +422,7 @@ def attachment_przesiadki(D: dict) -> str:
     edge = [d for d in days if d != "Roboczy" and D["overall"][d]["plain"]["t2b_near_miss"]["percentile"] >= 0.9]
     c = D["counts"]
     out = [header("Załącznik nr 2", "Przesiadki Iława Główna")]
-    out.append(title_block("Załącznik nr 2 · analiza rozkładów", "Przesiadki Iława Główna",
+    out.append(title_block(att("Załącznik nr 2 · analiza rozkładów", "Raport ZKM Iława · analiza rozkładów"), "Przesiadki Iława Główna",
                            "Czy autobusy ZKM odjeżdżają spod dworca akurat wtedy, gdy przyjeżdżają pociągi?",
                            f"Dworzec Iława Główna: {c['Roboczy']['trains']} pociągów w dzień roboczy. Przystanek Dworcowa: "
                            f"linie ZKM 1, 2, 3, 4, 7, {c['Roboczy']['bus_dep']} odjazdów w dzień roboczy. Stan na {fdate(D['generated'])}."))
@@ -612,7 +625,7 @@ def attachment_przesiadki(D: dict) -> str:
     # corrections pointer, monitoring, method
     out.append("\\section{Korekty rozkładu}\n")
     out.append("Propozycje zmian rozkładu przygotowuje osobne narzędzie. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej, "
-               "i zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. Wyniki są w załączniku nr 3, a wykaz zmian w załączniku nr 1.\n")
+               "i zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. " + att("Wyniki są w załączniku nr 3, a wykaz zmian w załączniku nr 1.", "Wyniki i pełny wykaz zmian są w raporcie „Korekty rozkładu ZKM Iława”.") + "\n")
     out.append("\\section{Pomiar faktycznych przyjazdów}\n")
     out.append("Faktyczne czasy pociągów zbiera monitor. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje "
                "potwierdzone czasy przyjazdu i odjazdu. Monitor powinien pracować co najmniej 4 tygodnie, żeby dla każdego typu dnia było po kilka dni danych. "
@@ -697,7 +710,7 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
     out = [header("Załącznik nr 3", "Korekty rozkładu ZKM Iława")]
     feed = R.get("feed") or {}
     fs = str(feed.get("feed_start_date") or "20260901")
-    out.append(title_block("Załącznik nr 3 · propozycja korekt", "Korekty rozkładu ZKM Iława",
+    out.append(title_block(att("Załącznik nr 3 · propozycja korekt", "Raport ZKM Iława · propozycja korekt"), "Korekty rozkładu ZKM Iława",
                            "Przesunięcia kursów o kilka minut, które dają więcej przesiadek z pociągów i do pociągów na przystanku Dworcowa.",
                            f"Rozkład ZKM ważny od {fdate(fs[:4] + '-' + fs[4:6] + '-' + fs[6:8])}. "
                            f"Przystanki: {', '.join(R['station_stops'])}. Obliczenia z dnia {fdate(R['generated'])}."))
@@ -787,7 +800,8 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
             rows.append([DAYSHORT[d] if p["stage"] == 0 else "", "obecny rozkład" if not p["stage"] else f"etap {p['stage']}",
                          num(p["changes"]), num(p["good_per_day"]), spct((p["good_per_day"] - g0) / g0) if p["stage"] else "--"])
     out.append(table([("Dzień", "l"), ("Etap", "l"), ("Zmienione kursy", "r"), ("Dobre przesiadki/dzień", "r"), ("Zmiana", "r")], rows))
-    out.append("Pełny wykaz zmienionych kursów, z pociągami, dla których przesiadka staje się dogodna, zawiera załącznik nr 1.\n")
+    out.append("Pełny wykaz zmienionych kursów, z pociągami, dla których przesiadka staje się dogodna, "
+               + att("zawiera załącznik nr 1.", "jest w ostatnim rozdziale.") + "\n")
     out.append(past_section(R))
 
     # boards
@@ -902,20 +916,48 @@ def compile_pdf(tex_path: Path) -> None:
                        stdout=subprocess.DEVNULL, check=True)
 
 
+def changes_section(R: dict) -> str:
+    """The list of changes (the same table as attachment 1 of the letter)."""
+    from zkmplan import write_latex
+    f = OUT / "wykaz-zmian.tex"
+    write_latex(R, f)
+    return ("\\clearpage\n\\section{Wykaz proponowanych zmian}\n"
+            "Wykaz dotyczy obiegów, w których autobus zostaje na jednej linii. Godziny są godzinami na przystanku Dworcowa: "
+            "obecna $\\to$ \\textbf{proponowana}. Autobus przyjeżdża tylko wcześniej albo odjeżdża tylko później niż obecnie.\n"
+            "\\begin{itemize}[itemsep=1pt]\n"
+            "\\item \\textbf{Etap}: 1 -- najskuteczniejsze zmiany (do 20 kursów), 2 -- do 40 kursów łącznie, 3 -- pozostałe zmiany. "
+            "Każdy etap zachowuje zmiany poprzedniego.\n"
+            "\\item \\textbf{Inne przyst.}: zmiana godzin na pozostałych przystankach kursu, w minutach.\n"
+            "\\item \\textbf{Zysk}: liczba dogodnych przesiadek dziennie, którą daje ta jedna zmiana.\n"
+            "\\item \\textbf{Pociągi}: pociągi, z których (\\emph{z}) lub na które (\\emph{na}) przesiadka staje się dogodna. "
+            "Kursywą: pociągi, dla których przesiadka przestaje być dogodna. Zmiana towarzysząca zachowuje przerwę kierowcy, "
+            "postój autobusu lub kolejność kursów po innej zmianie.\n\\end{itemize}\n"
+            "{\\footnotesize\\setlength{\\tabcolsep}{3pt}\\renewcommand{\\arraystretch}{1.15}\n\\input{wykaz-zmian.tex}\n}\n")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--report-data", default=str(ROOT / "reports" / "report_data.json"))
     ap.add_argument("--plan", default=None, help="result.json of zkmplan.py (default: newest run)")
     ap.add_argument("--variant", default="single", choices=["single", "interlined"])
     ap.add_argument("--pdf", action="store_true", help="compile with xelatex")
+    ap.add_argument("--public", default=None, metavar="HEADER",
+                    help="make the public versions (no references to the letters, with the list of changes); "
+                         "HEADER is the text in the page header, for example the web address of the page")
     a = ap.parse_args()
     setup_mpl()
     OUT.mkdir(parents=True, exist_ok=True)
     D = json.loads(Path(a.report_data).read_text(encoding="utf-8"))
     R = json.loads(Path(a.plan or newest_plan()).read_text(encoding="utf-8"))
     p2, p3 = OUT / "zalacznik-2-przesiadki.tex", OUT / "zalacznik-3-korekty.tex"
+    if a.public is not None:
+        PUBLIC.update(on=True, head=tex(a.public))
+        p2, p3 = OUT / "przesiadki-ilawa-glowna.tex", OUT / "korekty-rozkladu-zkm-ilawa.tex"
     p2.write_text(attachment_przesiadki(D), encoding="utf-8")
-    p3.write_text(attachment_korekty(R, a.variant), encoding="utf-8")
+    k = attachment_korekty(R, a.variant)
+    if PUBLIC["on"]:
+        k = k.replace("\\end{document}\n", changes_section(R) + "\\end{document}\n")
+    p3.write_text(k, encoding="utf-8")
     print(f"LaTeX: {p2}\n       {p3}")
     if a.pdf:
         for p in (p2, p3):

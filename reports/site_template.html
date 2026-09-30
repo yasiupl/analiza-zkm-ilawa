@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} - 14-200.pl</title>
+    <meta name="description" content="{{DESCRIPTION}}">
+    <meta property="og:title" content="{{TITLE}}">
+    <meta property="og:description" content="{{DESCRIPTION}}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{URL}}">
+
+    <!-- Tailwind CSS (as on the other pages of 14-200.pl) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
+                            500: '#ffca1a', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12',
+                        },
+                        accent: { 500: '#3b82f6', 600: '#2563eb' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Merriweather', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="font-sans text-gray-800 antialiased bg-gray-50 flex flex-col min-h-screen">
+    <nav class="bg-white/90 backdrop-blur-md fixed w-full z-50 border-b border-gray-200 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="/" class="flex items-center gap-2 group">
+                        <div class="bg-brand-500 text-gray-900 p-2 rounded-lg group-hover:bg-brand-400 transition-colors">
+                            <i class="fa-solid fa-comments text-xl"></i>
+                        </div>
+                        <span class="font-heading font-bold text-2xl text-gray-900 tracking-tight">14-200.pl</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/kalendarz" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Kalendarz</a>
+                    <a href="/#misja" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Nasza Misja</a>
+                    <a href="/#oferta" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Współpraca</a>
+                    <a href="/#zasady" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Zasady</a>
+                    <a href="https://forum.14-200.pl" class="bg-brand-500 hover:bg-brand-400 text-gray-900 px-5 py-2.5 rounded-lg font-bold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        Przejdź na forum
+                    </a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none p-2" aria-label="Menu">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 absolute w-full shadow-xl">
+            <div class="px-4 pt-2 pb-6 space-y-1 sm:px-3 flex flex-col gap-2">
+                <a href="/kalendarz" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Kalendarz</a>
+                <a href="/#misja" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Nasza Misja</a>
+                <a href="/#oferta" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Współpraca</a>
+                <a href="/#zasady" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Zasady</a>
+                <a href="https://forum.14-200.pl" class="mobile-link mt-4 block text-center bg-brand-500 hover:bg-brand-400 text-gray-900 px-5 py-3 rounded-lg font-bold shadow-md transition-colors">Przejdź na forum</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-32 pb-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+{{CONTENT}}
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8 items-center mb-8">
+                <div>
+                    <span class="font-heading font-bold text-2xl text-white tracking-tight mb-2 block">14-200.pl</span>
+                    <p class="text-sm">Cyfrowy Rynek Iławy i Powiatu Iławskiego</p>
+                </div>
+                <div class="flex justify-center gap-6">
+                    <a href="https://forum.14-200.pl/guidelines" class="hover:text-white transition-colors">Regulamin</a>
+                    <a href="https://forum.14-200.pl/privacy" class="hover:text-white transition-colors">Polityka Prywatności</a>
+                    <a href="https://forum.14-200.pl/about" class="hover:text-white transition-colors">O nas</a>
+                </div>
+                <div class="flex md:justify-end gap-4">
+                    <a href="mailto:kontakt@14-200.pl" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-500 hover:text-gray-900 transition-all" aria-label="E-mail">
+                        <i class="fa-solid fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-sm text-center">
+                <p>&copy; 2026 Społeczne Forum Internetowe 14-200.pl. Platforma finansowana społecznie, prowadzona we współpracy z organizacjami samorządowymi.</p>
+                <p class="mt-2 text-gray-500">Zaprojektowane z myślą o suwerenności cyfrowej i dobrym dyskursie.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
+        const setIcon = open => { const i = mobileMenuBtn.querySelector('i'); i.classList.toggle('fa-xmark', open); i.classList.toggle('fa-bars', !open); };
+        mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); setIcon(!mobileMenu.classList.contains('hidden')); });
+        document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => { mobileMenu.classList.add('hidden'); setIcon(false); }));
+        window.addEventListener('scroll', () => navbar.classList.toggle('shadow-md', window.scrollY > 20));
+    </script>
+</body>
+</html>
