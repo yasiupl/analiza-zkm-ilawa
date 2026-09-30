@@ -17,60 +17,59 @@
   "2026-09-25",
   "2026-09-26",
   "2026-09-27",
-  "2026-09-28"
+  "2026-09-28",
+  "2026-09-29"
  ],
  "files": [
-  "data/plan/scenariusze/w10-any/result.json",
-  "data/plan/scenariusze/w10-buf/result.json",
-  "data/plan/scenariusze/w5-any/result.json",
-  "data/plan/scenariusze/w5-buf/result.json"
+  "data/plan/2026-09-30/result.json"
  ],
  "windows": [
   5.0,
   10.0
  ],
+ "buffers": {
+  "EIC": 10.0,
+  "EIP": 9.0,
+  "IC": 10.0,
+  "R": 1.0,
+  "TLK": 10.0
+ },
  "worst_day": {
-  "Niedziela|5": {
+  "Niedziela": {
    "date": "2026-09-27",
-   "actual_total": 24,
-   "plan_total": 27,
+   "day_type": "Niedziela",
+   "late_over_5": 25,
    "delay_mean": 21.692307692307693,
-   "late_over_5": 25
+   "delay_median": 2.0,
+   "arr_with_data": 91,
+   "trains_arr": 91
   },
-  "Niedziela|10": {
+  "all": {
    "date": "2026-09-27",
-   "actual_total": 45,
-   "plan_total": 50,
+   "day_type": "Niedziela",
+   "late_over_5": 25,
    "delay_mean": 21.692307692307693,
-   "late_over_5": 25
+   "delay_median": 2.0,
+   "arr_with_data": 91,
+   "trains_arr": 91
   },
-  "Roboczy|5": {
-   "date": "2026-09-16",
-   "actual_total": 79,
-   "plan_total": 83,
-   "delay_mean": 8.172413793103448,
-   "late_over_5": 11
+  "Roboczy": {
+   "date": "2026-09-28",
+   "day_type": "Roboczy",
+   "late_over_5": 24,
+   "delay_mean": 12.010752688172044,
+   "delay_median": 2.0,
+   "arr_with_data": 93,
+   "trains_arr": 93
   },
-  "Roboczy|10": {
-   "date": "2026-09-24",
-   "actual_total": 146,
-   "plan_total": 154,
-   "delay_mean": 2.8620689655172415,
-   "late_over_5": 3
-  },
-  "Sobota|5": {
+  "Sobota": {
    "date": "2026-09-26",
-   "actual_total": 41,
-   "plan_total": 45,
+   "day_type": "Sobota",
+   "late_over_5": 13,
    "delay_mean": 2.842696629213483,
-   "late_over_5": 13
-  },
-  "Sobota|10": {
-   "date": "2026-09-26",
-   "actual_total": 86,
-   "plan_total": 91,
-   "delay_mean": 2.842696629213483,
-   "late_over_5": 13
+   "delay_median": 1.0,
+   "arr_with_data": 89,
+   "trains_arr": 92
   }
  }
 }

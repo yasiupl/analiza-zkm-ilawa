@@ -38,6 +38,7 @@ from ilawa.plan import demand as DM
 from ilawa.plan import explain as EX
 from ilawa.plan import gaps as G
 from ilawa.plan import optimize as O
+from ilawa.plan import pasttest as PT
 from ilawa.plan import trains as TR
 from ilawa.plan.blocks import build_blocks
 from ilawa.plan.duties import check_breaks, cut_duties
@@ -197,7 +198,8 @@ def main() -> None:
     tr = A.load_planned_trains()
     hist = [h for h in (A.load_ic_history(), A.load_monitor()) if len(h)]
     hist = pd.concat(hist, ignore_index=True) if hist else pd.DataFrame()
-    buffers = TR.delay_buffers(hist, cap=trc["delay_buffer_cap"]) if trc["delay_buffer"] == "observed" else {}
+    buffers = (TR.delay_buffers(hist, cap=trc["delay_buffer_cap"], quantile=trc.get("delay_buffer_quantile") or 0.5)
+               if trc["delay_buffer"] == "observed" else {})
     start = dt.date.fromisoformat(a.from_date) if a.from_date else dt.date.today() + dt.timedelta(days=1)
     dates = plan_dates(feed, tr, start, int(gen["horizon_days"]))
     dates = {k: v for k, v in dates.items() if k in a.day_types.split(",")}
@@ -277,7 +279,10 @@ def main() -> None:
                 "blocks_before": [[{"route": t.route, "start": t.start, "end": t.end} for t in b.trips] for b in blocks],
                 "blocks_after": [[{"route": t.route, "start": t.start, "end": t.end} for t in b.trips] for b in nblocks],
                 "bus_after": [{"id": t.id, "route": t.route, "arr": O.station_times(t, O.shape(t, station))[0],
-                               "dep": O.station_times(t, O.shape(t, station))[1]} for t in new_trips]}
+                               "dep": O.station_times(t, O.shape(t, station))[1]} for t in new_trips],
+                "bus_stages": [[{"id": t.id, "route": t.route, "arr": O.station_times(t, O.shape(t, station))[0],
+                                 "dep": O.station_times(t, O.shape(t, station))[1]} for t in s["trips"]]
+                               for s in opt["stages"][:-1]]}
             print(f"   {opt['status']}: good transfers {g0['total']} -> {g1['total']} over {g0['n_dates']} dates "
                   f"(with delay buffer {gb0['total']} -> {gb1['total']}); actual delays {real['before']} -> {real['after']}; "
                   f"cost/day {cost0['total']:.0f} -> {cost1['total']:.0f} PLN; changed trips {len(opt['changes'])}")
@@ -302,6 +307,8 @@ def main() -> None:
                          for dtp, r in result["day_types"].items())
         result.setdefault("annual_demand", {})[vname] = {**tot, "days": {d: n_days.get(d, 0) for d in result["day_types"]}}
     result["revenue_per_trip"] = DM.revenue_per_trip(dmc)
+    if int(gen.get("past_days") or 0) > 0:
+        result["past_test"] = past_test(result, tr, int(gen["past_days"]), m1, m2, good, buffers, dmc["wait_cap"])
     write_outputs(feed, proposed, result, run_dir)
     write_latex(result, run_dir / "zmiany.tex")
     (run_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
@@ -312,6 +319,33 @@ def main() -> None:
     shown = result if str(coc.get("show_money") or "").lower() in ("yes", "tak", "true", "1") else strip_money(result)
     out = report.build(shown, ROOT / "reports" / "zkmplan_template.html", ROOT / "reports" / "korekty-zkm.html")
     print(f"6. Results: {run_dir}\n   Report: {out}")
+
+
+def past_test(result: dict, tr: pd.DataFrame, n_days: int, m1: float, m2: float, good: float,
+              buffers: dict, wait_cap: float) -> dict:
+    """Test the current timetable, each stage and the proposal on past days with the actual train times."""
+    delays = PT.delay_table(A.load_ic_history(), A.load_monitor())
+    last = dt.date.today() - dt.timedelta(days=1)
+    fs = str((result.get("feed") or {}).get("feed_start_date") or "")
+    first = max(last - dt.timedelta(days=n_days - 1),
+                dt.date(int(fs[:4]), int(fs[4:6]), int(fs[6:8])) if len(fs) == 8 else dt.date.min)
+    days = PT.past_days(delays, first, last)
+    vname = "single" if "single" in next(iter(result["day_types"].values()))["variants"] else \
+        next(iter(next(iter(result["day_types"].values()))["variants"]))
+    tts = {"obecny": {d: r["bus_rep"] for d, r in result["day_types"].items()}}
+    nst = max(len(r["variants"][vname].get("bus_stages", [])) for r in result["day_types"].values())
+    for i in range(nst):
+        tts[f"etap {i + 1}"] = {d: (r["variants"][vname]["bus_stages"] + [r["variants"][vname]["bus_after"]] * nst)[i]
+                                for d, r in result["day_types"].items()}
+    tts["propozycja"] = {d: r["variants"][vname]["bus_after"] for d, r in result["day_types"].items()}
+    rows = PT.evaluate(tts, tr, delays, days, [good], m1, m2, buffers, wait_cap)
+    out = {"variant": vname, "window": good, "days": [str(d) for d in days], "first": str(first), "last": str(last),
+           "timetables": list(tts), "rows": rows, "summary": PT.summary(rows), "worst": PT.worst_days(rows)}
+    print(f"5b. Past days with delay data: {len(days)} ({first} to {last})")
+    for r in out["summary"]:
+        print(f"    {r['day_type']:9} {r['timetable']:10} good {r['plan_total']:.1f} planned / {r['actual_total']:.1f} actual; "
+              f"caught {r['plan_caught']:.1f} / {r['actual_caught']:.1f}; wait {r['actual_wait_t2b']:.1f} min")
+    return out
 
 
 def write_outputs(feed: Feed, proposed: dict, result: dict, run_dir: Path) -> None:
@@ -386,7 +420,7 @@ def write_latex(result: dict, path: Path, variant: str = "single") -> None:
         out += [f"\\subsection*{{{names.get(dtp, dtp)}}}",
                 f"Plan na dzień {pl(r['date'])}, sprawdzony na {len(r['all_dates'])} dniach tego typu "
                 f"({pl(r['all_dates'][0])}--{pl(r['all_dates'][-1])}). "
-                f"Dobre przesiadki dziennie (pary pociąg--linia, z zapasem na typowe opóźnienie pociągu): obecnie {g0:.0f}.", "",
+                f"Dobre przesiadki dziennie (pary pociąg--linia, z zapasem na opóźnienie pociągu): obecnie {g0:.0f}.", "",
                 "\\begin{tabular}{@{}lrrr@{}}\\toprule",
                 "Etap & Zmienione kursy (razem) & Dobre przesiadki dziennie & Zmiana \\\\ \\midrule"]
         for c in v["curve"][1:]:

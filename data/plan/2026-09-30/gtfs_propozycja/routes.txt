@@ -1,0 +1,6 @@
+route_id,agency_id,route_short_name,route_long_name,route_type
+1,ZKM,1,,3
+2,ZKM,2,,3
+3,ZKM,3,,3
+4,ZKM,4,,3
+7,ZKM,7,,3

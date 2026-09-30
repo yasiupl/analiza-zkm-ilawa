@@ -124,9 +124,6 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
     <div class="label">Jak czytać ten raport</div>
     <h2>Słowniczek, metoda i założenia</h2>
     <div class="prose" id="method"></div>
-    <pre>python3 zkmplan.py               # pobiera rozkłady ZKM i PKP, liczy, tworzy raport
-python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
-# parametry: zkmplan.ini, wyniki: data/plan/RRRR-MM-DD/, raport: reports/korekty-zkm.html</pre>
   </section>
 
   <section>
@@ -135,6 +132,14 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     <p class="prose" id="stage-text"></p>
     <div class="chart" id="stage-chart"></div>
     <div class="tbl" id="stage-tbl"></div>
+  </section>
+
+  <section id="past-sec">
+    <div class="label">Test na minionych dniach</div>
+    <h2 id="past-title">Rzeczywiste godziny pociągów</h2>
+    <p class="prose" id="past-text"></p>
+    <div class="tbl" id="past-sum"></div>
+    <details><summary>Pokaż wszystkie dni</summary><div class="tbl" id="past-tbl"></div></details>
   </section>
 
   <section>
@@ -219,6 +224,9 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
   const cfg = D.config || {};
   const MONEY = /^(yes|tak|true|1)$/i.test(String((cfg.costs || {}).show_money || "").trim());
 
+  const PT = D.past_test || { rows: [], summary: [], worst: {}, timetables: [] };
+  const plPoc = n => n === 1 ? "pociąg" : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? "pociągi" : "pociągów";
+  const pastMean = name => PT.summary.find(r => r.day_type === st.day && r.timetable === name);
   function V() { return D.day_types[st.day].variants[st.v]; }
   function R() { return D.day_types[st.day]; }
 
@@ -237,14 +245,13 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     const r = R(), v = V();
     const nd = v.good_before.n_dates, g0 = v.good_before.total / nd, g1 = v.good_after.total / nd;
     const gb0 = v.good_buffered_before.total / nd, gb1 = v.good_buffered_after.total / nd;
-    const re = v.realised_t2b || {};
     const maxOther = Math.max(0, ...v.changes.map(c => Math.max(Math.abs(c.shift_before), Math.abs(c.shift_after))));
     $("sum-title").textContent = `${DAYNAME[st.day]}: ${num(gb0)} → ${num(gb1)} dobrych przesiadek dziennie`;
-    $("sum-text").textContent = `Plan na ${fdate(r.date)}, sprawdzony na ${nd} dniach tego typu (${r.all_dates.map(fdate).slice(0, 6).join(", ")}${r.all_dates.length > 6 ? "…" : ""}). ${VARNAME[st.v]}. Przesiadka jest dobra, gdy po dojściu z peronu (${cfg.transfers?.walk_train_to_bus} min) lub na peron (${cfg.transfers?.walk_bus_to_train} min) czeka się najwyżej ${cfg.transfers?.good_window} min. Liczone są pary pociąg–linia. Do przyjazdu pociągu doliczany jest zapas na typowe opóźnienie jego kategorii.`;
+    $("sum-text").textContent = `Plan na ${fdate(r.date)}, sprawdzony na ${nd} dniach tego typu (${r.all_dates.map(fdate).slice(0, 6).join(", ")}${r.all_dates.length > 6 ? "…" : ""}). ${VARNAME[st.v]}. Przesiadka jest dobra, gdy po dojściu z peronu (${cfg.transfers?.walk_train_to_bus} min) lub na peron (${cfg.transfers?.walk_bus_to_train} min) czeka się najwyżej ${cfg.transfers?.good_window} min. Liczone są pary pociąg–linia. Do przyjazdu pociągu doliczany jest zapas na opóźnienie jego kategorii. ${cfg.shifts?.shift_direction === "buffer" ? "Autobus może tylko przyjechać wcześniej lub odjechać później, więc każda zmiana daje przesiadce więcej czasu." : ""}`;
     const tiles = [
       { k: "Dobre przesiadki na dzień, z zapasem na opóźnienie", v: `${num(gb0)} → ${num(gb1)}`, s: `${pct((gb1 - gb0) / gb0)}; zapas: ${Object.entries(D.buffers || {}).map(([k, x]) => `${k} ${num(x)} min`).join(", ") || "brak danych"}` },
       { k: "Bez zapasu (pociągi punktualne)", v: `${num(g0)} → ${num(g1)}`, s: `${pct((g1 - g0) / g0)}; pary pociąg–linia w obu kierunkach` },
-      { k: "Rzeczywiste przyjazdy pociągów z historią (pociąg → autobus)", v: re.pairs ? `${num(re.before)} → ${num(re.after)}` : "–", s: re.pairs ? `${pct((re.after - re.before) / re.before)} na ${re.days} minionych dniach (${num(re.trains)} przyjazdów). Te same pociągi według planu: ${num(re.plan_before)} → ${num(re.plan_after)} (${pct((re.plan_after - re.plan_before) / re.plan_before)})` : "brak danych o opóźnieniach dla tego typu dnia" },
+      (() => { const a = pastMean("obecny"), b = pastMean("propozycja"); return { k: "Minione dni: złapane przesiadki przy rzeczywistych godzinach pociągów", v: a ? `${num(a.actual_caught)} → ${num(b.actual_caught)}` : "–", s: a ? `${pct((b.actual_caught - a.actual_caught) / a.actual_caught)}; średnio z ${a.days} dni. Dobre (czekanie do ${num(PT.window)} min): ${num(a.actual_total)} → ${num(b.actual_total)} (${pct((b.actual_total - a.actual_total) / a.actual_total)})` : "brak dni z danymi o opóźnieniach dla tego typu dnia" }; })(),
       { k: "Zmienione kursy", v: `${v.changes.length}`, s: `na ${r.trips} kursów; najwyżej ${maxOther} min zmiany poza Dworcową` },
       MONEY ? { k: "Koszt dnia", v: `${num(v.cost_before.total)} → ${num(v.cost_after.total)} <small>zł</small>`, s: `${num(v.indicators_before.total_km)} → ${num(v.indicators_after.total_km)} km, ${num(v.indicators_before.vehicle_hours, 1)} → ${num(v.indicators_after.vehicle_hours, 1)} wozogodz.` }
         : { k: "Godziny pracy kierowców", v: `${num(v.indicators_before.duty_hours, 1)} → ${num(v.indicators_after.duty_hours, 1)}`, s: `${num(v.indicators_before.vehicle_hours, 1)} → ${num(v.indicators_after.vehicle_hours, 1)} wozogodzin, ${num(v.indicators_before.total_km)} km bez zmian, autobusy w szczycie ${v.indicators_before.peak_vehicles} → ${v.indicators_after.peak_vehicles}` },
@@ -256,7 +263,7 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     const v = V(), c = v.curve || [];
     if (c.length < 2) { $("stage-text").textContent = "Jeden etap: wszystkie zmiany razem."; $("stage-chart").innerHTML = ""; $("stage-tbl").innerHTML = ""; return; }
     const last = c[c.length - 1], g0 = c[0].good_per_day;
-    $("stage-text").textContent = `Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to ${c[1].changes} najbardziej opłacalnych zmian. Pełna propozycja zmienia ${last.changes} kursów i daje ${num(last.good_per_day - g0)} dobrych przesiadek dziennie więcej. Liczone z zapasem na typowe opóźnienie pociągu.`;
+    $("stage-text").textContent = `Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to ${c[1].changes} najbardziej opłacalnych zmian. Pełna propozycja zmienia ${last.changes} kursów i daje ${num(last.good_per_day - g0)} dobrych przesiadek dziennie więcej. Liczone z zapasem na opóźnienie pociągu.`;
     const W = 640, H = 220, L = 46, B = 34, T = 14, Rr = 16;
     const xm = Math.max(...c.map(p => p.changes)) || 1, ymn = Math.floor(g0 / 10) * 10, ymx = Math.ceil(last.good_per_day / 10) * 10 || 1;
     const X = x => L + (W - L - Rr) * x / xm, Y = y => H - B - (H - B - T) * (y - ymn) / Math.max(1, ymx - ymn);
@@ -360,7 +367,7 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     $("cost-label").textContent = MONEY ? "Koszty" : "Praca przewozowa";
     $("cost-title").textContent = MONEY ? "Koszt obecnego i proponowanego rozkładu" : "Praca przewozowa obecnego i proponowanego rozkładu";
     if (!MONEY) {
-      $("cost-text").textContent = `Wskaźniki jednego dnia (${DAYNAME[st.day].toLowerCase()}). Wozokilometry obejmują dojazdy z zajezdni. Koszt w złotych narzędzie pokazuje po wpisaniu stawek i danych o biletach przewoźnika w pliku zkmplan.ini (show_money = yes).`;
+      $("cost-text").textContent = `Wskaźniki jednego dnia (${DAYNAME[st.day].toLowerCase()}). Wozokilometry obejmują dojazdy z zajezdni. Koszt w złotych narzędzie pokaże po wpisaniu stawek i danych o biletach przewoźnika do jego ustawień.`;
       $("cost-tbl").innerHTML = table([{ h: "Obiegi", f: x => VARNAME[x.vn] }, { h: "Rozkład", f: x => x.lab },
         { h: "Autobusy w szczycie", num: 1, f: x => x.i.peak_vehicles }, { h: "Wozokm", num: 1, f: x => num(x.i.total_km) },
         { h: "Wozogodziny", num: 1, f: x => num(x.i.vehicle_hours, 1) }, { h: "Służby", num: 1, f: x => x.i.duties },
@@ -372,7 +379,7 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
         { h: "Wozogodziny / rok", num: 1, f: r => num(r.x.vehicle_hours) }, { h: "Godziny kierowców / rok", num: 1, f: r => num(r.x.duty_hours) }], ar);
       return;
     }
-    $("cost-text").textContent = `Koszt jednego dnia (${DAYNAME[st.day].toLowerCase()}) z parametrów w pliku zkmplan.ini. Domyślne stawki to szacunek dla małego miasta, a nie dane ZKM: zamień je na dane przewoźnika. Wozokilometry obejmują dojazdy z zajezdni.`;
+    $("cost-text").textContent = `Koszt jednego dnia (${DAYNAME[st.day].toLowerCase()}) z ustawień narzędzia. Domyślne stawki to szacunek dla małego miasta, a nie dane ZKM: zamień je na dane przewoźnika. Wozokilometry obejmują dojazdy z zajezdni.`;
     $("cost-tbl").innerHTML = table([{ h: "Obiegi", f: x => VARNAME[x.vn] }, { h: "Rozkład", f: x => x.lab },
       { h: "Autobusy", num: 1, f: x => x.i.peak_vehicles }, { h: "km", num: 1, f: x => num(x.i.total_km) },
       { h: "Wozogodz.", num: 1, f: x => num(x.i.vehicle_hours, 1) }, { h: "Służby", num: 1, f: x => x.i.duties },
@@ -391,7 +398,7 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
     const v = V(), d = v.demand, dm = cfg.demand || {};
     const mid = d.mid || {}, rev = D.revenue_per_trip || 0;
     $("dem-title").textContent = MONEY ? "Ilu pasażerów i przychodu mogą dać lepsze przesiadki" : "Ilu pasażerów mogą dać lepsze przesiadki";
-    $("dem-text").innerHTML = `<p>Na stacji Iława Główna wsiada i wysiada średnio ${num(+dm.station_daily_exchange)} osób na dobę (Urząd Transportu Kolejowego, 2025). Część z nich przesiada się tylko między pociągami. Nie wiadomo, ilu podróżnych jedzie dalej autobusem ZKM, dlatego narzędzie liczy trzy warianty: udział autobusu i wrażliwość na czas czekania to założenia, nie pomiar. W wariancie średnim to ${num(mid.base_trips_day)} przejazdów autobusem dziennie w obu kierunkach.</p><p>Średni czas czekania na przesiadkę (pociąg–linia, w obu kierunkach) zmienia się z ${num(d.wait_before, 1)} do ${num(d.wait_after, 1)} min (${pct(d.wait_change, 1)}). Krótsze czekanie oznacza więcej pasażerów.</p>${(D.annual_demand || {})[st.v] ? `<p>W roku, ze wszystkimi typami dni: ${num(D.annual_demand[st.v].low)} (ostrożny), ${num(D.annual_demand[st.v].mid)} (średni) i ${num(D.annual_demand[st.v].high)} (optymistyczny) przejazdów autobusem więcej.</p>` : ""}${MONEY ? `<p>Przychód z przejazdu: ${num(rev, 2)} zł (z pliku zkmplan.ini).</p>` : ""}`;
+    $("dem-text").innerHTML = `<p>Na stacji Iława Główna wsiada i wysiada średnio ${num(+dm.station_daily_exchange)} osób na dobę (Urząd Transportu Kolejowego, 2025). Część z nich przesiada się tylko między pociągami. Nie wiadomo, ilu podróżnych jedzie dalej autobusem ZKM, dlatego narzędzie liczy trzy warianty: udział autobusu i wrażliwość na czas czekania to założenia, nie pomiar. W wariancie średnim to ${num(mid.base_trips_day)} przejazdów autobusem dziennie w obu kierunkach.</p><p>Średni czas czekania na przesiadkę (pociąg–linia, w obu kierunkach) zmienia się z ${num(d.wait_before, 1)} do ${num(d.wait_after, 1)} min (${pct(d.wait_change, 1)}). Krótsze czekanie oznacza więcej pasażerów.</p>${(D.annual_demand || {})[st.v] ? `<p>W roku, ze wszystkimi typami dni: ${num(D.annual_demand[st.v].low)} (ostrożny), ${num(D.annual_demand[st.v].mid)} (średni) i ${num(D.annual_demand[st.v].high)} (optymistyczny) przejazdów autobusem więcej.</p>` : ""}${MONEY ? `<p>Przychód z przejazdu: ${num(rev, 2)} zł (z ustawień narzędzia).</p>` : ""}`;
     const rows = ["low", "mid", "high"].map(k => ({ k, ...d[k] }));
     const nm = { low: "ostrożny", mid: "średni", high: "optymistyczny" };
     $("dem-tbl").innerHTML = table([{ h: "Wariant", f: r => nm[r.k] }, { h: "Udział autobusu", num: 1, f: r => `${num(100 * r.bus_share)}%` },
@@ -400,13 +407,17 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
       ...(MONEY ? [{ h: "Przychód / dzień", num: 1, f: r => `${num(r.extra_trips_day * rev)} zł` }] : [])], rows);
   }
 
+  function qName(q) { q = +q || 0.5; return q === 0.5 ? "mediana" : `${num(100 * q)}. percentyl`; }
+
   function drawMethod() {
     const s = cfg.shifts || {}, b = cfg.blocks || {};
     const t = cfg.transfers || {};
     $("method").innerHTML = `<h3>Słowniczek</h3><dl class="gloss">
       <dt>Para pociąg–linia</dt><dd>Jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.</dd>
-      <dt>Dobra przesiadka</dt><dd>Czekanie po dojściu najwyżej ${t.good_window} min. Dojście trwa ${t.walk_train_to_bus} min z peronu na przystanek i ${t.walk_bus_to_train} min z przystanku na peron.</dd>
-      <dt>Zapas na opóźnienie</dt><dd>Do przyjazdu pociągu doliczana jest mediana opóźnienia jego kategorii: ${Object.entries(D.buffers || {}).map(([k, x]) => `${k} ${num(x)} min`).join(", ") || "brak danych"}.</dd>
+      <dt>Dobra przesiadka</dt><dd>Czekanie po dojściu najwyżej ${t.good_window} min. Dojście trwa ${t.walk_train_to_bus} min z peronu na przystanek i ${t.walk_bus_to_train} min z przystanku na peron. Przy przesiadce z pociągu okno czekania zaczyna się po zapasie na opóźnienie.</dd>
+      <dt>Zapas na opóźnienie</dt><dd>Czas doliczany do planowego przyjazdu pociągu: ${qName(t.delay_buffer_quantile)} opóźnienia pociągów danej kategorii na stacji Iława Główna, najwyżej ${t.delay_buffer_cap} min. Obecnie: ${Object.entries(D.buffers || {}).map(([k, x]) => `${k} ${num(x)} min`).join(", ") || "brak danych"}.</dd>
+      <dt>Złapana przesiadka</dt><dd>Przesiadka, przy której po dojściu czeka się najwyżej ${t.good_window} min plus zapas na opóźnienie kategorii pociągu. Na minionych dniach, przy rzeczywistych godzinach pociągów, pokazuje, ilu podróżnych zdąży na autobus (lub pociąg), który daje im rozkład. Gdy przesiadka się nie uda, czeka się na następny autobus linii.</dd>
+      <dt>Kierunek przesunięć</dt><dd>${s.shift_direction === "buffer" ? "Autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później. Każda zmiana daje przesiadce więcej czasu, więc nie zależy od punktualności autobusu." : "Autobus może przyjechać i odjechać wcześniej lub później."}</dd>
       <dt>Przesunięcie kursu</dt><dd>Zmiana godzin kursu na wszystkich jego przystankach o tyle samo minut.</dd>
       <dt>Etap</dt><dd>Grupa zmian do wprowadzenia razem: etap 1 to 20 najskuteczniejszych zmian, etap 2 to łącznie 40, ostatni etap to wszystkie. Każdy etap zachowuje zmiany poprzedniego.</dd>
       <dt>Zmiana towarzysząca</dt><dd>Zmiana bez własnego zysku, potrzebna do zachowania przerwy kierowcy, postoju autobusu albo kolejności kursów po innej zmianie.</dd>
@@ -417,17 +428,45 @@ python3 zkmplan.py --no-fetch    # liczy na plikach już pobranych
       <dt>Wozokilometr, wozogodzina</dt><dd>Kilometr i godzina pracy autobusu, razem z dojazdami z zajezdni.</dd>
       <dt>Wariant ostrożny, średni, optymistyczny</dt><dd>Założenia o liczbie pasażerów: udział podróżnych kolejowych, którzy jadą dalej autobusem, i wrażliwość na czas czekania.</dd></dl>
       <h3>Metoda i założenia</h3><ul>
-      <li><b>Rozkład ZKM</b> pochodzi z rozklad.com, przetworzony do formatu GTFS (zkm_gtfs.py). <b>Rozkład PKP</b> z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.</li>
+      <li><b>Rozkład ZKM</b> pochodzi z rozklad.com, przetworzony do formatu GTFS. <b>Rozkład PKP</b> z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.</li>
       <li><b>Przesunięcia:</b> kurs zmienia się najwyżej o ${s.max_shift} min na innych przystankach (kursy szkolne o ${s.school_max_shift} min). Na Dworcowej autobus może stać dłużej o maksymalnie ${s.max_extra_dwell} min. Każdy zmieniony kurs i każda minuta zmiany mają karę (${s.trip_change_penalty} i ${s.habit_penalty} dobrej przesiadki), więc optymalizator zmienia tylko te kursy, które coś dają.</li>
       <li><b>Etapy:</b> limity zmian ${esc(s.stages || "brak")}; każdy etap zachowuje zmiany poprzedniego, ostatni etap nie ma limitu.</li>
       <li><b>Obiegi:</b> postój między kursami autobusu co najmniej ${b.min_layover} min. Obieg odtworzony z rozkładu, wariant „${VARNAME.single}” i „${VARNAME.interlined}”. Kolejność kursów linii na Dworcowej zostaje ta sama.</li>
       <li><b>Koszt:</b> łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą, w częściach po co najmniej 15 min.</li>
-      <li><b>Pociągi:</b> wszystkie pociągi mają tę samą wagę. Przy przesiadce z pociągu na autobus doliczany jest zapas na typowe opóźnienie kategorii pociągu (mediana z danych, najwyżej ${(cfg.transfers || {}).delay_buffer_cap} min).</li>
+      <li><b>Pociągi:</b> wszystkie pociągi mają tę samą wagę. Przy przesiadce z pociągu na autobus doliczany jest zapas na opóźnienie kategorii pociągu (${qName(t.delay_buffer_quantile)} z danych, najwyżej ${t.delay_buffer_cap} min).</li>
+      <li><b>Test na minionych dniach:</b> obecny rozkład, każdy etap i pełna propozycja są sprawdzane na minionych dniach z danymi o opóźnieniach (do ${num(+(cfg.general || {}).past_days)} dni wstecz, od początku obowiązywania rozkładu ZKM). Godziny pociągów są rzeczywiste: z monitora PKP PLK (wszyscy przewoźnicy), a gdy go brak, z historii PKP Intercity (spoznienia.me). Pociąg bez danych liczy się jako punktualny. Godziny autobusów są planowe, bo brak danych o faktycznych odjazdach.</li>
       <li><b>Ograniczenia:</b> obiegi i służby ZKM są odtworzone, a nie pobrane z ZKM; koszty to szacunek; brak danych o faktycznych odjazdach autobusów. Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.</li></ul>`;
-    $("foot").textContent = `Wygenerowano ${D.generated} narzędziem zkmplan.py z repozytorium ilawa-transport.`;
+    $("foot").textContent = `Stan na ${fdate(D.generated.slice(0, 10))}. Dane: ZKM Iława (rozklad.com), PKP PLK Otwarte Dane Kolejowe, spoznienia.me.`;
   }
 
-  function drawAll() { drawSummary(); drawStages(); drawBoards(); drawChanges(); drawGantt(); drawDuties(); drawGaps(); drawCosts(); drawDemand(); }
+  function drawPast() {
+    const rows = PT.rows.filter(r => r.day_type === st.day), w = PT.worst[st.day];
+    if (!rows.length) { $("past-sec").hidden = true; return; }
+    $("past-sec").hidden = false;
+    const a = pastMean("obecny"), b = pastMean("propozycja");
+    const byDate = {}; rows.forEach(r => { (byDate[r.date] = byDate[r.date] || {})[r.timetable] = r; });
+    const dates = Object.keys(byDate).sort();
+    const ch = (x, y) => `${num(x)} → ${num(y)} (${pct((y - x) / x)})`;
+    const wr = w ? byDate[w.date] : null;
+    $("past-title").textContent = `${DAYNAME[st.day]}: ${num(a.actual_caught)} → ${num(b.actual_caught)} złapanych przesiadek przy rzeczywistych godzinach pociągów`;
+    $("past-text").innerHTML = `Test obejmuje ${dates.length} ${dates.length === 1 ? "dzień" : "dni"} tego typu z danymi o opóźnieniach (${fdate(dates[0])}–${fdate(dates[dates.length - 1])}). Rozkład ZKM i planowy rozkład pociągów są te same, zmieniają się tylko rzeczywiste godziny pociągów. Średnio na dzień: złapane przesiadki ${ch(a.actual_caught, b.actual_caught)}, dobre przesiadki (czekanie do ${num(PT.window)} min) ${ch(a.actual_total, b.actual_total)}, średnie czekanie na autobus po przyjeździe pociągu ${num(a.actual_wait_t2b, 1)} → ${num(b.actual_wait_t2b, 1)} min.${wr ? ` Najgorszy dzień tego typu to ${fdate(w.date)}: ${w.late_over_5} ${plPoc(w.late_over_5)} spóźnionych ponad 5 min, średnie opóźnienie przyjazdu ${num(w.delay_mean, 1)} min. Tego dnia złapane przesiadki: ${ch(wr.obecny.actual_caught, wr.propozycja.actual_caught)}.` : ""}`;
+    $("past-sum").innerHTML = table([
+      { h: "Rozkład", f: r => r.timetable === "obecny" ? "Obecny" : r.timetable === "propozycja" ? "Pełna propozycja" : r.timetable.replace("etap", "Etap") },
+      { h: "Złapane, planowo", num: 1, f: r => num(r.plan_caught) },
+      { h: "Złapane, rzeczywiście", num: 1, f: r => num(r.actual_caught) },
+      { h: "Dobre, planowo", num: 1, f: r => num(r.plan_total) },
+      { h: "Dobre, rzeczywiście", num: 1, f: r => num(r.actual_total) },
+      { h: "Czekanie po pociągu, min", num: 1, f: r => num(r.actual_wait_t2b, 1) }], PT.summary.filter(r => r.day_type === st.day));
+    $("past-tbl").innerHTML = table([
+      { h: "Dzień", f: d => `${fdate(d)}${w && d === w.date ? " <b>(najgorszy)</b>" : ""}` },
+      { h: "Pociągi z danymi", num: 1, f: d => `${byDate[d].obecny.arr_with_data}/${byDate[d].obecny.trains_arr}` },
+      { h: "Średnie opóźnienie, min", num: 1, f: d => num(byDate[d].obecny.delay_mean, 1) },
+      { h: "Spóźnione > 5 min", num: 1, f: d => num(byDate[d].obecny.late_over_5) },
+      { h: "Złapane: obecny → propozycja", num: 1, f: d => `${num(byDate[d].obecny.actual_caught)} → ${num(byDate[d].propozycja.actual_caught)}` },
+      { h: "Dobre: obecny → propozycja", num: 1, f: d => `${num(byDate[d].obecny.actual_total)} → ${num(byDate[d].propozycja.actual_total)}` }], dates);
+  }
+
+  function drawAll() { drawSummary(); drawStages(); drawPast(); drawBoards(); drawChanges(); drawGantt(); drawDuties(); drawGaps(); drawCosts(); drawDemand(); }
   tabs("f-day", DAYS.map(d => [d, DAYNAME[d]]), st, "day", drawAll);
   tabs("f-var", VARS.map(v => [v, v === "single" ? "Obiegi jednej linii" : "Obiegi mieszane"]), st, "v", drawAll);
   tabs("f-when", [["before", "Obecny rozkład"], ["after", "Po korekcie"]], st, "when", drawGantt);

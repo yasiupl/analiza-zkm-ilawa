@@ -153,11 +153,19 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
     <details><summary>Wrażliwość na czas dojścia z peronu na przystanek</summary><div class="tbl" id="sens-tbl"></div></details>
   </section>
 
+  <section id="testdays">
+    <div class="label">Dni testowe</div>
+    <h2>Rozkład planowy i rzeczywiste godziny pociągów</h2>
+    <div class="prose" id="td-text"></div>
+    <div class="tbl" id="td-tbl"></div>
+    <p class="note" id="td-note"></p>
+  </section>
+
   <section id="test">
     <div class="label">Test tezy</div>
     <h2>Rzeczywisty rozkład na tle rozkładu losowego</h2>
     <div class="prose">
-      <p>Dla każdego pociągu sprawdzamy, czy autobus odjeżdża w chwili, gdy podróżni jeszcze idą z peronu na przystanek: od 2 min przed przyjazdem do <span id="m1a"></span> min po przyjeździe. Ten sam wskaźnik liczymy 3000 razy dla rozkładu, w którym każdą linię przesunięto o losowy czas od −30 do +30 min. Szary pas to zakres 90% wyników losowych. Kropka poza pasem oznacza, że rozkład nie jest dziełem przypadku.</p>
+      <p>Dla każdego pociągu sprawdzamy, czy autobus odjeżdża w chwili, gdy podróżni jeszcze idą z peronu na przystanek: od 2 min przed przyjazdem do <span id="m1a"></span> min po przyjeździe. Ten sam wskaźnik liczymy 3000 razy dla rozkładu, w którym każdą linię przesunięto o losowy czas od −30 do +30 min. Szary pas to zakres 90% wyników losowych. Kropka poza pasem oznacza, że rozkład nie jest dziełem przypadku. Test używa rzeczywistych godzin pociągów z dnia testowego danego typu.</p>
     </div>
     <div class="controls">
       <div class="tabs" id="f-day" role="group" aria-label="Typ dnia"></div>
@@ -205,7 +213,7 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
   <section id="lines">
     <div class="label">Linie ZKM</div>
     <h2>Czas oczekiwania na konkretną linię</h2>
-    <div class="prose"><p>Podróżny potrzebuje konkretnej linii, a nie dowolnego autobusu. Tabela pokazuje medianę czasu od przyjazdu pociągu do odjazdu danej linii oraz od przyjazdu autobusu do odjazdu pociągu. Liczone jest średnio z 4 tygodni rozkładu (<span id="win"></span>).</p></div>
+    <div class="prose"><p>Podróżny potrzebuje konkretnej linii, a nie dowolnego autobusu. Tabela pokazuje medianę czasu od przyjazdu pociągu do odjazdu danej linii oraz od przyjazdu autobusu do odjazdu pociągu. Liczone jest średnio ze wszystkich dni okresu analizy (<span id="win"></span>), z planowymi godzinami pociągów.</p></div>
     <div class="tbl" id="lines-tbl"></div>
   </section>
 
@@ -235,7 +243,7 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
   <section id="fix">
     <div class="label">Co można poprawić</div>
     <h2>Korekty rozkładu</h2>
-    <div class="prose"><p>Propozycje zmian rozkładu przygotowuje osobne narzędzie <span class="mono">zkmplan.py</span>. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej. Zachowuje przy tym obiegi autobusów, przerwy kierowców, liczbę autobusów i czas pracy kierowców. Wyniki, etapy wdrożenia i wykaz zmian są w raporcie <a href="https://claude.ai/artifact/LHpHerFfAXQ8om2pxWeYN2">Korekty rozkładu ZKM Iława</a>.</p></div>
+    <div class="prose"><p>Propozycje zmian rozkładu przygotowuje osobne narzędzie. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej. Zachowuje przy tym obiegi autobusów, przerwy kierowców, liczbę autobusów i czas pracy kierowców. Wyniki, etapy wdrożenia i wykaz zmian są w raporcie <a href="https://claude.ai/artifact/LHpHerFfAXQ8om2pxWeYN2">Korekty rozkładu ZKM Iława</a>.</p></div>
   </section>
 
   <section id="monitoring">
@@ -314,11 +322,17 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
   const rKeep = mon && mon.keep_by_line_category ? Object.entries(mon.keep_by_line_category).filter(([k]) => k.endsWith("|R")) : [];
   const rKeepV = rKeep.length ? rKeep.reduce((s, [, v]) => s + v.p_keep * v.n, 0) / rKeep.reduce((s, [, v]) => s + v.n, 0) : null;
   const icDelay = icH && icH.t2b ? icH.t2b.delay.median : null;
-  const edge = DAYS.filter(d => d !== "Roboczy" && D.overall[d].plain.t2b_near_miss.percentile >= 0.9);
-  $("lead").innerHTML = `Teza się nie potwierdza dla całej sieci. W dzień roboczy autobus odjeżdża w chwili przyjazdu pociągu przy <b>${pct(W.t2b_near_miss.observed)}</b> pociągów. Rozkład losowy daje <b>${pct(W.t2b_near_miss.null_mean)}</b> (90% wyników losowych: ${pct(W.t2b_near_miss.null_p05)}–${pct(W.t2b_near_miss.null_p95)}). Wrażenie „uciekającego autobusu” jest prawdziwe, ale wynika z liczby kursów i skupień pociągów, a nie z ułożenia rozkładu. Rozkłady nie są jednak ze sobą skoordynowane: dobrych przesiadek jest tyle samo, ile przy losowym rozkładzie. Wyjątkiem jest <b>linia 1</b> w dni robocze, gdzie takich sytuacji jest więcej niż losowo (${pct(l1.rep_near_miss)} wobec ${pct(l1.null_near_miss)}). Chodzi o kilka wieczornych odjazdów, po których następny kurs jest za 50–100 min.${edge.length ? ` ${edge.map(d => DAYNAME[d]).join(" i ")}: wynik jest blisko górnej granicy losowości (${edge.map(d => `${pct(D.overall[d].plain.t2b_near_miss.observed)} wobec ${pct(D.overall[d].plain.t2b_near_miss.null_mean)}`).join(", ")}), ale kursów jest mało i test nie daje pewności.` : ""}`;
+  const REPACT = d => (D.rep_times || {})[d] === "actual";
+  const repTxt = d => `${fdate(D.rep_dates[d])}${REPACT(d) ? ", rzeczywiste godziny pociągów" : ""}`;
+  const nmOf = d => D.overall[d].plain.t2b_near_miss;
+  const worse = DAYS.filter(d => nmOf(d).percentile >= 0.95), edge = DAYS.filter(d => nmOf(d).percentile >= 0.9 && nmOf(d).percentile < 0.95);
+  const goodT = DAYS.filter(d => D.overall[d].plain.t2b_good.percentile >= 0.95 || D.overall[d].plain.b2t_good.percentile >= 0.95);
+  const l1eve = (D.collisions.Roboczy || []).filter(c => c.line === "1" && c.time >= "17:00" && c.gap);
+  const wGood = nmOf("Roboczy").percentile >= 0.95;
+  $("lead").innerHTML = `${wGood ? "W dzień roboczy teza się potwierdza." : "W dzień roboczy teza się nie potwierdza dla całej sieci."} W dniu testowym (${repTxt("Roboczy")}) autobus odjeżdża w chwili przyjazdu pociągu przy <b>${pct(W.t2b_near_miss.observed)}</b> pociągów. Rozkład losowy daje <b>${pct(W.t2b_near_miss.null_mean)}</b> (90% wyników losowych: ${pct(W.t2b_near_miss.null_p05)}–${pct(W.t2b_near_miss.null_p95)}).${wGood ? "" : ` ${edge.includes("Roboczy") ? "Wynik jest blisko górnej granicy losowości, ale mieści się w niej. " : ""}Wrażenie „uciekającego autobusu” jest prawdziwe, ale wynika głównie z liczby kursów i skupień pociągów, a nie z ułożenia rozkładu.`} Rozkłady nie są ze sobą skoordynowane: według rozkładu planowego dobrych przesiadek (czekanie do ${P.good_window} min) jest mniej więcej tyle, ile przy rozkładzie losowym.${l1.near_miss_pct >= 0.95 ? ` Wyjątkiem jest <b>linia 1</b> w dni robocze: autobus „ucieka” częściej niż losowo (${pct(l1.rep_near_miss)} wobec ${pct(l1.null_near_miss)}).${l1eve.length ? ` Chodzi głównie o ${l1eve.length} odjazdy po 17:00, po których następny kurs jest za ${num(Math.min(...l1eve.map(c => c.gap)))}–${num(Math.max(...l1eve.map(c => c.gap)))} min.` : ""}` : ""}${worse.filter(d => d !== "Roboczy").length ? ` ${worse.filter(d => d !== "Roboczy").map(d => `${DAYNAME[d]} (${repTxt(d)}): autobus „ucieka” częściej niż przy 95% rozkładów losowych (${pct(nmOf(d).observed)} wobec ${pct(nmOf(d).null_mean)}), więc tego dnia teza się potwierdza`).join("; ")}.` : ""}${edge.filter(d => d !== "Roboczy").length ? ` ${edge.filter(d => d !== "Roboczy").map(d => DAYNAME[d]).join(" i ")}: wynik jest blisko górnej granicy losowości, ale kursów jest mało i test nie daje pewności.` : ""}`;
   const tiles = [
-    { k: "Pociągi, którym autobus „ucieka” (dzień roboczy)", v: pct(W.t2b_near_miss.observed), s: `losowo ${pct(W.t2b_near_miss.null_mean)} · ${W.n_train_arr} przyjazdów w godzinach kursowania ZKM` },
-    { k: "To samo dla linii 1 (dzień roboczy)", v: pct(l1.rep_near_miss), s: `losowo ${pct(l1.null_near_miss)} · na granicy 95. percentyla` },
+    { k: `Pociągi, którym autobus „ucieka” (dzień roboczy ${fdate(D.rep_dates.Roboczy)})`, v: pct(W.t2b_near_miss.observed), s: `losowo ${pct(W.t2b_near_miss.null_mean)} · ${W.n_train_arr} przyjazdów w godzinach kursowania ZKM` },
+    { k: "To samo dla linii 1 (dzień roboczy)", v: pct(l1.rep_near_miss), s: `losowo ${pct(l1.null_near_miss)} · wynik wyższy niż w ${Math.round(100 * l1.near_miss_pct)}% rozkładów losowych` },
     { k: "Mediana opóźnienia IC w Iławie", v: `${num(icDelay, 0)} <small>min</small>`, s: `${icH ? icH.days.length : 0} dni danych PKP Intercity; POLREGIO: ${num(mon && mon.delay_by_category.R ? mon.delay_by_category.R.median : null)} min` },
     { k: "Ciasne przesiadki z IC na daną linię, które się udają", v: pct(keepLineIC), s: `POLREGIO: ${pct(rKeepV)} · ciasna = czekanie do ${P.m_t2b + P.good_window} min` },
   ];
@@ -364,7 +378,7 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
       hover(hit, `<b>${r.name}</b><br>rzeczywisty: ${pct(r.obs, 1)}<br>losowo: ${pct(r.mean, 1)} (90%: ${pct(r.p05, 1)}–${pct(r.p95, 1)})<br>percentyl: ${Math.round(r.pctl * 100)}`);
     });
     const metName = fs.met === "near" ? (fs.dir === "t2b" ? "autobus odjeżdża, gdy podróżni idą z peronu" : "autobus przyjeżdża za późno na pociąg") : "dobra przesiadka (czekanie do " + ((fs.dir === "t2b" ? P.m_t2b : P.m_b2t) + P.good_window) + " min)";
-    $("forest-note").textContent = `${DAYNAME[fs.day]} ${fdate(D.rep_dates[fs.day])} · ${DIRKEY[fs.dir]} · udział pociągów: ${metName}. Test obejmuje pociągi w godzinach kursowania danej linii.`;
+    $("forest-note").textContent = `${DAYNAME[fs.day]} ${repTxt(fs.day)} · ${DIRKEY[fs.dir]} · udział pociągów: ${metName}. Test obejmuje pociągi w godzinach kursowania danej linii.`;
     $("forest-tbl").innerHTML = table([{ h: "Linia", k: "name" }, { h: "Rzeczywisty", num: 1, f: r => pct(r.obs, 1) }, { h: "Losowo (średnia)", num: 1, f: r => pct(r.mean, 1) }, { h: "Losowo 5–95%", num: 1, f: r => `${pct(r.p05, 1)}–${pct(r.p95, 1)}` }, { h: "Percentyl", num: 1, f: r => Math.round(r.pctl * 100) }, { h: "Ocena", f: r => chipFor(r.obs, r.p05, r.p95, fs.met === "near") }], rows);
   }
   tabs("f-day", DAYS.map(d => [d, DAYNAME[d]]), fs, "day", drawForest);
@@ -428,7 +442,7 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
       const big = IC.has(tr.cat), x = X(tr.t);
       el("rect", { x: x - 1, y: yT - (big ? 11 : 6), width: 2.5, height: big ? 22 : 12, rx: 1, fill: big ? "var(--train)" : "var(--train-r)" }, svg);
       const hit = el("rect", { x: x - 5, y: yT - 12, width: 10, height: 24, fill: "transparent" }, svg);
-      hover(hit, `<b>${tr.time} przyjazd</b><br>${esc(tr.cat)} ${esc(tr.no)}<br>${esc(tr.rel)}`);
+      hover(hit, `<b>${tr.time} przyjazd</b>${tr.delay ? ` (opóźnienie ${num(tr.delay)} min)` : ""}<br>${esc(tr.cat)} ${esc(tr.no)}<br>${esc(tr.rel)}`);
     });
     deps.forEach(b => {
       const c = el("circle", { cx: X(b.t), cy: yL(b.line), r: 5, fill: LC(b.line), stroke: "var(--paper)", "stroke-width": 2 }, svg);
@@ -515,7 +529,7 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
   } else { $("key").hidden = true; }
 
   // ---------- monitoring
-  $("mon-text").innerHTML = `<p>Faktyczne czasy pociągów zbiera skrypt <span class="mono">monitor.py</span>. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje potwierdzone czasy przyjazdu i odjazdu. API przechowuje wykonane kursy przez około 3 dni, więc krótka przerwa w pracy monitora nie powoduje utraty danych. Dane z każdego dnia trafiają do pliku <span class="mono">data/monitor/RRRR-MM-DD.csv</span>, a <span class="mono">analyze.py</span> włącza je do analizy dynamicznej.</p>
+  $("mon-text").innerHTML = `<p>Faktyczne czasy pociągów zbiera monitor. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje potwierdzone czasy przyjazdu i odjazdu. API przechowuje wykonane kursy przez około 3 dni, więc krótka przerwa w pracy monitora nie powoduje utraty danych. Dane z każdego dnia są zapisywane osobno i trafiają do analizy dynamicznej oraz do testu na minionych dniach.</p>
   <ol class="steps">
     <li>Monitor powinien pracować co najmniej 4 tygodnie. Wtedy dla każdego typu dnia jest po kilka dni danych POLREGIO i IC.</li>
     <li>Wskaźniki do śledzenia: udział ciasnych przesiadek, które się udają (dla każdej linii i kategorii pociągu), średni dodatkowy czas czekania oraz liczba zerwanych przesiadek na dzień.</li>
@@ -534,7 +548,8 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
     <dt>Rozkład losowy</dt><dd>Rozkład ZKM, w którym każdą linię przesunięto o losowy czas od −30 do +30 min. Kursy i odstępy są takie same, znika tylko związek z pociągami. Porównanie z nim pokazuje, czy rozkład jest dopasowany do pociągów.</dd>
     <dt>90% wyników losowych, percentyl</dt><dd>Zakres, w którym mieści się 90% wyników rozkładów losowych. Wynik poza nim jest lepszy albo gorszy niż przypadek.</dd>
     <dt>Kategorie pociągów</dt><dd>EIP, EIC, IC i TLK to pociągi PKP Intercity; R to pociągi regionalne POLREGIO.</dd>
-    <dt>Typ dnia</dt><dd>Dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.</dd></dl>
+    <dt>Typ dnia</dt><dd>Dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.</dd>
+    <dt>Dzień testowy</dt><dd>Miniony dzień danego typu, dla którego są rzeczywiste godziny prawie wszystkich pociągów. Spośród takich dni wybrano dzień z największą liczbą pociągów spóźnionych ponad 5 min. Test tezy i wykresy jednego dnia używają rzeczywistych godzin pociągów z tego dnia.</dd></dl>
     <h3>Metoda i założenia</h3><ul>
     <li><b>Przystanki.</b> Dworcowa 005-01 to odjazdy do miasta (linie 1, 2, 3, 4, 7). Dworcowa 079-00 to przyjazdy z miasta: linie 2, 3, 4 kończą tu bieg, a linia 1 jedzie dalej na Piaskową (odjazd minutę później). Linia 7 jest linią okrężną i zatrzymuje się tylko na 005-01.</li>
     <li><b>Czas dojścia.</b> Z peronu na przystanek ${P.m_t2b} min, z przystanku na peron ${P.m_b2t} min. Wyniki dla 2–8 min są w tabeli poniżej.</li>
@@ -542,14 +557,34 @@ dl.gloss { margin: 0 0 1rem; } dl.gloss dt { font: 600 .95rem/1.3 var(--f-displa
     <li><b>Dobra przesiadka.</b> Czekanie po dojściu wynosi najwyżej ${P.good_window} min.</li>
     <li><b>Model losowy.</b> Każdą linię przesunięto o losowy czas od −30 do +30 min (3000 powtórzeń, dla linii osobno 1000). Częstotliwość i odstępy kursów zostają takie same. Znika tylko związek z rozkładem kolejowym.</li>
     <li><b>Pojemność.</b> Wyniki ważone liczbą miejsc (EIP 402, IC i EIC 400, TLK 450, POLREGIO 200) dają praktycznie te same wartości co wyniki nieważone.</li>
-    <li><b>Okres.</b> Rozkład planowy: ${fdate(P.dates[0])}–${fdate(P.dates[1])}. Dni reprezentatywne dla testu: ${DAYS.map(d => `${DAYNAME[d].toLowerCase()} ${fdate(D.rep_dates[d])}`).join(", ")}.</li>
+    <li><b>Okres.</b> Minione dni od ${fdate(P.dates[0])} do ${fdate(P.dates[1])}, z rozkładem ZKM ważnym od 1.09.2026. Wyniki zbiorcze używają planowych godzin pociągów. Dni testowe: ${DAYS.map(d => `${DAYNAME[d].toLowerCase()} ${repTxt(d)}`).join("; ")}.</li>
     <li><b>Ograniczenia.</b> Brak danych o faktycznych odjazdach autobusów. Historia IC ze spoznienia.me nie obejmuje 1–10.09.2026. Dane wszystkich przewoźników z API PLK obejmują na razie tylko kilka dni. Test statystyczny przeprowadzono dla wielu linii i dni, więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.</li>
   </ul>`;
   const srow = D.sensitivity.filter(r => r.day_type === "Roboczy");
   const walks = [...new Set(srow.map(r => r.walk))];
   $("sens-tbl").innerHTML = table([{ h: "Czas dojścia", f: r => `${r.w} min` }, { h: "Pociąg → autobus: ucieka", num: 1, f: r => pct(r.a.near_miss_rate) }, { h: "dobra", num: 1, f: r => pct(r.a.good_rate) }, { h: "Autobus → pociąg: nie zdąży", num: 1, f: r => pct(r.b.near_miss_rate) }, { h: "dobra", num: 1, f: r => pct(r.b.good_rate) }],
     walks.map(w => ({ w, a: srow.find(r => r.walk === w && r.direction === DIRKEY.t2b), b: srow.find(r => r.walk === w && r.direction === DIRKEY.b2t) })));
-  $("foot").innerHTML = `Wygenerowano ${fdate(D.generated)} skryptem <span class="mono">report.py</span> z repozytorium ilawa-transport. Dane: ZKM Iława (rozklad.com), PKP PLK Otwarte Dane Kolejowe, spoznienia.me.`;
+  $("foot").innerHTML = `Stan na ${fdate(D.generated)}. Dane: ZKM Iława (rozklad.com), PKP PLK Otwarte Dane Kolejowe, spoznienia.me.`;
+
+  // ---------- test days
+  (function () {
+    const T = (D.test_days || []).slice().sort((a, b) => a.date < b.date ? -1 : 1);
+    if (!T.length) { $("testdays").hidden = true; return; }
+    const ws = (P.test_windows || [P.good_window]).map(w => String(w));
+    const isRep = r => D.rep_dates[r.day_type] === r.date;
+    const wd = D.rep_dates.Roboczy, wr = T.find(r => r.date === wd);
+    $("td-text").innerHTML = `<p>Rozkład ZKM jest ten sam każdego dnia danego typu, ale pociągi się spóźniają. Dlatego wyniki sprawdzono na minionych dniach, dla których są rzeczywiste godziny prawie wszystkich pociągów na stacji Iława Główna (monitor API PKP PLK). Dla każdego typu dnia dniem testowym jest dzień z największą liczbą pociągów spóźnionych ponad 5 min. Tabela podaje udział pociągów z dobrą przesiadką na dowolną linię dla dwóch okien czekania: ${ws.map(w => `${w} min`).join(" i ")}.</p>${wr ? `<p>W dniu roboczym ${fdate(wd)} średnie opóźnienie przyjazdu wynosiło ${num(wr.delay_mean, 1)} min, a ${wr.late_over_5} z ${wr.arr_with_data} pociągów przyjechało ponad 5 min po czasie. Przy oknie ${ws[0]} min dobrą przesiadkę z pociągu na autobus miało ${pct(wr.windows[ws[0]].planned.t2b_good)} pociągów według planu i ${pct(wr.windows[ws[0]].actual.t2b_good)} w rzeczywistości.${ws[1] ? ` Przy oknie ${ws[1]} min: ${pct(wr.windows[ws[1]].planned.t2b_good)} i ${pct(wr.windows[ws[1]].actual.t2b_good)}.` : ""}</p>` : ""}`;
+    const cols = [{ h: "Dzień", f: r => `${fdate(r.date)}<br><span style="color:var(--muted)">${DAYNAME[r.day_type].toLowerCase()}${isRep(r) ? ", dzień testowy" : ""}</span>` },
+      { h: "Pociągi z danymi", num: 1, f: r => `${r.arr_with_data}/${r.trains_arr}` },
+      { h: "Opóźnienie: średnie / 75%", num: 1, f: r => `${num(r.delay_mean, 1)} / ${num(r.delay_p75)} min` },
+      { h: "Spóźnione > 5 min", num: 1, f: r => num(r.late_over_5) }];
+    for (const w of ws) {
+      cols.push({ h: `Pociąg → autobus, ${w} min: plan / rzecz.`, num: 1, f: r => `${pct(r.windows[w].planned.t2b_good)} / ${pct(r.windows[w].actual.t2b_good)}` });
+      cols.push({ h: `Autobus → pociąg, ${w} min: plan / rzecz.`, num: 1, f: r => `${pct(r.windows[w].planned.b2t_good)} / ${pct(r.windows[w].actual.b2t_good)}` });
+    }
+    $("td-tbl").innerHTML = table(cols, T.map(r => ({ ...r, _cls: isRep(r) ? "strong" : "" })));
+    $("td-note").textContent = "Plan: planowe godziny pociągów. Rzecz.: rzeczywiste godziny pociągów tego dnia. Godziny autobusów są planowe, bo brak danych o faktycznych odjazdach. Przy przesiadce z autobusu do pociągu spóźniony odjazd pociągu wydłuża czekanie na peronie, ale daje też czas autobusom, które według planu przyjeżdżają za późno.";
+  })();
 
   function drawAll() { drawForest(); drawHist(); drawTimeline(); drawColl(); }
   drawAll();

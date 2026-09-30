@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import numpy as np
 
-GOOD = 10          # minutes of acceptable waiting after the walk
+GOOD = 5           # minutes of acceptable waiting after the walk (default; callers can change it)
 MAX_WAIT = 120     # a gap above this counts as "no connection"
 NEAR_BEFORE = 2    # a bus that leaves up to 2 min before the train arrival is still "seen"
 
@@ -57,7 +57,8 @@ def _any_in(sorted_x: np.ndarray, lo: np.ndarray, hi: np.ndarray, hi_closed: boo
     return b > a
 
 
-def train_to_bus(train_arr: np.ndarray, bus_dep: np.ndarray, m: float, good_window: float = GOOD) -> dict:
+def train_to_bus(train_arr: np.ndarray, bus_dep: np.ndarray, m: float, good_window: float | None = None) -> dict:
+    good_window = GOOD if good_window is None else good_window
     d = np.sort(np.asarray(bus_dep, float))
     a = np.asarray(train_arr, float)
     nxt = _next_after(d, a + m)
@@ -68,7 +69,8 @@ def train_to_bus(train_arr: np.ndarray, bus_dep: np.ndarray, m: float, good_wind
     return {"wait": wait, "near_miss": near, "good": good}
 
 
-def bus_to_train(train_dep: np.ndarray, bus_arr: np.ndarray, m: float, good_window: float = GOOD) -> dict:
+def bus_to_train(train_dep: np.ndarray, bus_arr: np.ndarray, m: float, good_window: float | None = None) -> dict:
+    good_window = GOOD if good_window is None else good_window
     b = np.sort(np.asarray(bus_arr, float))
     t = np.asarray(train_dep, float)
     prv = _prev_before(b, t - m)

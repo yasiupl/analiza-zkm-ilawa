@@ -1,8 +1,16 @@
 """Static and dynamic analysis of train-bus transfers at Iława Główna.
 
-Run:  python analyze.py [--m-t2b 4] [--m-b2t 5] [--null 5000]
+Run:  python analyze.py [--m-t2b 4] [--m-b2t 5] [--good-window 5] [--null 5000] [--days 30]
 
-Static:  planned trains (PKP PLK schedules) against the ZKM timetable.
+Period:  the past days up to yesterday (default 30), not before the start of
+         the ZKM timetable.
+Static:  planned trains (PKP PLK schedules) against the ZKM timetable, all days
+         of the period.
+Test days: for each day type, the day of the period with actual times for
+         nearly all trains (PKP PLK monitor) and the most late trains. On these
+         days the tests against the random timetable use the actual train
+         times. The good transfers are also counted for a 5 min and a 10 min
+         window, with the planned and with the actual train times.
 Dynamic: actual train times (spoznienia.me history for PKP Intercity and
          data/monitor/*.csv from monitor.py for all carriers) against the ZKM
          timetable. Bus deviation follows the ZKM tolerance (-1 to +3 min).
@@ -20,6 +28,7 @@ import pandas as pd
 from ilawa import model as M
 from ilawa.calendar import day_type, is_school_day
 from ilawa.common import DATA, RAW, ROOT, load_json
+from ilawa.plan import pasttest as PT
 from ilawa.plk import schedule_rows
 from ilawa.zkm import BUS_CAPACITY, load_bus_events
 
@@ -132,6 +141,56 @@ def load_monitor() -> pd.DataFrame:
     # Only trains that the monitor saw to the end at this station.
     done = df["actual_arr"].notna() | df["actual_dep"].notna()
     return df[done]
+
+
+# ---------------------------------------------------------------- test days
+def train_times(tr: pd.DataFrame, d: dt.date, delays: dict) -> pd.DataFrame:
+    """Copy of the trains with the actual times on date d where the delay is known."""
+    x = tr.copy()
+    for k in ("arr", "dep"):
+        sel = x[f"{k}_date"] == d
+        dl = pd.to_numeric(x.loc[sel, "number"].astype(str).map(
+            lambda n: delays.get((str(d), n), {}).get(k)), errors="coerce")
+        x.loc[sel, f"{k}_delay"] = dl
+        x.loc[sel, f"{k}_min"] = x.loc[sel, f"{k}_min"] + dl.fillna(0)
+        x.loc[sel, f"{k}_time"] = x.loc[sel, f"{k}_min"].map(
+            lambda m: f"{int(m) // 60 % 24:02d}:{int(m) % 60:02d}:00" if pd.notna(m) else None)
+    return x
+
+
+def good_rates(trx: pd.DataFrame, d: dt.date, m1: float, m2: float, window: float) -> dict:
+    """Share of trains with a good transfer (any bus line) in the hours of bus service."""
+    b = bus_sets(d)
+    bd = np.sort(np.concatenate(list(b["dep"].values())))
+    ba = np.sort(np.concatenate(list(b["arr"].values())))
+    lo, hi = min(ba.min(), bd.min()), max(ba.max(), bd.max())
+    a = trx[(trx["arr_date"] == d) & trx["arr_min"].between(lo, hi)]["arr_min"].to_numpy(float)
+    t = trx[(trx["dep_date"] == d) & trx["dep_min"].between(lo, hi)]["dep_min"].to_numpy(float)
+    r1, r2 = M.train_to_bus(a, bd, m1, window), M.bus_to_train(t, ba, m2, window)
+    return {"t2b_good": float(r1["good"].mean()) if len(a) else None,
+            "b2t_good": float(r2["good"].mean()) if len(t) else None,
+            "t2b_near_miss": float(r1["near_miss"].mean()) if len(a) else None,
+            "n_arr": int(len(a)), "n_dep": int(len(t))}
+
+
+def test_days(tr: pd.DataFrame, delays: dict, first: dt.date, last: dt.date, m1: float, m2: float,
+              windows: list[float], min_share: float = 0.9) -> list[dict]:
+    """Days with actual times for at least min_share of the arriving trains."""
+    out = []
+    for d in PT.past_days(delays, first, last):
+        arr, _ = PT.actual_trains(tr, d, delays)
+        dl = np.array([x["delay"] for x in arr if x["delay"] is not None], float)
+        if not len(arr) or len(dl) < min_share * len(arr):
+            continue
+        act = train_times(tr, d, delays)
+        row = {"date": str(d), "day_type": day_type(d), "trains_arr": len(arr), "arr_with_data": int(len(dl)),
+               "delay_mean": float(dl.mean()), "delay_median": float(np.median(dl)),
+               "delay_p75": float(np.percentile(dl, 75)), "late_over_5": int((dl > 5).sum()),
+               "late_over_10": int((dl > 10).sum()), "windows": {}}
+        for w in windows:
+            row["windows"][f"{w:g}"] = {"planned": good_rates(tr, d, m1, m2, w), "actual": good_rates(act, d, m1, m2, w)}
+        out.append(row)
+    return out
 
 
 # ---------------------------------------------------------------- static
@@ -353,18 +412,26 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--m-t2b", type=float, default=4, help="walk from platform to bus stop, min")
     ap.add_argument("--m-b2t", type=float, default=5, help="walk from bus stop to platform, min")
+    ap.add_argument("--good-window", type=float, default=5, help="longest good wait after the walk, min")
+    ap.add_argument("--test-windows", default="5,10", help="good windows counted on the test days, min")
     ap.add_argument("--null", type=int, default=5000, help="null model draws per date")
-    ap.add_argument("--from-date", default=None, help="first planned date (default: today)")
-    ap.add_argument("--days", type=int, default=28)
+    ap.add_argument("--to-date", default=None, help="last day of the period (default: yesterday)")
+    ap.add_argument("--from-date", default=None, help="first day of the period (default: --days before --to-date)")
+    ap.add_argument("--days", type=int, default=30)
     a = ap.parse_args()
     RES.mkdir(exist_ok=True)
     m1, m2 = a.m_t2b, a.m_b2t
+    M.GOOD = a.good_window
+    windows = [float(x) for x in a.test_windows.split(",") if x.strip()]
     tr = load_planned_trains()
-    start = dt.date.fromisoformat(a.from_date) if a.from_date else dt.date.today()
-    dates = [start + dt.timedelta(days=i) for i in range(a.days)]
+    last = dt.date.fromisoformat(a.to_date) if a.to_date else dt.date.today() - dt.timedelta(days=1)
+    start = dt.date.fromisoformat(a.from_date) if a.from_date else max(BUS_TT_VALID_FROM, last - dt.timedelta(days=a.days - 1))
+    dates = [start + dt.timedelta(days=i) for i in range((last - start).days + 1)]
     dates = [d for d in dates if (tr["arr_date"] == d).any() or (tr["dep_date"] == d).any()]
     if not dates:
         raise SystemExit("No planned trains in the chosen period.")
+    ic_hist, mon_hist = load_ic_history(), load_monitor()
+    delays = PT.delay_table(ic_hist, mon_hist)
 
     ev = pd.concat([static_for_date(tr, d, m1, m2) for d in dates], ignore_index=True)
     pb = pd.concat([per_bus_for_date(tr, d, m1, m2) for d in dates], ignore_index=True)
@@ -372,7 +439,7 @@ def main() -> None:
     pb.to_csv(RES / "static_bus_events.csv", index=False)
 
     summary = {"params": {"m_t2b": m1, "m_b2t": m2, "good_window": M.GOOD, "near_before": M.NEAR_BEFORE,
-                          "max_wait": M.MAX_WAIT, "dates": [str(dates[0]), str(dates[-1])],
+                          "max_wait": M.MAX_WAIT, "dates": [str(dates[0]), str(dates[-1])], "test_windows": windows,
                           "bus_capacity": BUS_CAPACITY, "train_capacity": M.TRAIN_CAPACITY},
                "static": {}, "null": [], "sensitivity": [], "dynamic": {}}
     for (dtp, direction), g in ev.groupby(["day_type", "direction"]):
@@ -383,35 +450,51 @@ def main() -> None:
     for (dtp, kind), g in pb.groupby(["day_type", "kind"]):
         summary["static"].setdefault(dtp, {})[f"bus_{kind}"] = M.summary(g["minutes"].to_numpy(float))
 
-    # Null model for one representative date per day type (plus capacity weighting).
+    # Test days: days with actual times for nearly all trains. For each day type the
+    # test day is the day with the most trains more than 5 min late. Without such a
+    # day the test uses a planned day (Tuesday to Thursday for working days).
+    tdays = test_days(tr, delays, dates[0], dates[-1], m1, m2, windows)
+    summary["test_days"] = tdays
     reps: dict[str, dt.date] = {}
-    for d in dates:  # prefer Tuesday-Thursday as the typical working day
+    for r in sorted(tdays, key=lambda r: (r["late_over_5"], r["delay_mean"]), reverse=True):
+        reps.setdefault(r["day_type"], dt.date.fromisoformat(r["date"]))
+    actual_dates = set(reps.values())
+    for d in dates:
         if day_type(d) != "Roboczy" or d.weekday() in (1, 2, 3):
             reps.setdefault(day_type(d), d)
     for d in dates:
         reps.setdefault(day_type(d), d)
+    trx = {d: train_times(tr, d, delays) if d in actual_dates else tr for d in reps.values()}
     summary["representative_dates"] = {k: str(v) for k, v in reps.items()}
+    summary["representative_times"] = {k: "actual" if v in actual_dates else "planned" for k, v in reps.items()}
+    summary["null_planned"] = []
     for dtp, d in reps.items():
         for weighted in (False, True):
-            r = null_for_date(tr, d, m1, m2, a.null, weighted)
+            r = null_for_date(trx[d], d, m1, m2, a.null, weighted)
             r["weighted"] = weighted
             summary["null"].append(r)
+        if d in actual_dates:
+            r = null_for_date(tr, d, m1, m2, a.null, False)
+            r["weighted"] = False
+            summary["null_planned"].append(r)
         b = bus_sets(d)
-        ta = tr[(tr["arr_date"] == d)]["arr_min"].dropna().to_numpy()
-        td = tr[(tr["dep_date"] == d)]["dep_min"].dropna().to_numpy()
+        ta = trx[d][(trx[d]["arr_date"] == d)]["arr_min"].dropna().to_numpy()
+        td = trx[d][(trx[d]["dep_date"] == d)]["dep_min"].dropna().to_numpy()
         summary.setdefault("histograms", {})[dtp] = {
             "date": str(d),
             "bus_dep_minus_train_arr": M.offset_histogram(ta, np.concatenate(list(b["dep"].values()))),
             "train_dep_minus_bus_arr": M.offset_histogram(np.concatenate(list(b["arr"].values())), td)}
-    # Per line: all dates, null model on the representative dates.
+    # Per line: all dates with the planned times; null model on the test days.
     pl = []
     for d in dates:
-        pl += per_line_for_date(tr, d, m1, m2, n_null=1000 if d in reps.values() else 0)
+        pl += per_line_for_date(tr, d, m1, m2)
     pl = pd.DataFrame(pl)
     pl.to_csv(RES / "static_per_line.csv", index=False)
+    plr = pd.DataFrame([x for d in reps.values() for x in per_line_for_date(trx[d], d, m1, m2, n_null=1000)])
+    plr.to_csv(RES / "test_day_per_line.csv", index=False)
     summary["per_line"] = {}
     for (dtp, ln, direction), g in pl.groupby(["day_type", "line", "direction"]):
-        rep = g[g["date"] == str(reps.get(dtp))]
+        rep = plr[(plr["date"] == str(reps.get(dtp))) & (plr["line"] == ln) & (plr["direction"] == direction)]
         summary["per_line"].setdefault(dtp, {}).setdefault(ln, {})[direction] = {
             "near_miss": float(g["near_miss"].mean()), "good": float(g["good"].mean()),
             "median_wait": float(g["median_wait"].median()), "mean_wait": float(g["mean_wait"].mean()),
@@ -432,7 +515,7 @@ def main() -> None:
                                            "median_wait": s["wait"].get("median")})
 
     # Dynamic analysis.
-    for name, hist in (("ic_history", load_ic_history()), ("plk_monitor", load_monitor())):
+    for name, hist in (("ic_history", ic_hist), ("plk_monitor", mon_hist)):
         if hist.empty:
             summary["dynamic"][name] = {"n": 0}
             continue

@@ -35,17 +35,17 @@
 {\sffamily\footnotesize\bfseries\MakeUppercase{Załącznik nr 3 · propozycja korekt}}\par\smallskip
 {\sffamily\LARGE\bfseries Korekty rozkładu ZKM Iława}\par\medskip
 {\large Przesunięcia kursów o kilka minut, które dają więcej przesiadek z pociągów i do pociągów na przystanku Dworcowa.}\par\medskip
-{\small\mut{Rozkład ZKM ważny od 1.09.2026. Przystanki: 005-01, 079-00. Obliczenia z dnia 29.09.2026.}}\par\bigskip
+{\small\mut{Rozkład ZKM ważny od 1.09.2026. Przystanki: 005-01, 079-00. Obliczenia z dnia 30.09.2026.}}\par\bigskip
 \section*{Wynik}
-Obiegi autobusów, przerwy kierowców, liczba autobusów i łączny czas pracy kierowców zostają zachowane. Przesiadka jest dobra, gdy po dojściu z peronu (4 min) lub na peron (5 min) czeka się najwyżej 10 min. Liczone są pary pociąg--linia, bo podróżny potrzebuje konkretnej linii. Do przyjazdu pociągu doliczany jest zapas na typowe opóźnienie jego kategorii: EIC 3 min, EIP 3 min, IC 3 min, R 0 min, TLK 3 min. Wyniki dotyczą wariantu: obiegi jednej linii.
+Obiegi autobusów, przerwy kierowców, liczba autobusów i łączny czas pracy kierowców zostają zachowane. Przesiadka jest dobra, gdy po dojściu z peronu (4 min) lub na peron (5 min) czeka się najwyżej 5 min. Liczone są pary pociąg--linia, bo podróżny potrzebuje konkretnej linii. Do przyjazdu pociągu doliczany jest zapas na opóźnienie jego kategorii: EIC 10 min, EIP 9 min, IC 10 min, R 1 min, TLK 10 min. Autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później, więc każda zmiana daje przesiadce więcej czasu. Wyniki dotyczą wariantu: obiegi jednej linii.
 {\footnotesize
 \begin{center}\begin{tabular}{@{}p{5.4cm} r r r@{}}\toprule
 Wskaźnik & Dzień & Sobota & Niedziela \\ \midrule
-Dobre przesiadki dziennie, z zapasem na opóźnienie & 148 → 244 \mut{(+65\,\%)} & 91 → 133 \mut{(+46\,\%)} & 46 → 76 \mut{(+64\,\%)} \\
-Bez zapasu (pociągi punktualne) & 155 → 229 \mut{(+48\,\%)} & 91 → 124 \mut{(+36\,\%)} & 48 → 65 \mut{(+35\,\%)} \\
-Rzeczywiste przyjazdy pociągów IC z minionych dni (pociąg → autobus) & 713 → 779 \mut{(+9\,\%)} & 131 → 146 \mut{(+11\,\%)} & 80 → 90 \mut{(+12\,\%)} \\
-Zmienione kursy (wszystkie etapy) & 87 z 188 & 43 z 89 & 28 z 54 \\
-Godziny pracy kierowców dziennie & 197,3 → 196,8 & 69,8 → 69,8 & 53,5 → 53,4 \\
+Dobre przesiadki dziennie, z zapasem na opóźnienie & 82 → 134 \mut{(+65\,\%)} & 39 → 59 \mut{(+51\,\%)} & 28 → 40 \mut{(+44\,\%)} \\
+Bez zapasu (pociągi punktualne) & 84 → 109 \mut{(+30\,\%)} & 45 → 56 \mut{(+24\,\%)} & 27 → 31 \mut{(+16\,\%)} \\
+Minione dni, rzeczywiste godziny pociągów: złapane przesiadki dziennie & 179 → 203 \mut{(+13\,\%)} & 105 → 113 \mut{(+8\,\%)} & 58 → 62 \mut{(+7\,\%)} \\
+Zmienione kursy (wszystkie etapy) & 50 z 188 & 19 z 89 & 11 z 54 \\
+Godziny pracy kierowców dziennie & 197,3 → 196,6 & 69,8 → 69,7 & 53,5 → 53,2 \\
 Autobusy w szczycie & 18 → 18 & 6 → 6 & 5 → 5 \\
 Służby z przerwą zgodną z ustawą & 34/34 → 34/34 & 11/11 → 11/11 & 10/10 → 10/10 \\
 \bottomrule\end{tabular}\end{center}}
@@ -53,8 +53,10 @@ Służby z przerwą zgodną z ustawą & 34/34 → 34/34 & 11/11 → 11/11 & 10/1
 \subsection*{Słowniczek}
 \begin{description}[itemsep=1pt, leftmargin=0pt]
 \item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.
-\item[Dobra przesiadka] czekanie po dojściu najwyżej 10 min. Dojście trwa 4 min z peronu na przystanek i 5 min z przystanku na peron.
-\item[Zapas na opóźnienie] do przyjazdu pociągu doliczana jest mediana opóźnienia jego kategorii: EIC 3 min, EIP 3 min, IC 3 min, R 0 min, TLK 3 min.
+\item[Dobra przesiadka] czekanie po dojściu najwyżej 5 min. Dojście trwa 4 min z peronu na przystanek i 5 min z przystanku na peron.
+\item[Zapas na opóźnienie] czas doliczany do planowego przyjazdu pociągu: 75.\ percentyl opóźnienia pociągów danej kategorii na stacji Iława Główna, najwyżej 10 min. Obecnie: EIC 10 min, EIP 9 min, IC 10 min, R 1 min, TLK 10 min. Przy przesiadce z pociągu okno czekania zaczyna się po zapasie.
+\item[Złapana przesiadka] przesiadka, przy której po dojściu czeka się najwyżej 5 min plus zapas na opóźnienie kategorii pociągu. Na minionych dniach, przy rzeczywistych godzinach pociągów, pokazuje, ilu podróżnych zdąży na autobus (lub pociąg), który daje im rozkład. Gdy przesiadka się nie uda, czeka się na następny autobus linii.
+\item[Kierunek przesunięć] autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później. Każda zmiana daje przesiadce więcej czasu, więc nie zależy od punktualności autobusu.
 \item[Przesunięcie kursu] zmiana godzin kursu na wszystkich jego przystankach o tyle samo minut.
 \item[Etap] grupa zmian do wprowadzenia razem: etap 1 to 20 najskuteczniejszych zmian, etap 2 to łącznie 40, ostatni etap to wszystkie. Każdy etap zachowuje zmiany poprzedniego.
 \item[Zmiana towarzysząca] zmiana bez własnego zysku, potrzebna do zachowania przerwy kierowcy, postoju autobusu albo kolejności kursów po innej zmianie.
@@ -71,51 +73,75 @@ Służby z przerwą zgodną z ustawą & 34/34 → 34/34 & 11/11 → 11/11 & 10/1
 \item \textbf{Przesunięcia.} Kurs zmienia się najwyżej o 5 min (kursy szkolne o 2 min). Każdy zmieniony kurs i każda minuta zmiany mają karę, więc optymalizator (program całkowitoliczbowy) zmienia tylko te kursy, które coś dają.
 \item \textbf{Obiegi.} Postój między kursami autobusu co najmniej 2 min. Kolejność kursów linii na Dworcowej zostaje ta sama.
 \item \textbf{Koszt.} Łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą.
-\item \textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę.
+\item \textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę. Zapas na opóźnienie: 75.\ percentyl z danych, najwyżej 10 min.
+\item \textbf{Test na minionych dniach.} Obecny rozkład, każdy etap i pełna propozycja są sprawdzane na minionych dniach z danymi o opóźnieniach, od początku obowiązywania rozkładu ZKM. Godziny pociągów są rzeczywiste: z monitora PKP PLK (wszyscy przewoźnicy), a gdy go brak, z historii PKP Intercity (spoznienia.me). Pociąg bez danych liczy się jako punktualny. Godziny autobusów są planowe.
 \item \textbf{Ograniczenia.} Obiegi i służby są odtworzone z rozkładu, a nie pobrane z ZKM. Brak danych o faktycznych odjazdach autobusów. Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.
-\item \textbf{Powtarzalność.} Narzędzie \texttt{zkmplan.py} można uruchomić po każdej zmianie rozkładu ZKM lub PKP; parametry są w pliku \texttt{zkmplan.ini}.
+\item \textbf{Powtarzalność.} Narzędzie można uruchomić ponownie po każdej zmianie rozkładu ZKM lub PKP.
 \end{itemize}
 \section{Etapy wdrożenia}
-Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to 20 najbardziej opłacalnych zmian, etap 2 to łącznie 40 zmian, ostatni etap nie ma limitu. Liczone z zapasem na typowe opóźnienie pociągu.
+Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to 20 najbardziej opłacalnych zmian, etap 2 to łącznie 40 zmian, ostatni etap nie ma limitu. Liczone z zapasem na opóźnienie pociągu.
 \par\medskip\noindent\begin{minipage}{\textwidth}\centering\includegraphics[width=\textwidth]{fig/korekty-etapy.pdf}\par\smallskip
 {\small\mut{Rys. 1. Dobre przesiadki dziennie po kolejnych etapach.}}\end{minipage}\par\medskip
 {\small
 \begin{center}\begin{tabular}{@{}l l r r r@{}}\toprule
 Dzień & Etap & Zmienione kursy & Dobre przesiadki/dzień & Zmiana \\ \midrule
-dzień roboczy & obecny rozkład & 0 & 148 & -- \\
- & etap 1 & 20 & 180 & +22\,\% \\
- & etap 2 & 40 & 199 & +35\,\% \\
- & etap 3 & 87 & 244 & +65\,\% \\
-sobota & obecny rozkład & 0 & 91 & -- \\
- & etap 1 & 20 & 117 & +29\,\% \\
- & etap 2 & 40 & 132 & +45\,\% \\
- & etap 3 & 43 & 133 & +46\,\% \\
-niedziela & obecny rozkład & 0 & 46 & -- \\
- & etap 1 & 20 & 70 & +52\,\% \\
- & etap 2 & 28 & 76 & +64\,\% \\
+dzień roboczy & obecny rozkład & 0 & 82 & -- \\
+ & etap 1 & 20 & 106 & +30\,\% \\
+ & etap 2 & 40 & 126 & +54\,\% \\
+ & etap 3 & 50 & 134 & +65\,\% \\
+sobota & obecny rozkład & 0 & 39 & -- \\
+ & etap 1 & 19 & 59 & +51\,\% \\
+niedziela & obecny rozkład & 0 & 28 & -- \\
+ & etap 1 & 11 & 40 & +44\,\% \\
 \bottomrule\end{tabular}\end{center}}
 Pełny wykaz zmienionych kursów, z pociągami, dla których przesiadka staje się dogodna, zawiera załącznik nr 1.
+\section{Test na minionych dniach}
+Obecny rozkład, etapy i pełną propozycję sprawdzono na 19 minionych dniach z danymi o opóźnieniach (11.09.2026--29.09.2026). Rozkład ZKM i planowy rozkład pociągów są te same, zmieniają się tylko rzeczywiste godziny pociągów. „Dobre”: czekanie po dojściu do 5 min. „Złapane”: czekanie do 5 min plus zapas na opóźnienie kategorii pociągu. Wartości to średnie na dzień.
+
+{\footnotesize
+\begin{center}\begin{tabular}{@{}l l r r r r r r@{}}\toprule
+Dzień & Rozkład & Dni & Złapane: plan & rzecz. & Dobre: plan & rzecz. & Czekanie po pociągu [min] \\ \midrule
+dzień roboczy & obecny rozkład & 13 & 183 & 179 & 83 & 86 & 37,0 \\
+ & etap 1 & 13 & 197 & 189 & 98 & 96 & 36,6 \\
+ & etap 2 & 13 & 209 & 200 & 107 & 103 & 36,6 \\
+ & pełna propozycja & 13 & 211 & 203 & 109 & 103 & 36,6 \\
+sobota & obecny rozkład & 3 & 105 & 105 & 45 & 44 & 39,0 \\
+ & etap 1 & 3 & 115 & 113 & 56 & 52 & 38,6 \\
+ & etap 2 & 3 & 115 & 113 & 56 & 52 & 38,6 \\
+ & pełna propozycja & 3 & 115 & 113 & 56 & 52 & 38,6 \\
+niedziela & obecny rozkład & 3 & 63 & 58 & 27 & 27 & 45,5 \\
+ & etap 1 & 3 & 69 & 62 & 32 & 29 & 45,3 \\
+ & etap 2 & 3 & 69 & 62 & 32 & 29 & 45,3 \\
+ & pełna propozycja & 3 & 69 & 62 & 32 & 29 & 45,3 \\
+\bottomrule\end{tabular}\end{center}}
+Najgorsze dni (najwięcej pociągów spóźnionych ponad 5 min):
+\begin{itemize}
+\item dzień roboczy 28.09.2026: 24 pociągi spóźnionych ponad 5 min, średnie opóźnienie 12,0 min; złapane przesiadki 175 $\to$ 186, dobre 90 $\to$ 92.
+\item sobota 26.09.2026: 13 pociągów spóźnionych ponad 5 min, średnie opóźnienie 2,8 min; złapane przesiadki 104 $\to$ 109, dobre 41 $\to$ 48.
+\item niedziela 27.09.2026: 25 pociągów spóźnionych ponad 5 min, średnie opóźnienie 21,7 min; złapane przesiadki 48 $\to$ 50, dobre 24 $\to$ 24.
+\end{itemize}
+\mut{\footnotesize Czekanie po pociągu: średni czas od dojścia na przystanek do odjazdu najbliższego autobusu danej linii, dla wszystkich par pociąg--linia, najwyżej 60 min. W 16 z 19 dni rzeczywiste godziny są znane tylko dla części pociągów (głównie PKP Intercity); pozostałe pociągi liczą się jako punktualne.}
 \section{Odjazdy z przystanku Dworcowa po korekcie}
 Godziny odjazdów w dniu planowania. Zmienione godziny: obecna $\to$ \textbf{proponowana}.
-\subsection*{Dzień roboczy (30.09.2026)}
+\subsection*{Dzień roboczy (1.10.2026)}
 {\footnotesize
-\noindent\linedot{L1}1\textbf{Linia 1:} 5:05$\to$\textbf{5:07}, 6:42$\to$\textbf{6:47}, 7:24$\to$\textbf{7:26}, 8:00$\to$\textbf{8:02}, 8:35, 10:05, 11:25, 12:40, 13:08, 13:30, 14:35, 15:02$\to$\textbf{15:05}, 16:35$\to$\textbf{16:38}, 17:55, 19:55$\to$\textbf{19:52}, 21:04$\to$\textbf{21:07}\par\smallskip
-\noindent\linedot{L2}2\textbf{Linia 2:} 5:38, 6:05$\to$\textbf{6:04}, 6:36, 7:00$\to$\textbf{6:56}, 7:30, 8:08$\to$\textbf{8:10}, 8:40, 9:30, 9:50, 10:23, 11:04, 11:30$\to$\textbf{11:29}, 12:10, 13:00$\to$\textbf{13:05}, 13:35$\to$\textbf{13:33}, 14:25, 14:35, 15:07, 15:30, 15:45, 16:25$\to$\textbf{16:30}, 16:50, 17:46$\to$\textbf{17:42}, 18:38, 19:08$\to$\textbf{19:10}, 19:23$\to$\textbf{19:24}, 20:06$\to$\textbf{20:02}, 20:46$\to$\textbf{20:41}, 21:06$\to$\textbf{21:07}, 22:20\par\smallskip
-\noindent\linedot{L3}3\textbf{Linia 3:} 5:10, 5:52$\to$\textbf{5:54}, 6:20, 6:45, 6:52$\to$\textbf{6:54}, 7:30, 7:45, 7:52, 8:34, 9:03$\to$\textbf{9:00}, 9:41, 10:36$\to$\textbf{10:37}, 10:55$\to$\textbf{11:00}, 11:50$\to$\textbf{11:52}, 12:29, 12:36, 12:53, 13:28, 13:30, 13:38, 13:50, 14:30, 14:48, 15:16$\to$\textbf{15:14}, 15:20$\to$\textbf{15:24}, 15:40$\to$\textbf{15:42}, 16:10, 16:45, 17:15$\to$\textbf{17:14}, 18:08, 18:24, 19:27, 19:57$\to$\textbf{20:00}, 20:42$\to$\textbf{20:41}, 21:38$\to$\textbf{21:37}, 22:15\par\smallskip
-\noindent\linedot{L4}4\textbf{Linia 4:} 7:30, 8:40, 9:45, 11:20$\to$\textbf{11:19}, 12:23, 13:40, 15:10\par\smallskip
-\noindent\linedot{L7}7\textbf{Linia 7:} 9:15$\to$\textbf{9:14}, 15:50\par\smallskip
+\noindent\linedot{L1}1\textbf{Linia 1:} 5:05, 6:42, 7:24, 8:00, 8:35, 10:05, 11:25$\to$\textbf{11:26}, 12:40, 13:08$\to$\textbf{13:13}, 13:30$\to$\textbf{13:31}, 14:35, 15:02, 16:35, 17:55, 19:55, 21:04$\to$\textbf{21:08}\par\smallskip
+\noindent\linedot{L2}2\textbf{Linia 2:} 5:38, 6:05, 6:36, 7:00, 7:30, 8:08$\to$\textbf{8:09}, 8:40, 9:30$\to$\textbf{9:31}, 9:50, 10:23, 11:04$\to$\textbf{11:06}, 11:30$\to$\textbf{11:31}, 12:10, 13:00, 13:35, 14:25, 14:35, 15:07$\to$\textbf{15:12}, 15:30$\to$\textbf{15:31}, 15:45, 16:25, 16:50, 17:46, 18:38, 19:08$\to$\textbf{19:12}, 19:23, 20:06, 20:46, 21:06$\to$\textbf{21:08}, 22:20\par\smallskip
+\noindent\linedot{L3}3\textbf{Linia 3:} 5:10$\to$\textbf{5:14}, 5:52, 6:20, 6:45, 6:52$\to$\textbf{6:54}, 7:30, 7:45, 7:52, 8:34, 9:03, 9:41, 10:36, 10:55, 11:50, 12:29, 12:36, 12:53$\to$\textbf{12:54}, 13:28, 13:30$\to$\textbf{13:31}, 13:38, 13:50, 14:30, 14:48, 15:16, 15:20, 15:40$\to$\textbf{15:43}, 16:10, 16:45$\to$\textbf{16:50}, 17:15, 18:08, 18:24, 19:27$\to$\textbf{19:31}, 19:57, 20:42, 21:38, 22:15$\to$\textbf{22:16}\par\smallskip
+\noindent\linedot{L4}4\textbf{Linia 4:} 7:30, 8:40, 9:45, 11:20, 12:23, 13:40, 15:10$\to$\textbf{15:12}\par\smallskip
+\noindent\linedot{L7}7\textbf{Linia 7:} 9:15$\to$\textbf{9:16}, 15:50\par\smallskip
 }
 \subsection*{Sobota (3.10.2026)}
 {\footnotesize
-\noindent\linedot{L1}1\textbf{Linia 1:} 6:50, 8:10, 9:05$\to$\textbf{9:06}, 10:05, 11:45, 13:20$\to$\textbf{13:15}, 15:00$\to$\textbf{15:05}\par\smallskip
-\noindent\linedot{L2}2\textbf{Linia 2:} 5:42$\to$\textbf{5:40}, 6:15, 6:35, 7:11$\to$\textbf{7:09}, 7:40$\to$\textbf{7:36}, 8:32, 9:25$\to$\textbf{9:24}, 10:20, 11:10, 12:01, 13:01$\to$\textbf{13:05}, 14:11, 15:10$\to$\textbf{15:08}, 16:37$\to$\textbf{16:38}, 18:10$\to$\textbf{18:09}, 20:17\par\smallskip
-\noindent\linedot{L3}3\textbf{Linia 3:} 5:22$\to$\textbf{5:27}, 6:02$\to$\textbf{5:58}, 6:29, 7:04, 7:36, 7:54, 8:26$\to$\textbf{8:25}, 9:00, 9:45$\to$\textbf{9:42}, 10:35$\to$\textbf{10:33}, 10:45, 11:30, 11:52, 12:35, 13:35$\to$\textbf{13:33}, 14:05, 14:35, 15:33, 17:21$\to$\textbf{17:18}, 19:15$\to$\textbf{19:14}, 21:06$\to$\textbf{21:07}\par\smallskip
+\noindent\linedot{L1}1\textbf{Linia 1:} 6:50, 8:10, 9:05, 10:05, 11:45$\to$\textbf{11:46}, 13:20, 15:00\par\smallskip
+\noindent\linedot{L2}2\textbf{Linia 2:} 5:42, 6:15, 6:35, 7:11, 7:40, 8:32, 9:25, 10:20, 11:10, 12:01, 13:01, 14:11, 15:10$\to$\textbf{15:12}, 16:37, 18:10, 20:17$\to$\textbf{20:18}\par\smallskip
+\noindent\linedot{L3}3\textbf{Linia 3:} 5:22, 6:02, 6:29, 7:04, 7:36, 7:54, 8:26, 9:00$\to$\textbf{9:01}, 9:45, 10:35, 10:45, 11:30$\to$\textbf{11:31}, 11:52$\to$\textbf{11:53}, 12:35, 13:35, 14:05$\to$\textbf{14:06}, 14:35, 15:33, 17:21, 19:15$\to$\textbf{19:16}, 21:06$\to$\textbf{21:08}\par\smallskip
 }
 \subsection*{Niedziela i święta (4.10.2026)}
 {\footnotesize
-\noindent\linedot{L1}1\textbf{Linia 1:} 8:15$\to$\textbf{8:12}, 9:35$\to$\textbf{9:32}, 10:58$\to$\textbf{11:03}, 12:47, 14:15, 15:40$\to$\textbf{15:42}\par\smallskip
-\noindent\linedot{L2}2\textbf{Linia 2:} 7:07, 9:00, 10:51$\to$\textbf{10:46}, 12:52, 14:38$\to$\textbf{14:42}, 16:32, 18:10$\to$\textbf{18:09}, 20:17\par\smallskip
-\noindent\linedot{L3}3\textbf{Linia 3:} 6:05$\to$\textbf{6:04}, 7:58$\to$\textbf{8:02}, 9:16$\to$\textbf{9:14}, 10:00$\to$\textbf{10:03}, 11:00$\to$\textbf{11:03}, 11:46, 12:20$\to$\textbf{12:19}, 13:46, 14:30, 15:35$\to$\textbf{15:32}, 17:21$\to$\textbf{17:19}, 19:15$\to$\textbf{19:14}, 21:08\par\smallskip
+\noindent\linedot{L1}1\textbf{Linia 1:} 8:15$\to$\textbf{8:20}, 9:35, 10:58, 12:47, 14:15$\to$\textbf{14:16}, 15:40$\to$\textbf{15:43}\par\smallskip
+\noindent\linedot{L2}2\textbf{Linia 2:} 7:07, 9:00$\to$\textbf{9:01}, 10:51, 12:52$\to$\textbf{12:54}, 14:38$\to$\textbf{14:43}, 16:32, 18:10, 20:17$\to$\textbf{20:22}\par\smallskip
+\noindent\linedot{L3}3\textbf{Linia 3:} 6:05, 7:58, 9:16, 10:00, 11:00, 11:46, 12:20, 13:46, 14:30, 15:35, 17:21, 19:15$\to$\textbf{19:16}, 21:08\par\smallskip
 }
 \section{Obiegi autobusów i służby kierowców}
 Każdy wiersz to jeden autobus, każdy pasek to kurs. Obiegi odtworzono z rozkładu, bo ZKM ich nie publikuje: autobus bierze najbliższy kurs z tego samego przystanku końcowego, najpierw tej samej linii. Przesunięcia mieszczą się w postojach, więc obiegi się nie zmieniają.
@@ -126,40 +152,40 @@ Obiegi podzielono na służby kierowców na Dworcowej (najdłużej 8,5 godz. z p
 \begin{longtable}{@{}l l l r p{5.2cm} r l@{}}\toprule
 Autobus & Od & Do & Jazda [h] & Przerwy [min] & Wymagane &  \\ \midrule\endhead
 \bottomrule\endfoot
-\#1 & 04:48 & 12:54 & 3,6 & 17, 20, 34, 22, 32, 28, 36, 21, 44 & -- & zgodna \\
-\#1 & 13:18 & 21:20 & 2,8 & 53, 18, 22, 64, 56, 42, 43 & -- & zgodna \\
-\#2 & 04:52 & 11:12 & 4,2 & 38, 55 & -- & zgodna \\
-\#2 & 12:25 & 18:58 & 3,2 & 40, 127 & -- & zgodna \\
-\#3 & 04:54 & 12:45 & 3,4 & 23, 58, 137 & -- & zgodna \\
-\#3 & 12:38 & 17:38 & 1,6 & 104, 17, 66 & -- & zgodna \\
-\#3 & 19:45 & 21:32 & 0,7 & 48 & -- & zgodna \\
-\#4 & 04:55 & 11:40 & 2,9 & 24, 82, 61, 20 & -- & zgodna \\
-\#4 & 12:21 & 20:22 & 2,4 & 65, 19, 35, 61, 140 & -- & zgodna \\
-\#5 & 05:19 & 13:48 & 3,6 & 57, 57, 54, 55 & -- & zgodna \\
-\#5 & 14:10 & 21:43 & 2,8 & 27, 47, 81, 30, 53, 27 & -- & zgodna \\
-\#6 & 06:39 & 14:27 & 3,0 & 18, 46, 38, 27, 26, 40, 39, 36 & -- & zgodna \\
-\#6 & 14:20 & 21:24 & 2,5 & 32, 37, 22, 92, 67 & -- & zgodna \\
-\#7 & 06:39 & 14:48 & 3,1 & 47, 34, 102, 64, 16, 22 & -- & zgodna \\
-\#7 & 15:09 & 20:48 & 1,6 & 25, 106, 100 & -- & zgodna \\
-\#8 & 07:03 & 13:22 & 2,0 & 80, 65, 97 & -- & zgodna \\
-\#8 & 13:13 & 18:58 & 1,6 & 92, 57, 86 & -- & zgodna \\
-\#8 & 21:22 & 21:59 & 0,4 & -- & -- & zgodna \\
-\#9 & 07:11 & 14:29 & 3,5 & 45, 17, 88, 30, 21 & -- & zgodna \\
-\#9 & 14:50 & 21:00 & 2,1 & 15, 207 & -- & zgodna \\
-\#10 & 07:15 & 14:54 & 4,9 & 16, 31, 15, 18 & -- & zgodna \\
-\#10 & 14:55 & 16:28 & 0,9 & 22 & -- & zgodna \\
-\#11 & 07:30 & 15:31 & 2,8 & 18, 79, 74, 70, 52 & -- & zgodna \\
-\#11 & 15:55 & 21:02 & 1,1 & 69, 154 & -- & zgodna \\
-\#12 & 08:59 & 16:35 & 1,2 & 269, 86 & -- & zgodna \\
+\#1 & 04:48 & 12:54 & 3,6 & 17, 20, 32, 23, 33, 28, 36, 23, 42 & -- & zgodna \\
+\#1 & 13:20 & 21:20 & 2,8 & 51, 19, 17, 72, 52, 46, 39 & -- & zgodna \\
+\#2 & 04:50 & 11:12 & 4,2 & 30, 55 & -- & zgodna \\
+\#2 & 12:25 & 18:58 & 3,2 & 40, 128 & -- & zgodna \\
+\#3 & 04:50 & 12:35 & 3,4 & 25, 66, 127 & -- & zgodna \\
+\#3 & 12:39 & 17:35 & 1,6 & 103, 18, 62 & -- & zgodna \\
+\#3 & 19:42 & 21:32 & 0,7 & 51 & -- & zgodna \\
+\#4 & 04:59 & 11:40 & 2,9 & 24, 82, 60, 21 & -- & zgodna \\
+\#4 & 12:21 & 20:22 & 2,4 & 65, 19, 35, 62, 139 & -- & zgodna \\
+\#5 & 05:19 & 13:48 & 3,6 & 53, 55, 54, 55 & -- & zgodna \\
+\#5 & 14:10 & 21:43 & 2,8 & 23, 47, 81, 30, 58, 22 & -- & zgodna \\
+\#6 & 06:35 & 14:27 & 3,0 & 22, 46, 39, 24, 30, 33, 39, 41 & -- & zgodna \\
+\#6 & 14:20 & 21:25 & 2,5 & 32, 32, 27, 94, 73 & -- & zgodna \\
+\#7 & 06:39 & 14:45 & 3,1 & 46, 38, 99, 64, 16, 19 & -- & zgodna \\
+\#7 & 15:05 & 20:43 & 1,6 & 22, 113, 95 & -- & zgodna \\
+\#8 & 07:02 & 13:22 & 2,0 & 80, 60, 102 & -- & zgodna \\
+\#8 & 13:13 & 18:58 & 1,6 & 88, 66, 81 & -- & zgodna \\
+\#8 & 21:23 & 22:00 & 0,4 & -- & -- & zgodna \\
+\#9 & 07:09 & 14:29 & 3,5 & 47, 17, 89, 38, 16 & -- & zgodna \\
+\#9 & 14:47 & 20:58 & 2,1 & 15, 213 & -- & zgodna \\
+\#10 & 07:15 & 14:58 & 4,9 & 36, 22 & -- & zgodna \\
+\#10 & 14:57 & 16:28 & 0,9 & 20 & -- & zgodna \\
+\#11 & 07:30 & 15:31 & 2,8 & 18, 77, 74, 70, 52 & -- & zgodna \\
+\#11 & 15:55 & 21:03 & 1,1 & 69, 155 & -- & zgodna \\
+\#12 & 09:01 & 16:35 & 1,2 & 269, 86 & -- & zgodna \\
 \#13 & 09:37 & 16:35 & 0,8 & 343 & -- & zgodna \\
-\#14 & 13:15 & 17:47 & 2,2 & 110 & -- & zgodna \\
-\#14 & 20:52 & 22:45 & 1,0 & 37 & -- & zgodna \\
-\#15 & 13:15 & 17:02 & 1,6 & 19, 37, 59 & -- & zgodna \\
-\#15 & 19:12 & 22:38 & 0,8 & 146 & -- & zgodna \\
+\#14 & 13:16 & 17:47 & 2,2 & 109 & -- & zgodna \\
+\#14 & 20:53 & 22:42 & 1,0 & 33 & -- & zgodna \\
+\#15 & 13:16 & 17:04 & 1,6 & 18, 39, 59 & -- & zgodna \\
+\#15 & 19:16 & 22:38 & 0,8 & 142 & -- & zgodna \\
 \#16 & 14:03 & 14:31 & 0,2 & -- & -- & zgodna \\
 \#17 & 14:05 & 14:31 & 0,2 & -- & -- & zgodna \\
-\#18 & 14:15 & 22:37 & 1,9 & 68, 104, 20, 183 & -- & zgodna \\
-\#19 & 14:52 & 22:38 & 2,4 & 31, 26, 58, 50, 48, 92 & -- & zgodna \\
+\#18 & 14:15 & 22:38 & 1,9 & 66, 106, 20, 184 & -- & zgodna \\
+\#19 & 14:57 & 22:38 & 2,4 & 22, 30, 58, 49, 49, 92 & -- & zgodna \\
 \end{longtable}}
 \section{Dodatkowe kursy bez dodatkowego autobusu}
 Autobusy, które czekają na Dworcowej dłużej niż jeden kurs tam i z powrotem, mogą wykonać dodatkowy kurs tej samej linii bez nowego autobusu. Gdy postój wypada w środku służby, kierowca jest już w pracy, a kurs przechodzi tylko wtedy, gdy zostaje przerwa wymagana ustawą. Gdy służba kończy się na początku postoju, kurs wydłuża ją o podany czas. Każdy kurs sprawdzono osobno.
@@ -167,32 +193,35 @@ Autobusy, które czekają na Dworcowej dłużej niż jeden kurs tam i z powrotem
 \begin{longtable}{@{}l l l l l r r r l@{}}\toprule
 Dzień & Linia & Odjazd & Powrót & Postój & Nowe dobre & Luka w linii & km & Kierowca \\ \midrule\endhead
 \bottomrule\endfoot
-dzień roboczy & \linedot{L3}3 & 19:14 & 21:07 & 19:12--22:15 & +5 & 63 min & 13,0 & w służbie \\
-dzień roboczy & \linedot{L1}1 & 19:07 & 20:21 & 17:47--21:07 & +4 & 117 min & 20,7 & +2,6 godz. \\
-dzień roboczy & \linedot{L2}2 & 17:40 & 18:58 & 17:38--19:10 & +3 & 52 min & 15,3 & w służbie \\
-dzień roboczy & \linedot{L1}1 & 16:00 & 17:14 & 15:48--17:55 & +3 & 93 min & 20,7 & w służbie \\
-dzień roboczy & \linedot{L1}1 & 11:14 & 12:28 & 11:12--12:40 & +3 & 80 min & 20,7 & +1,3 godz. \\
-dzień roboczy & \linedot{L3}3 & 17:04 & 18:57 & 17:02--19:27 & +3 & 29 min & 13,0 & +1,9 godz. \\
-dzień roboczy & \linedot{L3}3 & 17:57 & 19:50 & 17:38--20:00 & +3 & 54 min & 13,0 & +2,2 godz. \\
-dzień roboczy & \linedot{L2}2 & 20:57 & 22:15 & 20:48--22:20 & +1 & 26 min & 15,3 & w służbie \\
-sobota & \linedot{L3}3 & 16:48 & 17:38 & 16:25--19:14 & +5 & 105 min & 14,8 & w służbie \\
-sobota & \linedot{L2}2 & 19:07 & 19:48 & 17:19--20:17 & +4 & 128 min & 15,3 & w służbie \\
-sobota & \linedot{L2}2 & 16:49 & 17:30 & 15:48--18:09 & +4 & 91 min & 15,3 & w służbie \\
-sobota & \linedot{L3}3 & 19:58 & 20:48 & 18:02--21:07 & +4 & 113 min & 14,8 & +2,8 godz. \\
-sobota & \linedot{L2}2 & 11:05 & 11:46 & 11:03--12:01 & +3 & 50 min & 15,3 & w służbie \\
-sobota & \linedot{L2}2 & 15:43 & 16:24 & 14:53--16:38 & +3 & 90 min & 15,3 & w służbie \\
-sobota & \linedot{L2}2 & 10:07 & 10:48 & 10:05--11:10 & +3 & 56 min & 15,3 & w służbie \\
-sobota & \linedot{L2}2 & 09:12 & 09:53 & 09:10--10:20 & +2 & 52 min & 15,3 & w służbie \\
-sobota & \linedot{L2}2 & 12:12 & 12:53 & 11:54--13:05 & +2 & 64 min & 15,3 & w służbie \\
-sobota & \linedot{L1}1 & 13:21 & 14:44 & 13:12--15:05 & +2 & 110 min & 20,7 & w służbie \\
-sobota & \linedot{L2}2 & 08:20 & 09:01 & 08:18--09:24 & +1 & 56 min & 15,3 & w służbie \\
-sobota & \linedot{L1}1 & 11:40 & 13:03 & 11:38--13:15 & +1 & 100 min & 20,7 & w służbie \\
-niedziela & \linedot{L3}3 & 07:03 & 07:49 & 06:48--08:02 & +6 & 118 min & 13,0 & w służbie \\
-niedziela & \linedot{L3}3 & 15:59 & 16:45 & 15:24--17:19 & +4 & 107 min & 13,0 & w służbie \\
-niedziela & \linedot{L3}3 & 20:02 & 20:48 & 18:07--21:08 & +4 & 114 min & 13,0 & w służbie \\
-niedziela & \linedot{L3}3 & 12:44 & 13:30 & 12:38--13:46 & +2 & 87 min & 13,0 & w służbie \\
-niedziela & \linedot{L3}3 & 14:42 & 15:28 & 14:32--15:32 & +2 & 62 min & 13,0 & w służbie \\
-niedziela & \linedot{L3}3 & 10:50 & 11:36 & 10:48--11:46 & +1 & 60 min & 13,0 & w służbie \\
+dzień roboczy & \linedot{L3}3 & 19:06 & 20:58 & 18:58--21:38 & +4 & 67 min & 13,0 & +2,0 godz. \\
+dzień roboczy & \linedot{L1}1 & 16:00 & 17:14 & 15:47--17:55 & +3 & 93 min & 20,7 & w służbie \\
+dzień roboczy & \linedot{L1}1 & 16:42 & 17:56 & 16:22--19:55 & +3 & 80 min & 20,7 & w służbie \\
+dzień roboczy & \linedot{L1}1 & 19:06 & 20:20 & 17:47--21:08 & +3 & 120 min & 20,7 & +2,5 godz. \\
+dzień roboczy & \linedot{L2}2 & 17:40 & 18:56 & 17:38--19:12 & +2 & 56 min & 15,3 & w służbie \\
+dzień roboczy & \linedot{L1}1 & 11:16 & 12:30 & 11:12--12:40 & +2 & 81 min & 20,7 & +1,3 godz. \\
+dzień roboczy & \linedot{L3}3 & 17:06 & 18:58 & 17:04--19:31 & +2 & 25 min & 13,0 & +1,9 godz. \\
+dzień roboczy & \linedot{L3}3 & 17:58 & 19:50 & 17:35--19:57 & +2 & 53 min & 13,0 & +2,2 godz. \\
+dzień roboczy & \linedot{L2}2 & 20:57 & 22:14 & 20:48--22:20 & +1 & 22 min & 15,3 & w służbie \\
+sobota & \linedot{L3}3 & 15:42 & 16:30 & 15:29--17:21 & +3 & 108 min & 14,8 & w służbie \\
+sobota & \linedot{L2}2 & 15:03 & 15:43 & 14:52--16:37 & +3 & 61 min & 15,3 & w służbie \\
+sobota & \linedot{L2}2 & 12:13 & 12:53 & 11:54--13:01 & +3 & 60 min & 15,3 & w służbie \\
+sobota & \linedot{L2}2 & 16:42 & 17:22 & 15:52--18:10 & +3 & 93 min & 15,3 & w służbie \\
+sobota & \linedot{L1}1 & 13:32 & 14:58 & 13:12--15:00 & +3 & 100 min & 20,7 & w służbie \\
+sobota & \linedot{L2}2 & 13:07 & 13:47 & 12:44--14:11 & +3 & 70 min & 15,3 & +1,1 godz. \\
+sobota & \linedot{L3}3 & 19:07 & 19:55 & 18:07--21:08 & +3 & 115 min & 14,8 & +1,8 godz. \\
+sobota & \linedot{L2}2 & 11:03 & 11:43 & 11:01--12:01 & +2 & 50 min & 15,3 & w służbie \\
+sobota & \linedot{L2}2 & 18:18 & 18:58 & 17:17--20:18 & +2 & 128 min & 15,3 & w służbie \\
+sobota & \linedot{L2}2 & 10:08 & 10:48 & 10:05--11:10 & +2 & 55 min & 15,3 & w służbie \\
+sobota & \linedot{L2}2 & 09:14 & 09:54 & 09:10--10:20 & +1 & 53 min & 15,3 & w służbie \\
+sobota & \linedot{L2}2 & 08:20 & 09:00 & 08:18--09:25 & +1 & 52 min & 15,3 & w służbie \\
+sobota & \linedot{L1}1 & 11:52 & 13:18 & 11:37--13:20 & +1 & 94 min & 20,7 & w służbie \\
+sobota & \linedot{L3}3 & 12:44 & 13:32 & 12:41--13:35 & +1 & 60 min & 14,8 & +0,8 godz. \\
+niedziela & \linedot{L3}3 & 19:09 & 19:55 & 18:07--21:08 & +4 & 115 min & 14,8 & w służbie \\
+niedziela & \linedot{L3}3 & 07:03 & 07:49 & 06:51--07:58 & +3 & 113 min & 14,8 & w służbie \\
+niedziela & \linedot{L3}3 & 15:43 & 16:29 & 15:22--17:21 & +3 & 106 min & 14,8 & w służbie \\
+niedziela & \linedot{L3}3 & 12:57 & 13:43 & 12:35--13:46 & +2 & 86 min & 14,8 & w służbie \\
+niedziela & \linedot{L3}3 & 14:42 & 15:28 & 14:32--15:35 & +2 & 65 min & 14,8 & w służbie \\
+niedziela & \linedot{L3}3 & 10:06 & 10:52 & 10:04--11:00 & +1 & 60 min & 14,8 & w służbie \\
 \end{longtable}}
 \section{Praca przewozowa}
 Wskaźniki dzienne obecnego i proponowanego rozkładu, w obu wariantach obiegów. Wozokilometry obejmują dojazdy z zajezdni. Koszty i przychody w złotych narzędzie liczy dopiero po wpisaniu stawek i danych o sprzedaży biletów przewoźnika.
@@ -201,36 +230,36 @@ Wskaźniki dzienne obecnego i proponowanego rozkładu, w obu wariantach obiegów
 Dzień & Obiegi & Rozkład & Autobusy & Wozokm & Wozogodz. & Służby & Godz. kierowców \\ \midrule\endhead
 \bottomrule\endfoot
 dzień roboczy & jednej linii & obecny & 18 & 1\,600 & 211,4 & 34 & 197,3 \\
-dzień roboczy & jednej linii & proponowany & 18 & 1\,600 & 211,2 & 34 & 196,8 \\
+dzień roboczy & jednej linii & proponowany & 18 & 1\,600 & 211,1 & 34 & 196,6 \\
 dzień roboczy & mieszane & obecny & 15 & 1\,589 & 194,4 & 32 & 185,9 \\
-dzień roboczy & mieszane & proponowany & 15 & 1\,589 & 194,3 & 32 & 185,8 \\
+dzień roboczy & mieszane & proponowany & 15 & 1\,589 & 194,3 & 32 & 185,2 \\
 sobota & jednej linii & obecny & 6 & 713 & 75,6 & 11 & 69,8 \\
-sobota & jednej linii & proponowany & 6 & 713 & 75,5 & 11 & 69,8 \\
+sobota & jednej linii & proponowany & 6 & 713 & 75,5 & 11 & 69,7 \\
 sobota & mieszane & obecny & 5 & 709 & 65,1 & 10 & 59,9 \\
 sobota & mieszane & proponowany & 5 & 709 & 65,1 & 10 & 59,9 \\
 niedziela & jednej linii & obecny & 5 & 456 & 58,9 & 10 & 53,5 \\
-niedziela & jednej linii & proponowany & 5 & 456 & 58,9 & 10 & 53,4 \\
+niedziela & jednej linii & proponowany & 5 & 456 & 58,9 & 10 & 53,2 \\
 niedziela & mieszane & obecny & 4 & 452 & 46,6 & 8 & 44,5 \\
-niedziela & mieszane & proponowany & 4 & 452 & 46,6 & 8 & 44,5 \\
+niedziela & mieszane & proponowany & 4 & 452 & 46,6 & 8 & 44,4 \\
 \end{longtable}}
 \subsection*{Rok, wszystkie typy dni}
 {\small
 \begin{center}\begin{tabular}{@{}l l r r r r@{}}\toprule
 Obiegi & Rozkład & Autobusy w szczycie & Wozokm/rok & Wozogodz./rok & Godz. kierowców/rok \\ \midrule
 jednej linii & obecny & 18 & 468\,628 & 60\,925 & 56\,736 \\
-jednej linii & proponowany & 18 & 468\,628 & 60\,869 & 56\,603 \\
+jednej linii & proponowany & 18 & 468\,628 & 60\,844 & 56\,512 \\
 mieszane & obecny & 15 & 465\,489 & 55\,331 & 52\,786 \\
-mieszane & proponowany & 15 & 465\,489 & 55\,314 & 52\,760 \\
+mieszane & proponowany & 15 & 465\,489 & 55\,300 & 52\,606 \\
 \bottomrule\end{tabular}\end{center}}
 Jeżeli autobus może zmienić linię na Dworcowej, obecny rozkład wymaga w dzień roboczy 15 autobusów w szczycie zamiast 18, a godzin pracy kierowców jest o 6\,\% mniej. Nie wiadomo, jak ZKM układa obiegi obecnie.
 \section{Ilu pasażerów mogą dać lepsze przesiadki}
-Na stacji Iława Główna wsiada i wysiada średnio 4\,700 osób na dobę (Urząd Transportu Kolejowego, 2025). Część z nich przesiada się tylko między pociągami. Nie wiadomo, ilu podróżnych jedzie dalej autobusem ZKM, dlatego narzędzie liczy trzy warianty: udział autobusu i wrażliwość na czas czekania to założenia, nie pomiar. Średni czas czekania na przesiadkę (pociąg--linia, w obu kierunkach) zmienia się w dzień roboczy z 34,2 do 32,0 min ($-$6,5\,\%).
+Na stacji Iława Główna wsiada i wysiada średnio 4\,700 osób na dobę (Urząd Transportu Kolejowego, 2025). Część z nich przesiada się tylko między pociągami. Nie wiadomo, ilu podróżnych jedzie dalej autobusem ZKM, dlatego narzędzie liczy trzy warianty: udział autobusu i wrażliwość na czas czekania to założenia, nie pomiar. Średni czas czekania na przesiadkę (pociąg--linia, w obu kierunkach) zmienia się w dzień roboczy z 34,2 do 32,9 min ($-$3,9\,\%).
 {\small
 \begin{center}\begin{tabular}{@{}l r r r r r r@{}}\toprule
 Wariant & Udział autobusu & Elastyczność & Przejazdy/dzień & Zmiana & Dodatkowe/dzień & Dodatkowe/rok \\ \midrule
-ostrożny & 5\,\% & -0,2 & 235 & +1,3\,\% & 3 & 951 \\
-średni & 10\,\% & -0,4 & 470 & +2,6\,\% & 12 & 3\,802 \\
-optymistyczny & 15\,\% & -0,7 & 705 & +4,5\,\% & 32 & 9\,980 \\
+ostrożny & 5\,\% & -0,2 & 235 & +0,8\,\% & 2 & 544 \\
+średni & 10\,\% & -0,4 & 470 & +1,6\,\% & 7 & 2\,176 \\
+optymistyczny & 15\,\% & -0,7 & 705 & +2,7\,\% & 19 & 5\,712 \\
 \bottomrule\end{tabular}\end{center}}
 \mut{\footnotesize Wartości dzienne dotyczą dnia roboczego, roczne obejmują wszystkie typy dni. Elastyczność: o tyle procent zmienia się liczba pasażerów, gdy czas czekania zmienia się o 1\,\%.}
 \end{document}

@@ -2,6 +2,7 @@
 
 Run:  python report.py        (after analyze.py)
 Output: reports/report_data.json and reports/przesiadki-ilawa.html
+The timeline of each test day uses the actual train times when analyze.py used them.
 """
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ import analyze as A
 from ilawa import model as M
 from ilawa.calendar import day_type
 from ilawa.common import ROOT
+from ilawa.plan import pasttest as PT
 
 RES = ROOT / "results"
 OUT = ROOT / "reports"
@@ -48,8 +50,12 @@ def main() -> None:
     m1, m2 = p["m_t2b"], p["m_b2t"]
     reps = {k: dt.date.fromisoformat(v) for k, v in s["representative_dates"].items()}
     tr = A.load_planned_trains()
+    rep_times = s.get("representative_times", {})
     data: dict = {"generated": dt.date.today().isoformat(), "params": p,
-                  "rep_dates": {k: str(v) for k, v in reps.items()}}
+                  "rep_dates": {k: str(v) for k, v in reps.items()}, "rep_times": rep_times,
+                  "test_days": s.get("test_days", []),
+                  "null_planned": {r["day_type"]: r["comparison"] for r in s.get("null_planned", [])}}
+    delays = PT.delay_table(A.load_ic_history(), A.load_monitor()) if "actual" in rep_times.values() else {}
 
     # Overall comparison with the null model (representative dates).
     data["overall"] = {}
@@ -84,12 +90,14 @@ def main() -> None:
     data["timeline"], data["collisions"] = {}, {}
     for dtp, d in reps.items():
         b = A.bus_sets(d)
-        arr = tr[(tr["arr_date"] == d) & tr["arr_min"].notna()].sort_values("arr_min")
-        dep = tr[(tr["dep_date"] == d) & tr["dep_min"].notna()].sort_values("dep_min")
+        trd = A.train_times(tr, d, delays) if rep_times.get(dtp) == "actual" else tr.assign(arr_delay=np.nan, dep_delay=np.nan)
+        arr = trd[(trd["arr_date"] == d) & trd["arr_min"].notna()].sort_values("arr_min")
+        dep = trd[(trd["dep_date"] == d) & trd["dep_min"].notna()].sort_values("dep_min")
+        dl = lambda x: None if pd.isna(x) else round(float(x), 1)
         trains = [{"t": round(r.arr_min, 1), "time": r.arr_time[:5], "cat": r.category, "no": r.number,
-                   "rel": r.relation, "from": r.prev_station} for r in arr.itertuples()]
+                   "rel": r.relation, "from": r.prev_station, "delay": dl(r.arr_delay)} for r in arr.itertuples()]
         trains_dep = [{"t": round(r.dep_min, 1), "time": r.dep_time[:5], "cat": r.category, "no": r.number,
-                       "rel": r.relation, "to": r.next_station} for r in dep.itertuples()]
+                       "rel": r.relation, "to": r.next_station, "delay": dl(r.dep_delay)} for r in dep.itertuples()]
         buses = [{"t": e.minute, "time": e.hhmm, "line": e.line, "kind": e.kind, "to": e.towards,
                   "flags": e.flags} for e in b["events"]]
         data["timeline"][dtp] = {"date": str(d), "trains_arr": trains, "trains_dep": trains_dep, "buses": buses}
@@ -104,7 +112,7 @@ def main() -> None:
                     ev = next(e for e in b["events"] if e.kind == "dep" and e.line == ln and e.minute == x)
                     coll.append({"line": ln, "time": hhmm(x), "to": ev.towards, "next": hhmm(nxt) if nxt is not None else None,
                                  "gap": gap, "trains": [{"time": r.arr_time[:5], "cat": r.category, "no": r.number,
-                                                         "rel": r.relation} for r in hit.itertuples()],
+                                                         "rel": r.relation, "delay": dl(r.arr_delay)} for r in hit.itertuples()],
                                  "seats": int(hit["capacity"].sum())})
         data["collisions"][dtp] = sorted(coll, key=lambda c: c["time"])
 

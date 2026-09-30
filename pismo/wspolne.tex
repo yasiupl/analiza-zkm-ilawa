@@ -66,36 +66,38 @@ ul. Wojska Polskiego 29\\
 \vspace{0.8cm}}
 
 \newcommand{\Wstep}{%
-Przeanalizowałem rozkład jazdy autobusów ZKM Iława obowiązujący od 1 września 2026 r. na tle rozkładu jazdy pociągów na stacji Iława Główna (dane PKP Polskich Linii Kolejowych S.A.). Wyniki i metoda są opisane w raportach załączonych do pisma (załączniki nr~2 i~3).}
+Przeanalizowałem rozkład jazdy autobusów ZKM Iława obowiązujący od 1 września 2026~r.\ na tle rozkładu jazdy pociągów na stacji Iława Główna (dane PKP Polskich Linii Kolejowych S.A.). Wyniki i metoda są opisane w raportach załączonych do pisma (załączniki nr~2 i~3).}
 
 \newcommand{\Uzasadnienie}{%
 \Tytul{Uzasadnienie}
 
-Autobusy ZKM nie są obecnie dopasowane do pociągów. W dzień roboczy autobus odjeżdża z przystanku Dworcowa w chwili, gdy podróżni idą jeszcze z peronu, przy 50\,\% przyjazdów pociągów. Rozkład autobusów ułożony losowo dałby 47\,\%. Liczba dogodnych przesiadek również odpowiada rozkładowi losowemu.
+Autobusy ZKM nie są obecnie dopasowane do pociągów. Według rozkładów z września 2026~r.\ w dzień roboczy autobus odjeżdża z przystanku Dworcowa w chwili, gdy podróżni idą jeszcze z peronu, przy 50\,\% przyjazdów pociągów. W dniu roboczym o największych opóźnieniach (28.09.2026) było to 55\,\% przyjazdów, a rozkład autobusów ułożony losowo dałby 47\,\%. W sobotę 26.09.2026 było to 35\,\% przyjazdów wobec 27\,\% przy rozkładzie losowym. Liczba dogodnych przesiadek odpowiada rozkładowi losowemu.
 
-Dogodna przesiadka to czekanie najwyżej 10 minut po dojściu z peronu na przystanek (4 minuty) albo z przystanku na peron (5 minut). Do przyjazdu pociągu doliczono typowe opóźnienie jego kategorii: 3 minuty dla pociągów PKP Intercity. Liczone są pary pociąg--linia, ponieważ podróżny potrzebuje konkretnej linii.
+Dogodna przesiadka to czekanie najwyżej 5 minut po dojściu z peronu na przystanek (4 minuty) albo z przystanku na peron (5 minut). Dłuższe czekanie przegrywa z dojściem pieszo lub z taksówką. Przy przesiadce z pociągu do autobusu okno czekania zaczyna się po zapasie na opóźnienie pociągu. Zapas to czas, w którym przyjeżdżają trzy na cztery pociągi danej kategorii (75.\ percentyl opóźnienia na stacji Iława Główna), najwyżej 10 minut: 1 minuta dla pociągów POLREGIO i 9--10 minut dla pociągów PKP Intercity. Liczone są pary pociąg--linia, ponieważ podróżny potrzebuje konkretnej linii.
 
-Proponowane zmiany wyznaczyło narzędzie, które przesuwa kursy o najwyżej 5 minut, a kursy kursujące tylko w dni nauki szkolnej o najwyżej 2 minuty. Przesunięty kurs zmienia godziny na wszystkich przystankach o tyle samo. Narzędzie zachowuje obiegi autobusów, przerwy kierowców wymagane ustawą o czasie pracy kierowców, liczbę autobusów i łączny czas pracy kierowców. Kursy każdej linii zachowują kolejność. Obiegi i służby narzędzie odtworzyło z rozkładu, ponieważ nie są one publikowane. Każdy etap zachowuje zmiany etapu poprzedniego, więc rozkład można zmieniać stopniowo.
+Proponowane zmiany wyznaczyło narzędzie, które przesuwa kursy o najwyżej 5 minut, a kursy kursujące tylko w dni nauki szkolnej o najwyżej 2 minuty. Autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później, więc każda zmiana daje podróżnym więcej czasu na przesiadkę i nie zależy od punktualności autobusu. Przesunięty kurs zmienia godziny na wszystkich przystankach o tyle samo. Narzędzie zachowuje obiegi autobusów, przerwy kierowców wymagane ustawą o czasie pracy kierowców, liczbę autobusów i łączny czas pracy kierowców. Kursy każdej linii zachowują kolejność. Obiegi i służby narzędzie odtworzyło z rozkładu, ponieważ nie są one publikowane. Każdy etap zachowuje zmiany etapu poprzedniego, więc rozkład można zmieniać stopniowo.
 
 \begin{center}
 \begin{tabular}{@{}lrrrrl@{}}
 \toprule
- & \multicolumn{4}{c}{Dogodne przesiadki dziennie} & \\
+ & \multicolumn{4}{c}{Dogodne przesiadki dziennie, z zapasem na opóźnienie} & \\
 \cmidrule(lr){2-5}
 Typ dnia & obecnie & etap 1 & etap 2 & wszystkie zmiany & liczba zmian \\
 \midrule
-Dzień roboczy (188 kursów) & 148 & 180 (+22\,\%) & 199 (+35\,\%) & 244 (+65\,\%) & 20 / 40 / 87 \\
-Sobota (89 kursów) & 91 & 117 (+29\,\%) & 132 (+45\,\%) & 133 (+46\,\%) & 20 / 40 / 43 \\
-Niedziela (54 kursy) & 46 & 70 (+52\,\%) & -- & 76 (+64\,\%) & 20 / 28 \\
+Dzień roboczy (188 kursów) & 82 & 106 (+30\,\%) & 126 (+54\,\%) & 134 (+65\,\%) & 20 / 40 / 50 \\
+Sobota (89 kursów) & 39 & 59 (+51\,\%) & -- & 59 (+51\,\%) & 19 \\
+Niedziela (54 kursy) & 28 & 40 (+44\,\%) & -- & 40 (+44\,\%) & 11 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Najwięcej zyskują osoby dojeżdżające autobusem na pociąg oraz podróżni pociągów regionalnych. Przy rzeczywistych przyjazdach pociągów PKP Intercity z 13 dni roboczych liczba dogodnych przesiadek z pociągu do autobusu rośnie o 9\,\%.
+Najwięcej zyskują osoby dojeżdżające autobusem na pociąg. Propozycję sprawdziłem na 19 minionych dniach września 2026~r.\ z rzeczywistymi godzinami pociągów. W dzień roboczy liczba przesiadek, na które podróżni zdążają przy czekaniu do 5 minut plus zapas na opóźnienie, rośnie średnio ze 179 do 203 dziennie (+13\,\%), a liczba przesiadek z czekaniem do 5 minut z 86 do 103 (+19\,\%). W dniu o największych opóźnieniach (28.09.2026, 24 pociągi spóźnione ponad 5 minut) takich przesiadek było 186 zamiast 175.
 
-Na stacji Iława Główna wsiada i wysiada średnio 4700 osób na dobę (Urząd Transportu Kolejowego, 2025). Jeżeli autobusem ZKM jedzie dalej od 5\,\% do 15\,\% z nich, krótsze czekanie na przesiadkę daje w dzień roboczy od 1,3\,\% do 4,5\,\% więcej przejazdów autobusem do dworca i z dworca. W ciągu roku to od około 950 do 10\,000 przejazdów.
+Korekty rozkładu nie pomogą, gdy pociąg spóźni się bardziej niż zapas. Wtedy podróżny czeka na następny kurs swojej linii: na liniach 2 i 3 około pół godziny, na liniach 1 i 4 nawet ponad godzinę. Dlatego proszę również o analizę linii przesiadkowej, której autobus odjeżdża z przystanku Dworcowa kilka minut po rzeczywistym przyjeździe pociągu. Rzeczywiste godziny przyjazdów udostępnia bezpłatnie API PKP PLK. Według wstępnego szacunku jeden autobus na krótkiej trasie po mieście mógłby odjeżdżać po około czterech na pięć przyjazdów pociągów w dzień roboczy w godzinach 5--23. Prostszą alternatywą jest zasada, że ostatni kurs linii przed długą przerwą czeka na spóźniony pociąg kilka minut. Trasę, rozkład i koszt takiego rozwiązania powinien ocenić ZKM.
 
-Narzędzie znalazło w dzień roboczy 8 okresów, w których autobus stoi na przystanku Dworcowa dłużej, niż trwa kurs tam i z powrotem. Dodatkowe kursy w tym czasie dałyby łącznie około 25 dogodnych przesiadek dziennie. Przy obiegach ze zmianą linii na przystanku Dworcowa obecny rozkład wymaga w szczycie 15 autobusów zamiast 18.
+Na stacji Iława Główna wsiada i wysiada średnio 4700 osób na dobę (Urząd Transportu Kolejowego, 2025). Jeżeli autobusem ZKM jedzie dalej od 5\,\% do 15\,\% z nich, krótsze czekanie na przesiadkę daje w dzień roboczy od 0,8\,\% do 2,7\,\% więcej przejazdów autobusem do dworca i z dworca. W ciągu roku to od około 540 do 5700 przejazdów.
+
+Narzędzie znalazło w dzień roboczy 9 okresów, w których autobus stoi na przystanku Dworcowa dłużej, niż trwa kurs tam i z powrotem. Dodatkowe kursy w tym czasie dałyby łącznie około 22 dogodne przesiadki dziennie. Przy obiegach ze zmianą linii na przystanku Dworcowa obecny rozkład wymaga w szczycie 15 autobusów zamiast 18.
 
 Rozkład w formacie GTFS pozwoli pokazać połączenia autobus--pociąg w wyszukiwarkach połączeń i łatwo sprawdzać skutki każdej zmiany rozkładu. Rozkład ZKM w tym formacie przygotowałem na potrzeby analizy. Jestem gotów przekazać narzędzie, dane i rozkład w formacie GTFS oraz spotkać się z przedstawicielami Urzędu Miasta i ZKM.}
 
@@ -126,7 +128,7 @@ Z poważaniem\\[1.4cm]
 \newpage
 \section*{Załącznik nr 1. Wykaz proponowanych zmian rozkładu jazdy}
 
-Wykaz dotyczy obiegów, w których autobus zostaje na jednej linii. Godziny są godzinami na przystanku Dworcowa: obecna $\to$ \textbf{proponowana}.
+Wykaz dotyczy obiegów, w których autobus zostaje na jednej linii. Godziny są godzinami na przystanku Dworcowa: obecna $\to$ \textbf{proponowana}. Autobus przyjeżdża tylko wcześniej albo odjeżdża tylko później niż obecnie.
 \begin{itemize}[itemsep=1pt]
 \item \textbf{Etap}: 1 -- najskuteczniejsze zmiany (do 20 kursów), 2 -- do 40 kursów łącznie, 3 -- pozostałe zmiany. Każdy etap zachowuje zmiany poprzedniego.
 \item \textbf{Inne przyst.}: zmiana godzin na pozostałych przystankach kursu, w minutach.

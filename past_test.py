@@ -5,9 +5,11 @@ actual times of the trains.
 Each result.json of zkmplan.py gives two timetables: the current one and the
 proposal (all stages). The test uses every past day in the period that has
 delay data (PKP PLK monitor, PKP Intercity history). The output lists, for each
-day, timetable and good window, the good transfers (train, line) with the
-planned and with the actual train times, and names the worst day of each day
-type (the fewest good transfers with the actual times, current timetable).
+day, timetable and good window, the transfers (train, line) with the planned
+and with the actual train times: good transfers (wait not longer than the
+window) and caught transfers (wait not longer than the window plus the delay
+buffer of the train category, from result.json). It names the worst day of each
+day type: the most trains more than 5 min late, then the largest mean delay.
 
 Usage:
     python3 past_test.py --days 30 --windows 5,10 data/plan/scenariusze/*/result.json
@@ -41,10 +43,11 @@ def main() -> None:
     files = [Path(p) for p in a.results] or sorted((ROOT / "data" / "plan").glob("*/result.json"))[-1:]
     if not files:
         raise SystemExit("No result.json. Run zkmplan.py first.")
-    timetables = {}
+    timetables, buffers = {}, {}
     for f in files:
         R = json.loads(f.read_text(encoding="utf-8"))
         name = f.parent.name
+        buffers = buffers or R.get("buffers") or {}
         timetables.setdefault("obecny", {d: x["bus_rep"] for d, x in R["day_types"].items()})
         timetables[name] = {d: x["variants"][a.variant]["bus_after"] for d, x in R["day_types"].items()
                             if a.variant in x["variants"]}
@@ -60,22 +63,18 @@ def main() -> None:
     if not days:
         raise SystemExit("No past day with delay data in the period.")
     windows = [float(w) for w in a.windows.split(",")]
-    rows = pd.DataFrame(PT.evaluate(timetables, tr, delays, days, windows, a.m_t2b, a.m_b2t))
+    rows = PT.evaluate(timetables, tr, delays, days, windows, a.m_t2b, a.m_b2t, buffers)
+    worst = PT.worst_days(rows)
+    rows = pd.DataFrame(rows)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     rows.to_csv(out / "dni.csv", index=False)
-    summ = (rows.groupby(["day_type", "timetable", "window"])[["plan_total", "actual_total", "actual_t2b", "actual_b2t"]]
+    summ = (rows.groupby(["day_type", "timetable", "window"])[["plan_total", "actual_total", "plan_caught", "actual_caught",
+                                                               "actual_wait_t2b"]]
             .mean().round(1).reset_index())
     summ.to_csv(out / "podsumowanie.csv", index=False)
-    cur = rows[rows["timetable"] == "obecny"]
-    worst = {}
-    for (dtp, w), g in cur.groupby(["day_type", "window"]):
-        r = g.sort_values("actual_total").iloc[0]
-        worst[f"{dtp}|{w:g}"] = {"date": r["date"], "actual_total": int(r["actual_total"]),
-                                 "plan_total": int(r["plan_total"]), "delay_mean": r["delay_mean"],
-                                 "late_over_5": int(r["late_over_5"])}
     meta = {"days": [str(d) for d in days], "files": [str(f) for f in files], "windows": windows,
-            "worst_day": worst}
+            "buffers": buffers, "worst_day": worst}
     (out / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     print(f"Days: {', '.join(str(d) for d in days)}")
     print(summ.to_string(index=False))

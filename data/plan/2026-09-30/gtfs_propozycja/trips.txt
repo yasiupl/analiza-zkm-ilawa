@@ -1,0 +1,332 @@
+route_id,service_id,trip_id,trip_headsign,direction_id,trip_short_name,pattern_id
+1,RO,1_RO_0505_005-01,Długa,1,,00/0/WAP-B-1
+1,RO,1_RO_0610_002-01,Dworcowa,0,,00/0/WAP-A-1
+1,RO,1_RO_0642_005-01,Długa,1,,00/0/WAP-B-1
+1,RO,1_RO_0717_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO_S,1_RO_S_0724_005-01,Długa,1,sp,00/0/WAP-B-1
+1,RO,1_RO_0800_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_0835_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_0840_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_0925_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1005_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1045_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1125_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1205_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1240_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1308_005-01,Długa,1,,00/0/WAP-B-1
+1,RO,1_RO_1325_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1330_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1400_002-01,Dworcowa,0,,00/0/WAP-A-1
+1,RO,1_RO_1414_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1435_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1502_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1515_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1550_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1635_005-01,Długa,1,c,00/0/WAP-B-1
+1,RO,1_RO_1715_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,RO,1_RO_1755_005-01,Długa,1,,00/0/WAP-B-1
+1,RO,1_RO_1830_002-01,Dworcowa,0,,00/0/WAP-A-1
+1,RO,1_RO_1955_005-01,Długa,1,,00/0/WAP-B-1
+1,RO,1_RO_2030_002-01,Dworcowa,0,,00/0/WAP-A-1
+1,RO,1_RO_2104_005-01,Długa,1,,00/0/WAP-B-1
+1,RO,1_RO_2212_002-01,Dworcowa,0,,00/0/WAP-A-1
+2,RO,2_RO_0503_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0535_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0538_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0558_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0605_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0625_039-01,Dworcowa,0,l,00/0/WAP-A-2A
+2,RO,2_RO_0636_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0650_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0700_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0725_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0730_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0808_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0810_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0833_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0840_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0903_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_0930_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0950_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_0955_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1015_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1023_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1047_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1104_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1130_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1139_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1200_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1210_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1235_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1300_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1327_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1335_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1405_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1425_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1435_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1455_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1507_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1516_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1530_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1534_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1545_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1558_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1615_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1625_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1650_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1655_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1717_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1746_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1812_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1838_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1902_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1908_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1923_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_1934_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_1942_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_2006_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_2030_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_2046_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_2106_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,RO,2_RO_2107_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_2125_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,RO,2_RO_2220_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+3,RO,3_RO_0505_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0510_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_0544_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0552_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_0616_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0620_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_0643_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0645_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_0652_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_0715_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO_S,3_RO_S_0717_031-01,Dworcowa,0,s,00/0/WAP-A-3
+3,RO,3_RO_0730_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO_S,3_RO_S_0745_005-01,Księżnej Dobrawy,1,ks,00/0/WAP-B-3
+3,RO_S,3_RO_S_0745_023-02,Księżnej Dobrawy,1,ks,00/0/WAP-B-3
+3,RO,3_RO_0752_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO_S,3_RO_S_0754_035-01,Dworcowa,0,s,00/0/WAP-A-3
+3,RO,3_RO_0802_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0816_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0834_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_0903_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_0913_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0932_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_0941_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1013_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1036_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1055_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1102_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1119_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1150_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1215_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1229_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1236_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1253_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1257_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1308_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1321_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1328_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1330_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1338_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1350_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1406_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1412_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1420_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1430_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1448_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1500_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1505_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1516_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1520_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1520_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1540_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1548_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1557_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1610_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1610_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1640_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1645_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1708_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1715_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1742_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1808_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1824_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1834_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1850_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_1927_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_1957_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_1957_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_2020_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_2042_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,RO,3_RO_2108_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,RO,3_RO_2138_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_2215_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,RO,3_RO_2215_029-01,Dworcowa,0,,00/0/WAP-A-3
+4,RO,4_RO_0730_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_0805_051-01,Dworcowa,1,,00/0/WAP-B-4
+4,RO,4_RO_0840_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_0915_051-01,Dworcowa,1,,00/0/WAP-B-4
+4,RO,4_RO_0945_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_1020_051-01,Dworcowa,1,,00/0/WAP-B-4
+4,RO,4_RO_1120_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_1155_051-01,Dworcowa,1,,00/0/WAP-B-4
+4,RO,4_RO_1223_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_1300_051-01,Dworcowa,1,,00/0/WAP-B-4
+4,RO,4_RO_1340_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_1430_051-01,Dworcowa,1,,00/0/WAP-B-4
+4,RO,4_RO_1510_005-01,Piaskowa,0,,00/0/WAP-A-4
+4,RO,4_RO_1600_051-01,Dworcowa,1,,00/0/WAP-B-4
+7,RO,7_RO_0915_005-01,Nowa Wieś,0,,00/0/WAP-B-7
+7,RO,7_RO_0950_028-01,Smolki,1,t,00/0/WAP-A-7
+7,RO,7_RO_0952_030-02,Smolki,1,t,00/0/WAP-A-7
+7,RO,7_RO_1418_028-01,Smolki,1,t,00/0/WAP-A-7
+7,RO,7_RO_1420_030-02,Smolki,1,t,00/0/WAP-A-7
+7,RO,7_RO_1435_006-02,Nowa Wieś,0,,00/0/WAP-B-7
+7,RO,7_RO_1550_005-01,Nowa Wieś,0,,00/0/WAP-B-7
+7,RO,7_RO_1622_028-01,Smolki,1,t,00/0/WAP-A-7
+7,RO,7_RO_1624_030-02,Smolki,1,t,00/0/WAP-A-7
+1,SO,1_SO_0650_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_0725_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,SO,1_SO_0810_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_0900_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,SO,1_SO_0905_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_0957_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,SO,1_SO_1005_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_1105_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,SO,1_SO_1145_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_1240_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,SO,1_SO_1320_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_1420_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,SO,1_SO_1500_005-01,Długa,1,c,00/0/WAP-B-1
+1,SO,1_SO_1555_002-01,Dworcowa,0,c,00/0/WAP-A-1
+2,SO,2_SO_0541_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0542_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0602_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0615_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0635_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0635_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0655_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0711_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0731_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0740_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0800_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0832_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0852_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_0925_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_0947_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1020_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1042_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1110_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1135_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1201_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1225_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1301_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1330_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1411_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1431_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1510_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1533_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1637_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1700_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_1810_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_1833_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,SO,2_SO_2017_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,SO,2_SO_2038_039-01,Dworcowa,0,,00/0/WAP-A-2A
+3,SO,3_SO_0522_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_0548_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0602_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_0627_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0629_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_0700_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0704_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_0730_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0736_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_0754_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_0800_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0825_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0826_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_0852_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0900_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_0930_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_0945_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1007_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1035_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1045_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1100_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1117_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1130_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1152_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_1200_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1218_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1235_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1303_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1335_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_1405_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1405_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1435_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_1435_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1507_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1533_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_1600_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1721_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_1745_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_1915_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,SO,3_SO_1940_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,SO,3_SO_2106_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,SO,3_SO_2132_035-01,Dworcowa,0,,00/0/WAP-A-3
+1,ND,1_ND_0815_005-01,Długa,1,c,00/0/WAP-B-1
+1,ND,1_ND_0855_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,ND,1_ND_0935_005-01,Długa,1,c,00/0/WAP-B-1
+1,ND,1_ND_1015_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,ND,1_ND_1058_005-01,Długa,1,c,00/0/WAP-B-1
+1,ND,1_ND_1140_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,ND,1_ND_1247_005-01,Długa,1,c,00/0/WAP-B-1
+1,ND,1_ND_1335_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,ND,1_ND_1415_005-01,Długa,1,c,00/0/WAP-B-1
+1,ND,1_ND_1500_002-01,Dworcowa,0,c,00/0/WAP-A-1
+1,ND,1_ND_1540_005-01,Długa,1,c,00/0/WAP-B-1
+1,ND,1_ND_1625_002-01,Dworcowa,0,c,00/0/WAP-A-1
+2,ND,2_ND_0707_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_0727_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_0900_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_0920_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_1051_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_1112_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_1252_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_1314_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_1438_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_1500_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_1632_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_1657_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_1810_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_1833_039-01,Dworcowa,0,,00/0/WAP-A-2A
+2,ND,2_ND_2017_005-01,Iława ul. Lipowy Dwór (ogrody),1,,00/0/WAP-B-2
+2,ND,2_ND_2037_039-01,Dworcowa,0,,00/0/WAP-A-2A
+3,ND,3_ND_0605_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,ND,3_ND_0629_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_0758_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_0822_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_0916_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,ND,3_ND_0942_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1000_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_1024_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1100_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_1130_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1146_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,ND,3_ND_1212_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1220_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_1255_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1346_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_1410_035-01,Dworcowa,0,s,00/0/WAP-A-3
+3,ND,3_ND_1430_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_1500_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1535_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,ND,3_ND_1600_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1721_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_1745_035-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_1915_005-01,Nowa Wieś,1,,00/0/WAP-B-3
+3,ND,3_ND_1940_029-01,Dworcowa,0,,00/0/WAP-A-3
+3,ND,3_ND_2108_005-01,Księżnej Dobrawy,1,k,00/0/WAP-B-3
+3,ND,3_ND_2131_035-01,Dworcowa,0,,00/0/WAP-A-3
