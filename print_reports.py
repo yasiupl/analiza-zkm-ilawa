@@ -319,6 +319,7 @@ PREAMBLE = r"""\documentclass[10pt,a4paper]{article}
 PUBLIC = {"on": False, "head": ""}
 # Weekday gain of good transfers in the plan (from zkmplan.py), quoted in the transfers report.
 PLAN_GAIN: dict = {}
+PLAN_RUN: dict = {}  # day type -> (before, after) "runaway" pairs per day in the plan
 
 
 def att(letter_text: str, public_text: str) -> str:
@@ -650,7 +651,7 @@ def attachment_przesiadki(D: dict) -> str:
     out.append("\\section{Korekty rozkładu}\n")
     out.append("Propozycje zmian rozkładu przygotowuje osobne narzędzie. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej, "
                "i zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. " + att("Wyniki są w załączniku nr 3, a wykaz zmian w załączniku nr 1.", "Wyniki i pełny wykaz zmian są w raporcie „Korekty rozkładu ZKM Iława”.") + "\n")
-    out.append(measured_section(PLAN_GAIN.get("Roboczy")))
+    out.append(measured_section(PLAN_GAIN.get("Roboczy"), PLAN_RUN.get("Roboczy")))
     srow = [r for r in D["sensitivity"] if r["day_type"] == "Roboczy"]
     rows = []
     for w in sorted({r["walk"] for r in srow}):
@@ -735,8 +736,9 @@ def measured_data() -> dict | None:
     return M
 
 
-def measured_section(plan_gain: float | None = None) -> str:
-    """plan_gain: gain of good transfers in the plan, weekday (the headline number of the corrections report)."""
+def measured_section(plan_gain: float | None = None, plan_run: tuple | None = None) -> str:
+    """plan_gain: gain of good transfers in the plan, weekday; plan_run: "runaway" pairs per day before/after in the plan, weekday
+    (the headline numbers of the corrections report, so that the text quotes the same plan figures)."""
     M = measured_data()
     out = ["\\section{Pomiar faktycznych przyjazdów}\n"]
     if not M:
@@ -778,9 +780,11 @@ def measured_section(plan_gain: float | None = None) -> str:
     p0, p1 = g("obecny", 5.0, "plan_total"), g("propozycja", 5.0, "plan_total")
     r0, r1 = g("obecny", 5.0, "actual_runaway"), g("propozycja", 5.0, "actual_runaway")
     q0, q1 = g("obecny", 5.0, "plan_runaway"), g("propozycja", 5.0, "plan_runaway")
+    run_plan = (f"{num(plan_run[0])} $\\to$ {num(plan_run[1])} ({spct((plan_run[1] - plan_run[0]) / plan_run[0])})" if plan_run
+                else spct((q1 - q0) / q0))
     out.append(f"Przy faktycznych godzinach pociągów propozycja nadal daje więcej dogodnych przesiadek niż obecny rozkład: w dzień roboczy "
                f"{num(a0)} $\\to$ {num(a1)} dziennie ({spct((a1 - a0) / a0)}), a nie {spct(plan_gain if plan_gain is not None else (p1 - p0) / p0)} jak w planie. Słabiej wypada usuwanie "
-               f"„uciekających” odjazdów: {num(r0)} $\\to$ {num(r1)} ({spct((r1 - r0) / r0)}), a nie {spct((q1 - q0) / q0)}. Prawdopodobna przyczyna: "
+               f"„uciekających” odjazdów: {num(r0)} $\\to$ {num(r1)} ({spct((r1 - r0) / r0)}), a nie {run_plan} jak w planie. Prawdopodobna przyczyna: "
                "przesunięte kursy odjeżdżają kilka minut po planowym przyjeździe pociągu, więc podróżni ze spóźnionego pociągu Intercity często już na nie "
                "nie zdążą. Obecny rozkład prawie nie zależy od opóźnień, bo i tak rzadko jest dopasowany do pociągów.\n\n")
     o = lambda tt, k: M[("only", "Roboczy", tt, 5.0, k)]
@@ -842,7 +846,9 @@ def past_section(R: dict) -> str:
            f"({fdate(PTR['days'][0])}--{fdate(PTR['days'][-1])}). Rozkład ZKM i planowy rozkład pociągów są te same, zmieniają się tylko rzeczywiste "
            f"godziny pociągów. „Dobre”: czekanie po dojściu do {num(PTR['window'])} min. "
            + (f"„Złapane”: czekanie do {num(PTR['window'])} min plus zapas na opóźnienie kategorii pociągu. " if buf else "")
-           + "Wartości to średnie na dzień.\n\n"]
+           + "Wartości to średnie na dzień."
+           + (" Nowszy pomiar faktycznych przyjazdów (monitor PKP PLK, wszyscy przewoźnicy, także październik) jest w raporcie "
+              "„Przesiadki Iława Główna”." if PUBLIC["on"] else "") + "\n\n"]
     rows = []
     for d in days:
         for r in [x for x in PTR["summary"] if x["day_type"] == d]:
@@ -1010,7 +1016,7 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
                + ("Autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później, więc każda zmiana daje przesiadce więcej czasu. "
                   if sh.get("shift_direction") == "buffer" else "")
                + f"Wyniki dotyczą wariantu: {VN[variant]}.\n")
-    keys = ["a"] + (["acc"] if acc else []) + (["run"] if has_run else []) + ["c", "d", "e", "f", "g"]
+    keys = ["a"] + (["acc"] if acc else []) + (["run"] if has_run else []) + ["d", "e", "f", "g"]  # no past-days row: the measured arrivals are in the transfer report
     rows = {k: [] for k in keys}
     caught = "actual_caught" if buf else "actual_total"
     ch = lambda x, y: f"{num(x)} → {num(y)} \\mut{{({spct((y - x) / x)})}}" if x else f"{num(x)} → {num(y)}"
@@ -1024,8 +1030,6 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
         if has_run:
             ra = (v.get("runaways") or {}).get("per_day")
             rows["run"].append(ch(ra["before"], ra["after"]) if ra else "--")
-        pa, pb = past_mean(R, d, "obecny"), past_mean(R, d, "propozycja")
-        rows["c"].append(ch(pa[caught], pb[caught]) if pa and pb else "--")
         rows["d"].append(f"{len(v['changes'])} z {r['trips']}")
         rows["e"].append(f"{num(v['indicators_before']['duty_hours'], 1)} → {num(v['indicators_after']['duty_hours'], 1)}")
         rows["f"].append(f"{v['indicators_before']['peak_vehicles']} → {v['indicators_after']['peak_vehicles']}")
@@ -1033,7 +1037,6 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
     labels = {"a": "Dobre przesiadki dziennie, z zapasem na opóźnienie" if buf else f"Dobre przesiadki dziennie (czekanie do {tr['good_window']} min)",
               "acc": f"Przesiadki z czekaniem do {num(acc)} min dziennie",
               "run": "„Uciekające” odjazdy: pary pociąg--linia dziennie",
-              "c": "Minione dni, rzeczywiste godziny pociągów: " + ("złapane" if buf else "dobre") + " przesiadki dziennie",
               "d": "Zmienione kursy (wszystkie etapy)", "e": "Godziny pracy kierowców dziennie", "f": "Autobusy w szczycie",
               "g": "Służby z przerwą zgodną z ustawą"}
     out.append(table([("Wskaźnik", "p{5.4cm}")] + [(DAYNAME[d].split(" ")[0], "r") for d in days],
@@ -1228,6 +1231,9 @@ def main() -> None:
     for d, x in R["day_types"].items():
         v = x["variants"][a.variant]
         PLAN_GAIN[d] = (v["good_after"]["total"] - v["good_before"]["total"]) / v["good_before"]["total"]
+        ra = (v.get("runaways") or {}).get("per_day")
+        if ra:
+            PLAN_RUN[d] = (ra["before"], ra["after"])
     p2.write_text(attachment_przesiadki(D), encoding="utf-8")
     k = attachment_korekty(R, a.variant)
     if PUBLIC["on"]:
