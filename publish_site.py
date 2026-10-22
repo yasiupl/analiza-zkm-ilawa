@@ -1,23 +1,33 @@
 #!/usr/bin/env python3
 """Build the public web page of the report for a static web site.
 
-The page is one folder, raport-zkm-<date>, with these files:
+The page is one folder, <date>-raport-zkm, with these files:
   index.html                            summary, links to the reports and to the files
   przesiadki.html, korekty.html         the two web reports
   przesiadki-ilawa-glowna.pdf           printable report on the transfers
   korekty-rozkladu-zkm-ilawa.pdf        printable report on the corrections (with the list of changes)
   wykaz-zmian.csv                       list of the proposed changes
   test-minione-dni.csv                  test of the timetables on past days with the actual train times
+  pomiar-dni.csv                        test with the measured train times from the monitor (monitor_test.py)
   zkm-ilawa-gtfs.zip                    current ZKM Iława timetable (GTFS, not official)
   zkm-ilawa-gtfs-propozycja.zip         timetable with the proposed changes (GTFS)
 
 Make the data first:
     python3 report.py
     python3 zkmplan.py --no-fetch
-    python3 print_reports.py --public "14-200.pl/@yasiu/raport-zkm-<date>" --pdf
+    python3 print_reports.py --public "14-200.pl/@yasiu/<date>-raport-zkm" --pdf
 
 Usage:
     python3 publish_site.py --out ../14-200.pl/src/@yasiu --url https://14-200.pl/@yasiu
+
+The published pages (index.html, przesiadki.html, korekty.html) were edited by hand after the first
+publication: the map in the story of index.html, local fonts, the glossary at the end of the reports,
+the measured arrivals, no estimate of passengers. The templates in reports/ do not have these edits yet.
+The data files of the published page (wykaz-zmian.csv, test-minione-dni.csv, GTFS) also come from a run of
+zkmplan.py that is not in data/plan. So the script does not overwrite any file of the page that exists; it
+only adds the missing ones. Use --overwrite only after the templates have the edits and the data come from
+the current tools. The PDFs of the published page: print_reports.py --from-html <page folder> --public ... --pdf,
+then copy them by hand.
 """
 from __future__ import annotations
 
@@ -175,29 +185,43 @@ def main() -> None:
     ap.add_argument("--variant", default="single", choices=["single", "interlined"])
     ap.add_argument("--author", default="Marcin Jasiukowicz")
     ap.add_argument("--code-url", default="https://github.com/yasiupl/analiza-zkm-ilawa")
+    ap.add_argument("--overwrite", action="store_true",
+                    help="write the files of the page also when they exist (this undoes the edits by hand)")
     a = ap.parse_args()
     plan = Path(a.plan) if a.plan else newest_plan()
     R = json.loads(plan.read_text(encoding="utf-8"))
     D = json.loads((REPORTS / "report_data.json").read_text(encoding="utf-8"))
     date = a.date or plan.parent.name
-    name = f"raport-zkm-{date}"
+    name = f"{date}-raport-zkm"
     out = Path(a.out) / name
     out.mkdir(parents=True, exist_ok=True)
 
     pdfs = {"przesiadki-ilawa-glowna.pdf": DRUK / "przesiadki-ilawa-glowna.pdf",
             "korekty-rozkladu-zkm-ilawa.pdf": DRUK / "korekty-rozkladu-zkm-ilawa.pdf"}
+    keep = lambda f: (out / f).exists() and not a.overwrite
     for n, p in pdfs.items():
         if not p.exists():
             raise SystemExit(f"{p} is missing. Run: python3 print_reports.py --public \"<address>\" --pdf")
+        if keep(n):
+            print(f"  {n}: exists, not overwritten (see --overwrite)")
+            continue
         shutil.copyfile(p, out / n)
-    (out / "przesiadki.html").write_text(public_report(REPORTS / "przesiadki-ilawa.html", "przesiadki-ilawa-glowna.pdf"), encoding="utf-8")
-    (out / "korekty.html").write_text(public_report(REPORTS / "korekty-zkm.html", "korekty-rozkladu-zkm-ilawa.pdf"), encoding="utf-8")
+    for f, src, pdf in (("przesiadki.html", "przesiadki-ilawa.html", "przesiadki-ilawa-glowna.pdf"),
+                        ("korekty.html", "korekty-zkm.html", "korekty-rozkladu-zkm-ilawa.pdf")):
+        if keep(f):
+            print(f"  {f}: exists, not overwritten (see --overwrite)")
+        else:
+            (out / f).write_text(public_report(REPORTS / src, pdf), encoding="utf-8")
     data = [("wykaz-zmian.csv", plan.parent / "zmiany.csv"),
             ("test-minione-dni.csv", ROOT / "results" / "test_na_minionych_dniach" / "dni.csv"),
             ("zkm-ilawa-gtfs.zip", ROOT / "data" / "zkm_gtfs.zip"),
-            ("zkm-ilawa-gtfs-propozycja.zip", plan.parent / "gtfs_propozycja.zip")]
+            ("zkm-ilawa-gtfs-propozycja.zip", plan.parent / "gtfs_propozycja.zip"),
+            ("pomiar-dni.csv", ROOT / "results" / "pomiar" / "dni.csv")]
     for n, p in data:
-        shutil.copyfile(p, out / n)
+        if keep(n):
+            print(f"  {n}: exists, not overwritten (see --overwrite)")
+        elif p.exists():
+            shutil.copyfile(p, out / n)
     files = [("przesiadki-ilawa-glowna.pdf", "Raport „Przesiadki Iława Główna”, wersja do druku", out / "przesiadki-ilawa-glowna.pdf"),
              ("korekty-rozkladu-zkm-ilawa.pdf", "Raport „Korekty rozkładu ZKM Iława” z pełnym wykazem zmian, wersja do druku", out / "korekty-rozkladu-zkm-ilawa.pdf"),
              ("wykaz-zmian.csv", "Wykaz proponowanych zmian: typ dnia, etap, kurs, godziny obecne i proponowane, pociągi", out / "wykaz-zmian.csv"),
@@ -212,7 +236,10 @@ def main() -> None:
     page = (tpl.replace("{{TITLE}}", html.escape(title)).replace("{{DESCRIPTION}}", html.escape(desc))
             .replace("{{URL}}", f"{a.url.rstrip('/')}/{name}/")
             .replace("{{CONTENT}}", content(S, files, date, a.author, a.code_url)))
-    (out / "index.html").write_text(page, encoding="utf-8")
+    if keep("index.html"):
+        print("  index.html: exists, not overwritten (see --overwrite)")
+    else:
+        (out / "index.html").write_text(page, encoding="utf-8")
     print(f"Page: {out}\nAddress: {a.url.rstrip('/')}/{name}/")
     for f in sorted(out.iterdir()):
         print(f"  {f.name:34} {size(f)}")
