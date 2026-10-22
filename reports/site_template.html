@@ -46,29 +46,11 @@
                         <span class="font-heading font-bold text-2xl text-gray-900 tracking-tight">14-200.pl</span>
                     </a>
                 </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="/kalendarz" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Kalendarz</a>
-                    <a href="/#misja" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Nasza Misja</a>
-                    <a href="/#oferta" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Współpraca</a>
-                    <a href="/#zasady" class="text-gray-600 hover:text-brand-700 font-medium transition-colors">Zasady</a>
-                    <a href="https://forum.14-200.pl" class="bg-brand-500 hover:bg-brand-400 text-gray-900 px-5 py-2.5 rounded-lg font-bold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                <div class="flex items-center">
+                    <a href="https://forum.14-200.pl" class="bg-brand-500 hover:bg-brand-400 text-gray-900 px-4 sm:px-5 py-2.5 rounded-lg font-bold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         Przejdź na forum
                     </a>
                 </div>
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none p-2" aria-label="Menu">
-                        <i class="fa-solid fa-bars text-2xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 absolute w-full shadow-xl">
-            <div class="px-4 pt-2 pb-6 space-y-1 sm:px-3 flex flex-col gap-2">
-                <a href="/kalendarz" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Kalendarz</a>
-                <a href="/#misja" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Nasza Misja</a>
-                <a href="/#oferta" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Współpraca</a>
-                <a href="/#zasady" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-700 hover:bg-brand-50">Zasady</a>
-                <a href="https://forum.14-200.pl" class="mobile-link mt-4 block text-center bg-brand-500 hover:bg-brand-400 text-gray-900 px-5 py-3 rounded-lg font-bold shadow-md transition-colors">Przejdź na forum</a>
             </div>
         </div>
     </nav>
@@ -104,12 +86,7 @@
         </div>
     </footer>
     <script>
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
         const navbar = document.getElementById('navbar');
-        const setIcon = open => { const i = mobileMenuBtn.querySelector('i'); i.classList.toggle('fa-xmark', open); i.classList.toggle('fa-bars', !open); };
-        mobileMenuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); setIcon(!mobileMenu.classList.contains('hidden')); });
-        document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => { mobileMenu.classList.add('hidden'); setIcon(false); }));
         window.addEventListener('scroll', () => navbar.classList.toggle('shadow-md', window.scrollY > 20));
     </script>
 </body>

@@ -316,7 +316,7 @@ The templates in `reports/` do not have these edits, and `data/plan` has no run 
 
   The PDFs are compiled with `xelatex`, or with `tectonic` when there is no `xelatex`. The figures use TeX Gyre Heros (install the font so that matplotlib finds it).
 - `publish_site.py` keeps the existing files of the page, so it does not undo the edits.
-- `publish_site.py` adds the navigation of the page: a bar on top of both web reports and of the summary page (current page marked), a link back to the summary page and the previous/next report at the end of the web reports. The tiles of the summary page show counts.
+- `publish_site.py` adds the navigation of the page: both web reports link only back to the summary page (on top and at the end, hidden in print); the header of the summary page links only to the home page of 14-200.pl and to the forum; the name of the author links to https://14-200.pl/@yasiu/. The tiles of the summary page show counts.
 - The report on the corrections has no row with the test on past days in its result table; the measured arrivals are in the transfer report.
 
 ### Measured train arrivals (monitor_test.py)

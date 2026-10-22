@@ -84,55 +84,23 @@ def size(p: Path) -> str:
     return f"{b / 1024:.0f} kB" if b < 1024 * 1024 else f"{b / 1024 / 1024:.1f} MB".replace(".", ",")
 
 
-# Navigation of the report page: summary page · transfer report · corrections report (same markup as on 14-200.pl).
-NAV_CSS = """
-/* Nawigacja raportu: strona główna · Przesiadki · Korekty */
+# Navigation of the report page (same markup as on 14-200.pl): the web reports link only back to the summary page;
+# the summary page links only to the home page of 14-200.pl and to the forum (header of the site template).
+NAV_CSS = """/* Nawigacja: powrót do strony głównej raportu */
 .rnav { background: var(--poster); color: var(--poster-ink); border-bottom: 1px solid var(--poster-rule); font: 600 .86rem/1.3 var(--f-display); }
-.rnav ol { list-style: none; margin: 0; padding: .45rem 0; display: flex; flex-wrap: wrap; align-items: center; }
-.rnav li + li::before { content: "·"; margin: 0 .5rem; opacity: .6; }
-.rnav a { color: inherit; text-decoration: none; display: inline-block; padding: .35rem 0; }
+.rnav .wrap { padding-block: .45rem; }
+.rnav a, .rnav-end a { color: inherit; text-underline-offset: 3px; }
+.rnav a { text-decoration: none; display: inline-block; padding: .35rem 0; }
 .rnav a:hover { text-decoration: underline; }
-.rnav a[aria-current="page"] { font-weight: 800; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 .rnav a:focus-visible, .rnav-end a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .rnav-end { border-top: 1px solid var(--rule); font-family: var(--f-display); }
-.rnav-end a { color: inherit; text-underline-offset: 3px; }
-.rnav-end .wrap { padding-block: 2rem; display: grid; gap: 1rem; }
-.rnav-end .back { font-weight: 600; justify-self: start; }
-.rnav-end .pn { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
-.rnav-end .pn a { background: var(--paper); padding: .9rem 1.1rem; text-decoration: none; font-weight: 700; line-height: 1.3; display: flex; flex-direction: column; gap: .3rem; min-width: 0; }
-.rnav-end .pn a:hover { background: var(--panel); }
-.rnav-end .pn a span { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-.rnav-end .pn a[rel="next"] { text-align: right; }
+.rnav-end .wrap { padding-block: 2rem; }
+.rnav-end a { font-weight: 600; display: inline-block; padding: .35rem 0; }
 @media print { .rnav, .rnav-end { display: none; } }
 """
-NAV_PAGES = [("./", "Raport ZKM"), ("przesiadki.html", "Przesiadki Iława Główna"), ("korekty.html", "Korekty rozkładu ZKM Iława")]
-
-
-def nav_top(cur: str) -> str:
-    li = "".join(f'<li><a href="{h}"{' aria-current="page"' if h == cur else ""}>{t}</a></li>' for h, t in NAV_PAGES)
-    return f'<nav class="rnav" aria-label="Raport ZKM"><div class="wrap"><ol>{li}</ol></div></nav>\n'
-
-
-def nav_end(cur: str) -> str:
-    i = [h for h, _ in NAV_PAGES].index(cur)
-    pn = ""
-    if i - 1 >= 1:
-        pn += f'<a rel="prev" href="{NAV_PAGES[i - 1][0]}"><span>← Poprzedni raport</span>{NAV_PAGES[i - 1][1]}</a>'
-    if i + 1 < len(NAV_PAGES):
-        pn += f'<a rel="next" href="{NAV_PAGES[i + 1][0]}"><span>Następny raport →</span>{NAV_PAGES[i + 1][1]}</a>'
-    return (f'<nav class="rnav-end" aria-label="Dalej w raporcie"><div class="wrap">\n'
-            f'  <a class="back" href="./">← Wróć do strony głównej raportu</a>\n'
-            f'  <div class="pn">{pn}</div>\n</div></nav>\n')
-
-
-def nav_index() -> str:
-    li = []
-    for h, t in NAV_PAGES:
-        if h == "./":
-            li.append(f'<li><a href="./" aria-current="page" class="inline-block py-2 font-bold text-gray-900 underline decoration-brand-500 decoration-2 underline-offset-4">{t}</a></li>')
-        else:
-            li.append(f'<li class="before:content-[\'·\'] before:mx-2 before:text-gray-400"><a href="{h}" class="inline-block py-2 hover:text-accent-600 hover:underline">{t}</a></li>')
-    return '            <nav aria-label="Raport ZKM" class="mb-6 text-sm font-semibold text-gray-600"><ol class="flex flex-wrap items-center">' + "".join(li) + '</ol></nav>\n'
+NAV_TOP = '<nav class="rnav" aria-label="Raport ZKM"><div class="wrap"><a href="./">← Raport ZKM</a></div></nav>\n'
+NAV_END = '<nav class="rnav-end" aria-label="Powrót"><div class="wrap"><a href="./">← Wróć do strony głównej raportu</a></div></nav>\n'
+AUTHOR_URL = "https://14-200.pl/@yasiu/"
 
 
 def public_report(src: Path, pdf: str, name: str) -> str:
@@ -140,8 +108,8 @@ def public_report(src: Path, pdf: str, name: str) -> str:
     h = src.read_text(encoding="utf-8")
     if "</style>" in h and '<header class="poster">' in h and "<footer>" in h:
         h = h.replace("</style>", NAV_CSS.lstrip("\n") + "</style>", 1)
-        h = h.replace('<header class="poster">', nav_top(name) + '<header class="poster">', 1)
-        h = h.replace("<footer>", nav_end(name) + "<footer>", 1)
+        h = h.replace('<header class="poster">', NAV_TOP + '<header class="poster">', 1)
+        h = h.replace("<footer>", NAV_END + "<footer>", 1)
     if DL_BUTTON not in h:
         raise SystemExit(f"{src}: the download button is missing. Build the report again.")
     h = h.replace(DL_BUTTON, f'<a href="{pdf}" download>Pobierz wersję do druku (PDF)</a>'
@@ -211,9 +179,9 @@ def content(S: dict, files: list[tuple[str, str, Path]], date: str, author: str,
                    f'<td class="py-3 pr-4 text-gray-600">{e(d)}</td><td class="py-3 text-right whitespace-nowrap text-gray-500">{size(p)}</td></tr>'
                    for n, d, p in files)
     return f"""
-{nav_index()}            <p class="text-sm font-semibold uppercase tracking-wide text-brand-700 mb-3">Raport · komunikacja miejska</p>
+            <p class="text-sm font-semibold uppercase tracking-wide text-brand-700 mb-3">Raport · komunikacja miejska</p>
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 font-heading mb-4">Autobus a pociąg: przesiadki na stacji Iława Główna</h1>
-            <p class="text-gray-500 mb-8">{e(author)} · {fdate(date)}</p>
+            <p class="text-gray-500 mb-8"><a href="{AUTHOR_URL}" class="hover:text-accent-600 hover:underline">{e(author)}</a> · {fdate(date)}</p>
 
             <p class="text-xl text-gray-700 leading-relaxed mb-8">W dzień roboczy autobus ZKM odjeżdża spod dworca w chwili, gdy podróżni idą jeszcze z peronu, przy {pct(S['near_all'])} pociągów.
             Rozkład autobusów ułożony losowo daje podobny wynik, więc autobusy nie „uciekają” celowo, ale też nie są dopasowane do pociągów.
