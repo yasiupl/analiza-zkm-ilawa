@@ -16,11 +16,20 @@ The reports show no values in PLN: money values need the operator's data
 Usage:
     python3 report.py && python3 zkmplan.py --no-fetch   # data first
     python3 print_reports.py --pdf
+    # PDFs of the published page, from the data in its web reports:
+    python3 print_reports.py --from-html ../14-200.pl/src/@yasiu/2026-09-30-raport-zkm \
+        --public "14-200.pl/@yasiu/2026-09-30-raport-zkm" --pdf
+
+The section „Pomiar faktycznych przyjazdów” comes from results/pomiar (monitor_test.py) and data/monitor.
+The report on the corrections has no estimate of passengers: the share of rail travellers who go on by bus
+is not known, so the number would be a guess.
 """
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+from decimal import ROUND_HALF_UP, Decimal
 import shutil
 import subprocess
 from pathlib import Path
@@ -58,10 +67,15 @@ def tex(s) -> str:
     return "".join(rep.get(c, c) for c in s)
 
 
+def half_up(x, d=0) -> float:
+    """Round half away from zero, like the web reports (toLocaleString), not half to even."""
+    return float(Decimal(repr(float(x))).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP))
+
+
 def num(x, d=0) -> str:
     if x is None:
         return "--"
-    s = f"{x:,.{d}f}".replace(",", "\u2009").replace(".", ",")
+    s = f"{half_up(x, d):,.{d}f}".replace(",", "\u2009").replace(".", ",")
     return s.replace("\u2009", r"\,")
 
 
@@ -81,7 +95,7 @@ def fdate(s: str) -> str:
 def hm(m) -> str:
     if m is None:
         return "--"
-    m = int(round(m))
+    m = int(half_up(m))
     return f"{m // 60}:{m % 60:02d}"
 
 
@@ -303,6 +317,8 @@ PREAMBLE = r"""\documentclass[10pt,a4paper]{article}
 # Public mode (--public): the reports without the references to the letters, for
 # publication on a web page. PUBLIC["head"] is the text in the page header.
 PUBLIC = {"on": False, "head": ""}
+# Weekday gain of good transfers in the plan (from zkmplan.py), quoted in the transfers report.
+PLAN_GAIN: dict = {}
 
 
 def att(letter_text: str, public_text: str) -> str:
@@ -413,6 +429,40 @@ def test_days_section(D: dict) -> str:
     return "".join(out)
 
 
+def how_to_read_przesiadki(D: dict) -> str:
+    """Glossary and method of the transfers report (at the end, after the results, as on the web page)."""
+    P, days = D["params"], [d for d in DAYS if d in D["overall"]]
+    out = []
+    out.append("\\section*{Jak czytać ten raport}\n")
+    out.append("\\subsection*{Słowniczek}\n\\begin{description}[itemsep=1pt, leftmargin=0pt]\n"
+               "\\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.\n"
+               f"\\item[Czas dojścia] {P['m_t2b']} min z peronu na przystanek Dworcowa i {P['m_b2t']} min z przystanku na peron.\n"
+               "\\item[Czekanie] czas od dojścia na przystanek do odjazdu autobusu albo od dojścia na peron do odjazdu pociągu.\n"
+               f"\\item[Dobra przesiadka] czekanie po dojściu najwyżej {P['good_window']} min.\n"
+               f"\\item[Ciasna przesiadka] według rozkładu czekanie na linię najwyżej {P['m_t2b'] + P['good_window']} min od przyjazdu pociągu. Takie przesiadki najłatwiej zrywa opóźnienie.\n"
+               "\\item[Autobus „ucieka”] odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. "
+               "W drugą stronę: autobus przyjeżdża tak późno, że podróżni „nie zdążą” na pociąg.\n"
+               "\\item[Rozkład losowy] rozkład ZKM, w którym każdą linię przesunięto o losowy czas od $-30$ do $+30$ min. Kursy i odstępy są takie same, "
+               "znika tylko związek z pociągami. Porównanie z nim pokazuje, czy rozkład jest dopasowany do pociągów.\n"
+               "\\item[90\\,\\% wyników losowych, percentyl] zakres, w którym mieści się 90\\,\\% wyników rozkładów losowych. Wynik poza nim jest lepszy albo gorszy niż przypadek.\n"
+               "\\item[Kategorie pociągów] EIP, EIC, IC i TLK to pociągi PKP Intercity; R to pociągi regionalne POLREGIO.\n"
+               "\\item[Przystanki Dworcowa] 005-01 to odjazdy do miasta, 079-00 to przyjazdy z miasta.\n"
+               "\\item[Typ dnia] dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.\n"
+               "\\item[Dzień testowy] miniony dzień danego typu, dla którego są rzeczywiste godziny prawie wszystkich pociągów. Spośród takich dni "
+               "wybrano dzień z największą liczbą pociągów spóźnionych ponad 5 min. Test tezy i wykresy jednego dnia używają rzeczywistych godzin pociągów z tego dnia.\n"
+               "\\end{description}\n")
+    out.append("\\subsection*{Metoda i założenia}\n\\begin{itemize}\n"
+               "\\item \\textbf{Dane.} Rozkład ZKM z rozklad.com, rozkład pociągów wszystkich przewoźników z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.\n"
+               "\\item \\textbf{Model losowy.} 3000 powtórzeń dla sieci, 1000 dla każdej linii osobno.\n"
+               f"\\item \\textbf{{Okres.}} Minione dni od {fdate(P['dates'][0])} do {fdate(P['dates'][1])}, z rozkładem ZKM ważnym od 1.09.2026. "
+               "Wyniki zbiorcze używają planowych godzin pociągów. Dni testowe: "
+               + "; ".join(f"{DAYSHORT[d]} {rep_txt(D, d)}" for d in days) + ".\n"
+               "\\item \\textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, "
+               "więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.\n\\end{itemize}\n")
+
+    return "".join(out)
+
+
 def attachment_przesiadki(D: dict) -> str:
     P = D["params"]
     W = D["overall"]["Roboczy"]["plain"]
@@ -450,34 +500,6 @@ def attachment_przesiadki(D: dict) -> str:
         ["Mediana opóźnienia pociągów PKP Intercity w Iławie", f"{num(ic_delay)} min", f"POLREGIO: {num(r_delay)} min"],
         [f"Ciasne przesiadki z IC na daną linię (czekanie do {P['m_t2b'] + P['good_window']} min), które się udają",
          pct(keep_ic), f"POLREGIO: {pct(r_keep)}"]]))
-
-    # how to read: glossary and method, before the results
-    out.append("\\section*{Jak czytać ten raport}\n")
-    out.append("\\subsection*{Słowniczek}\n\\begin{description}[itemsep=1pt, leftmargin=0pt]\n"
-               "\\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.\n"
-               f"\\item[Czas dojścia] {P['m_t2b']} min z peronu na przystanek Dworcowa i {P['m_b2t']} min z przystanku na peron.\n"
-               "\\item[Czekanie] czas od dojścia na przystanek do odjazdu autobusu albo od dojścia na peron do odjazdu pociągu.\n"
-               f"\\item[Dobra przesiadka] czekanie po dojściu najwyżej {P['good_window']} min.\n"
-               f"\\item[Ciasna przesiadka] według rozkładu czekanie na linię najwyżej {P['m_t2b'] + P['good_window']} min od przyjazdu pociągu. Takie przesiadki najłatwiej zrywa opóźnienie.\n"
-               "\\item[Autobus „ucieka”] odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek. "
-               "W drugą stronę: autobus przyjeżdża tak późno, że podróżni „nie zdążą” na pociąg.\n"
-               "\\item[Rozkład losowy] rozkład ZKM, w którym każdą linię przesunięto o losowy czas od $-30$ do $+30$ min. Kursy i odstępy są takie same, "
-               "znika tylko związek z pociągami. Porównanie z nim pokazuje, czy rozkład jest dopasowany do pociągów.\n"
-               "\\item[90\\,\\% wyników losowych, percentyl] zakres, w którym mieści się 90\\,\\% wyników rozkładów losowych. Wynik poza nim jest lepszy albo gorszy niż przypadek.\n"
-               "\\item[Kategorie pociągów] EIP, EIC, IC i TLK to pociągi PKP Intercity; R to pociągi regionalne POLREGIO.\n"
-               "\\item[Przystanki Dworcowa] 005-01 to odjazdy do miasta, 079-00 to przyjazdy z miasta.\n"
-               "\\item[Typ dnia] dzień roboczy, sobota albo niedziela i święto, według rozkładu ZKM.\n"
-               "\\item[Dzień testowy] miniony dzień danego typu, dla którego są rzeczywiste godziny prawie wszystkich pociągów. Spośród takich dni "
-               "wybrano dzień z największą liczbą pociągów spóźnionych ponad 5 min. Test tezy i wykresy jednego dnia używają rzeczywistych godzin pociągów z tego dnia.\n"
-               "\\end{description}\n")
-    out.append("\\subsection*{Metoda i założenia}\n\\begin{itemize}\n"
-               "\\item \\textbf{Dane.} Rozkład ZKM z rozklad.com, rozkład pociągów wszystkich przewoźników z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.\n"
-               "\\item \\textbf{Model losowy.} 3000 powtórzeń dla sieci, 1000 dla każdej linii osobno.\n"
-               f"\\item \\textbf{{Okres.}} Minione dni od {fdate(P['dates'][0])} do {fdate(P['dates'][1])}, z rozkładem ZKM ważnym od 1.09.2026. "
-               "Wyniki zbiorcze używają planowych godzin pociągów. Dni testowe: "
-               + "; ".join(f"{DAYSHORT[d]} {rep_txt(D, d)}" for d in days) + ".\n"
-               "\\item \\textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, "
-               "więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.\n\\end{itemize}\n")
 
     # test days
     out.append(test_days_section(D))
@@ -517,7 +539,9 @@ def attachment_przesiadki(D: dict) -> str:
 
     # collisions
     out.append("\\section{Odjazdy, które „uciekają” pociągom}\n")
-    out.append("Kursy, które w dniu testowym odjeżdżają w chwili przyjazdu co najmniej jednego pociągu, a następny kurs tej samej linii jest dopiero po 30 min lub później.\n")
+    out.append("Kursy, które w dniu testowym odjeżdżają w chwili przyjazdu co najmniej jednego pociągu, a następny kurs tej samej linii jest dopiero po 30 min lub później. "
+               + att("Które z nich usuwa proponowana korekta, a które wymagają zmiany obiegu, pokazuje załącznik nr 3.",
+                     "Które z nich usuwa proponowana korekta, a które wymagają zmiany obiegu, pokazuje raport „Korekty rozkładu ZKM Iława”.") + "\n")
     rows = []
     for d in days:
         for r in D["collisions"].get(d) or []:
@@ -626,10 +650,7 @@ def attachment_przesiadki(D: dict) -> str:
     out.append("\\section{Korekty rozkładu}\n")
     out.append("Propozycje zmian rozkładu przygotowuje osobne narzędzie. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej, "
                "i zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. " + att("Wyniki są w załączniku nr 3, a wykaz zmian w załączniku nr 1.", "Wyniki i pełny wykaz zmian są w raporcie „Korekty rozkładu ZKM Iława”.") + "\n")
-    out.append("\\section{Pomiar faktycznych przyjazdów}\n")
-    out.append("Faktyczne czasy pociągów zbiera monitor. Co 5 min pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje "
-               "potwierdzone czasy przyjazdu i odjazdu. Monitor powinien pracować co najmniej 4 tygodnie, żeby dla każdego typu dnia było po kilka dni danych. "
-               "Autobusy nie mają publicznych danych o faktycznych odjazdach: potrzebne są dane GPS z ZKM, obserwacje na przystanku albo założenie tolerancji ZKM, jak w tym raporcie.\n")
+    out.append(measured_section(PLAN_GAIN.get("Roboczy")))
     srow = [r for r in D["sensitivity"] if r["day_type"] == "Roboczy"]
     rows = []
     for w in sorted({r["walk"] for r in srow}):
@@ -639,6 +660,7 @@ def attachment_przesiadki(D: dict) -> str:
     out.append("\\section{Wrażliwość na czas dojścia}\n")
     out.append("Wyniki dla dnia roboczego przy innych czasach dojścia z peronu na przystanek i z przystanku na peron.\n")
     out.append(table([("Czas dojścia", "l"), ("P→A: ucieka", "r"), ("P→A: dobra", "r"), ("A→P: nie zdąży", "r"), ("A→P: dobra", "r")], rows))
+    out.append(how_to_read_przesiadki(D))
     out.append("\\section*{Źródła}\n\\begin{itemize}\n"
                "\\item Rozkład jazdy ZKM Iława: \\url{https://rozklad.com/maps/index.php?IDKlienta=ILAWA_ZKM}\n"
                "\\item PKP PLK, Otwarte Dane Kolejowe: \\url{https://pdp-api.plk-sa.pl/}\n"
@@ -647,6 +669,150 @@ def attachment_przesiadki(D: dict) -> str:
     out.append("\\end{document}\n")
     return "".join(out)
 
+
+# ---------------------------------------------------------------- measured arrivals (monitor)
+POMIAR = ROOT / "results" / "pomiar"
+CARRIER = {"IC": "PKP Intercity", "PR": "POLREGIO"}
+
+
+def _runs(dates: list[str]) -> str:
+    """26–29.09.2026 i 8–21.10.2026: runs of consecutive days."""
+    import datetime as dt
+    ds = sorted(dt.date.fromisoformat(d) for d in set(dates))
+    runs, cur = [], [ds[0]]
+    for d in ds[1:]:
+        if (d - cur[-1]).days == 1:
+            cur.append(d)
+        else:
+            runs.append(cur)
+            cur = [d]
+    runs.append(cur)
+    txt = [f"{r[0].day}--{r[-1].day}.{r[-1].month:02d}.{r[-1].year}" if len(r) > 1 else f"{r[0].day}.{r[0].month:02d}.{r[0].year}" for r in runs]
+    gaps = [(a[-1] + dt.timedelta(days=1), b[0] - dt.timedelta(days=1)) for a, b in zip(runs, runs[1:])]
+    return " i ".join(txt), gaps
+
+
+def measured_data() -> dict | None:
+    """Numbers of the section „Pomiar faktycznych przyjazdów” from results/pomiar (monitor_test.py) and data/monitor."""
+    f, fm = POMIAR / "dni.csv", POMIAR / "dni-tylko-zmierzone.csv"
+    if not f.exists():
+        return None
+    rows = list(csv.DictReader(f.open(encoding="utf-8")))
+    only = list(csv.DictReader(fm.open(encoding="utf-8"))) if fm.exists() else []
+    day = {r["date"]: r for r in rows}
+    ndays = {d: sum(1 for r in day.values() if r["day_type"] == d) for d in DAYS}
+
+    def mean(rs, dtp, tt, w, k):
+        v = [float(r[k]) for r in rs if r["day_type"] == dtp and r["timetable"] == tt and float(r["window"]) == w]
+        return sum(v) / len(v) if v else None
+
+    M = {"days": sorted(day), "ndays": ndays,
+         "trains": sum(int(r["trains_arr"]) for r in day.values()), "measured": sum(int(r["arr_measured"]) for r in day.values()),
+         "oct_trains": sum(int(r["trains_arr"]) for d, r in day.items() if d[5:7] == "10"),
+         "oct_measured": sum(int(r["arr_measured"]) for d, r in day.items() if d[5:7] == "10"),
+         "worst": max(day.values(), key=lambda r: float(r["delay_mean"] or 0))}
+    for dtp in DAYS:
+        for tt in ("obecny", "propozycja"):
+            for w in (5.0, 10.0):
+                for k in ("plan_total", "actual_total", "plan_runaway", "actual_runaway"):
+                    M[(dtp, tt, w, k)] = mean(rows, dtp, tt, w, k)
+                    M[("only", dtp, tt, w, k)] = mean(only, dtp, tt, w, k)
+    # delays of the arrivals at Iława Główna (all monitor days)
+    dl, tlk = {}, [0, 0]
+    for p in sorted((ROOT / "data" / "monitor").glob("*.csv")):
+        if p.stem not in day:
+            continue
+        for r in csv.DictReader(p.open(encoding="utf-8")):
+            if not r["arr_time"]:
+                continue
+            if r["category"] == "TLK" and r["operating_date"][5:7] == "10":
+                tlk[0] += 1
+                tlk[1] += r["arr_delay"] != ""
+            if r["arr_delay"] != "":
+                dl.setdefault(r["carrier"], []).append(float(r["arr_delay"]))
+    M["delays"] = dl
+    M["tlk_oct"] = tlk
+    return M
+
+
+def measured_section(plan_gain: float | None = None) -> str:
+    """plan_gain: gain of good transfers in the plan, weekday (the headline number of the corrections report)."""
+    M = measured_data()
+    out = ["\\section{Pomiar faktycznych przyjazdów}\n"]
+    if not M:
+        out.append("Brak wyników pomiaru (results/pomiar/dni.csv). Uruchom monitor\\_test.py.\n")
+        return "".join(out)
+    nd = M["ndays"]
+    rng, gaps = _runs(M["days"])
+    out.append(f"Monitor pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje potwierdzone godziny przyjazdu i odjazdu pociągów. "
+               f"Są dane z {len(M['days'])} dni: {rng} ({nd['Roboczy']} dni roboczych, {nd['Sobota']} soboty, {nd['Niedziela']} niedziele). "
+               "\\textbf{Faktyczne godziny są tylko dla pociągów.} Godziny autobusów są nadal planowe, bo nie ma publicznych danych o faktycznych odjazdach ZKM.\n\n")
+    out.append("\\subsection*{Opóźnienia pociągów na przyjeździe do Iławy Głównej}\n")
+    rows = []
+    for c in ("IC", "PR"):
+        v = sorted(M["delays"].get(c) or [])
+        if not v:
+            continue
+        n = len(v)
+        med = v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2
+        b = [sum(x <= 1 for x in v), sum(1 < x <= 5 for x in v), sum(5 < x <= 10 for x in v), sum(x > 10 for x in v)]
+        rows.append([CARRIER.get(c, c), str(n), f"{num(med)} min"] + [pct(x / n) for x in b])
+    out.append(table([("Przewoźnik", "l"), ("Przyjazdy", "r"), ("Mediana", "r"), ("do 1 min", "r"), ("2--5 min", "r"), ("6--10 min", "r"), ("ponad 10 min", "r")], rows))
+    out.append("Pociągi regionalne przyjeżdżają prawie zawsze o czasie. Co czwarty pociąg Intercity przyjeżdża ponad 5 minut po czasie, a co ósmy ponad 10 minut.\n\n")
+    out.append("\\subsection*{Przesiadki przy planowych i faktycznych godzinach pociągów}\n")
+    out.append(f"Ten sam test co w raporcie: pary pociąg--linia, dojście 4 min z peronu i 5 min na peron, dogodna przesiadka do 5 min czekania, "
+               f"przesiadka do 10 min czekania. Średnia dzienna z {nd['Roboczy']} dni roboczych.\n")
+    g = lambda *k: M[("Roboczy",) + k]
+    rows = [[lab] + [num(g(tt, w, f"{pa}_{k}")) for tt in ("obecny", "propozycja") for pa in ("plan", "actual")]
+            for lab, w, k in (("Dogodne przesiadki (do 5 min)", 5.0, "total"), ("Przesiadki z czekaniem do 10 min", 10.0, "total"),
+                              ("„Uciekające” odjazdy", 5.0, "runaway"))]
+    rows[0][4], rows[2][4] = f"\\textbf{{{rows[0][4]}}}", f"\\textbf{{{rows[2][4]}}}"
+    out.append(table([("Dzień roboczy, pary pociąg--linia dziennie", "l"), ("Obecny: plan", "r"), ("faktycznie", "r"),
+                      ("Propozycja: plan", "r"), ("faktycznie", "r")], rows))
+    s = lambda d, tt, k: M[(d, tt, 5.0, k)]
+    out.append(f"\\mut{{\\footnotesize Soboty ({nd['Sobota']} dni): dogodne przesiadki {num(s('Sobota', 'obecny', 'actual_total'))} $\\to$ "
+               f"{num(s('Sobota', 'propozycja', 'actual_total'))} przy faktycznych godzinach pociągów (plan: {num(s('Sobota', 'obecny', 'plan_total'))} $\\to$ "
+               f"{num(s('Sobota', 'propozycja', 'plan_total'))}). Niedziele ({nd['Niedziela']} dni): {num(s('Niedziela', 'obecny', 'actual_total'))} $\\to$ "
+               f"{num(s('Niedziela', 'propozycja', 'actual_total'))} (plan: {num(s('Niedziela', 'obecny', 'plan_total'))} $\\to$ {num(s('Niedziela', 'propozycja', 'plan_total'))}).}}\n\n")
+    a0, a1 = g("obecny", 5.0, "actual_total"), g("propozycja", 5.0, "actual_total")
+    p0, p1 = g("obecny", 5.0, "plan_total"), g("propozycja", 5.0, "plan_total")
+    r0, r1 = g("obecny", 5.0, "actual_runaway"), g("propozycja", 5.0, "actual_runaway")
+    q0, q1 = g("obecny", 5.0, "plan_runaway"), g("propozycja", 5.0, "plan_runaway")
+    out.append(f"Przy faktycznych godzinach pociągów propozycja nadal daje więcej dogodnych przesiadek niż obecny rozkład: w dzień roboczy "
+               f"{num(a0)} $\\to$ {num(a1)} dziennie ({spct((a1 - a0) / a0)}), a nie {spct(plan_gain if plan_gain is not None else (p1 - p0) / p0)} jak w planie. Słabiej wypada usuwanie "
+               f"„uciekających” odjazdów: {num(r0)} $\\to$ {num(r1)} ({spct((r1 - r0) / r0)}), a nie {spct((q1 - q0) / q0)}. Prawdopodobna przyczyna: "
+               "przesunięte kursy odjeżdżają kilka minut po planowym przyjeździe pociągu, więc podróżni ze spóźnionego pociągu Intercity często już na nie "
+               "nie zdążą. Obecny rozkład prawie nie zależy od opóźnień, bo i tak rzadko jest dopasowany do pociągów.\n\n")
+    o = lambda tt, k: M[("only", "Roboczy", tt, 5.0, k)]
+    gap = "; ".join(f"{a.day}.{a.month:02d}--{b.day}.{b.month:02d}" if a != b else f"{a.day}.{a.month:02d}" for a, b in gaps)
+    w = M["worst"]
+    out.append("\\subsection*{Ograniczenia}\n\\begin{itemize}\n"
+               f"\\item \\textbf{{Dane są niepełne.}} Monitor zapisał faktyczne godziny {M['measured']} z {M['trains']} przyjazdów ({pct(M['measured'] / M['trains'])}). "
+               "Od 8.10 odpytuje API raz dziennie o 20:15, więc brakuje pociągów po 20:15 i części wcześniejszych, w październiku "
+               f"{pct(M['oct_measured'] / M['oct_trains'])} przyjazdów. Pociągi TLK w październiku prawie nie mają danych ({M['tlk_oct'][1]} z {M['tlk_oct'][0]})."
+               + (f" Brakuje dni {gap}." if gap else "") + " Pociąg bez danych liczy się jako punktualny, tak jak w teście na minionych dniach, "
+               "więc wynik „faktycznie” jest raczej zbyt łagodny.\n"
+               + (f"\\item \\textbf{{Sprawdzenie na samych zmierzonych pociągach}} daje ten sam kierunek, ale mniejszy zysk: dogodne przesiadki w dzień roboczy "
+                  f"{num(o('obecny', 'actual_total'))} $\\to$ {num(o('propozycja', 'actual_total'))} ({spct((o('propozycja', 'actual_total') - o('obecny', 'actual_total')) / o('obecny', 'actual_total'))}), "
+                  f"„uciekające” odjazdy {num(o('obecny', 'actual_runaway'))} $\\to$ {num(o('propozycja', 'actual_runaway'))}.\n" if o("obecny", "actual_total") else "")
+               + "\\item \\textbf{Autobusy nie są mierzone.} Spóźniony autobus może uratować przesiadkę z opóźnionego pociągu, a wcześniejszy może ją zerwać. "
+               "Tego ten pomiar nie pokazuje.\n"
+               f"\\item {len(M['days'])} dni to mała próba, zwłaszcza dla sobót i niedziel (po {nd['Sobota']} dni). "
+               f"{DAYNAME[w['day_type']].split(' ')[0]} {int(w['date'][8:10])}.{w['date'][5:7]} miała duże zakłócenia (średnie opóźnienie {num(float(w['delay_mean']))} min).\n"
+               "\\end{itemize}\n")
+    out.append("\\mut{\\footnotesize Metoda: test na minionych dniach (ilawa/plan/pasttest.py) z faktycznymi godzinami z monitora, plan pociągów z API PKP PLK. "
+               + att("Propozycja to obecny rozkład z wszystkimi zmianami z wykazu (załącznik nr 1), obiegi jednej linii.",
+                     "Propozycja to obecny rozkład z wszystkimi zmianami z wykazu zmian (wykaz-zmian.csv), obiegi jednej linii.")
+               + " „Uciekający” odjazd liczony według definicji z raportu: autobus odjeżdża od 2 min przed przyjazdem pociągu do dojścia podróżnych, "
+               "a następny kurs linii jest za 30 min lub później."
+               + att("", " Wyniki dla każdego dnia: pomiar-dni.csv.") + "}\n\n")
+    out.append("\\subsection*{Co dalej}\n\\begin{enumerate}\n"
+               "\\item Monitor powinien znów odpytywać API co kilka minut, a nie raz dziennie. Wtedy będą też pociągi wieczorne.\n"
+               "\\item Autobusy nie mają publicznych danych o faktycznych odjazdach. Są trzy możliwości: wniosek do ZKM Iława o dane GPS lub z komputerów "
+               "pokładowych (tryb dostępu do informacji publicznej), krótkie obserwacje na przystanku Dworcowa w godzinach szczytu albo założenie tolerancji ZKM, jak w tym raporcie.\n"
+               "\\item Rozkład ZKM zmienia się sezonowo (szkolny, wakacyjny). Po każdej zmianie trzeba ponownie pobrać tabliczki przystanku Dworcowa.\n"
+               "\\end{enumerate}\n")
+    return "".join(out)
 
 # ---------------------------------------------------------------- attachment 3
 def pl_poc(n: int) -> str:
@@ -668,20 +834,23 @@ def past_section(R: dict) -> str:
     PTR = R.get("past_test") or {}
     if not PTR.get("rows"):
         return ""
+    buf = any((v or 0) > 0 for v in (R.get("buffers") or {}).values())
     names = {"obecny": "obecny rozkład", "propozycja": "pełna propozycja"}
     days = [d for d in DAYS if any(r["day_type"] == d for r in PTR["rows"])]
     out = ["\\section{Test na minionych dniach}\n",
            f"Obecny rozkład, etapy i pełną propozycję sprawdzono na {len(PTR['days'])} minionych dniach z danymi o opóźnieniach "
            f"({fdate(PTR['days'][0])}--{fdate(PTR['days'][-1])}). Rozkład ZKM i planowy rozkład pociągów są te same, zmieniają się tylko rzeczywiste "
-           f"godziny pociągów. „Dobre”: czekanie po dojściu do {num(PTR['window'])} min. „Złapane”: czekanie do {num(PTR['window'])} min plus zapas "
-           "na opóźnienie kategorii pociągu. Wartości to średnie na dzień.\n\n"]
+           f"godziny pociągów. „Dobre”: czekanie po dojściu do {num(PTR['window'])} min. "
+           + (f"„Złapane”: czekanie do {num(PTR['window'])} min plus zapas na opóźnienie kategorii pociągu. " if buf else "")
+           + "Wartości to średnie na dzień.\n\n"]
     rows = []
     for d in days:
         for r in [x for x in PTR["summary"] if x["day_type"] == d]:
-            rows.append([DAYSHORT[d] if r["timetable"] == "obecny" else "", names.get(r["timetable"], r["timetable"]), str(r["days"]),
-                         num(r["plan_caught"]), num(r["actual_caught"]), num(r["plan_total"]), num(r["actual_total"]), num(r["actual_wait_t2b"], 1)])
-    out.append(table([("Dzień", "l"), ("Rozkład", "l"), ("Dni", "r"), ("Złapane: plan", "r"), ("rzecz.", "r"), ("Dobre: plan", "r"), ("rzecz.", "r"),
-                      ("Czekanie po pociągu [min]", "r")], rows, size="footnotesize"))
+            rows.append([DAYSHORT[d] if r["timetable"] == "obecny" else "", names.get(r["timetable"], r["timetable"]), str(r["days"])]
+                        + ([num(r["plan_caught"]), num(r["actual_caught"])] if buf else [])
+                        + [num(r["plan_total"]), num(r["actual_total"]), num(r["actual_wait_t2b"], 1)])
+    out.append(table([("Dzień", "l"), ("Rozkład", "l"), ("Dni", "r")] + ([("Złapane: plan", "r"), ("rzecz.", "r")] if buf else [])
+                     + [("Dobre: plan", "r"), ("rzecz.", "r"), ("Czekanie po pociągu [min]", "r")], rows, size="footnotesize"))
     part = sorted({r["date"] for r in PTR["rows"] if r["arr_with_data"] < 0.9 * r["trains_arr"]})
     wo = PTR.get("worst") or {}
     lines = []
@@ -693,7 +862,8 @@ def past_section(R: dict) -> str:
         b = next((r for r in PTR["rows"] if r["date"] == w["date"] and r["timetable"] == "propozycja"), None)
         if a and b:
             lines.append(f"{DAYSHORT[d]} {fdate(w['date'])}: {w['late_over_5']} {pl_poc(w['late_over_5'])} spóźnionych ponad 5 min, średnie opóźnienie {num(w['delay_mean'], 1)} min; "
-                         f"złapane przesiadki {num(a['actual_caught'])} $\\to$ {num(b['actual_caught'])}, dobre {num(a['actual_total'])} $\\to$ {num(b['actual_total'])}")
+                         + (f"złapane przesiadki {num(a['actual_caught'])} $\\to$ {num(b['actual_caught'])}, " if buf else "")
+                         + f"dobre przesiadki {num(a['actual_total'])} $\\to$ {num(b['actual_total'])}")
     if lines:
         out.append("Najgorsze dni (najwięcej pociągów spóźnionych ponad 5 min):\n\\begin{itemize}\n" + "".join(f"\\item {x}.\n" for x in lines) + "\\end{itemize}\n")
     out.append("\\mut{\\footnotesize Czekanie po pociągu: średni czas od dojścia na przystanek do odjazdu najbliższego autobusu danej linii, dla wszystkich par "
@@ -702,59 +872,81 @@ def past_section(R: dict) -> str:
     return "".join(out)
 
 
-def attachment_korekty(R: dict, variant: str = "single") -> str:
-    cfg = R["config"]
-    sh, du, tr, dm = cfg["shifts"], cfg["duties"], cfg["transfers"], cfg["demand"]
-    days = [d for d in DAYS if d in R["day_types"]]
-    VN = {"single": "obiegi jednej linii", "interlined": "obiegi mieszane (zmiana linii na Dworcowej)"}
-    out = [header("Załącznik nr 3", "Korekty rozkładu ZKM Iława")]
-    feed = R.get("feed") or {}
-    fs = str(feed.get("feed_start_date") or "20260901")
-    out.append(title_block(att("Załącznik nr 3 · propozycja korekt", "Raport ZKM Iława · propozycja korekt"), "Korekty rozkładu ZKM Iława",
-                           "Przesunięcia kursów o kilka minut, które dają więcej przesiadek z pociągów i do pociągów na przystanku Dworcowa.",
-                           f"Rozkład ZKM ważny od {fdate(fs[:4] + '-' + fs[4:6] + '-' + fs[6:8])}. "
-                           f"Przystanki: {', '.join(R['station_stops'])}. Obliczenia z dnia {fdate(R['generated'])}."))
-    out.append("\\section*{Wynik}\n")
-    out.append("Obiegi autobusów, przerwy kierowców, liczba autobusów i łączny czas pracy kierowców zostają zachowane. "
-               f"Przesiadka jest dobra, gdy po dojściu z peronu ({tr['walk_train_to_bus']} min) lub na peron ({tr['walk_bus_to_train']} min) czeka się najwyżej "
-               f"{tr['good_window']} min. Liczone są pary pociąg--linia, bo podróżny potrzebuje konkretnej linii. Do przyjazdu pociągu doliczany jest zapas "
-               "na opóźnienie jego kategorii: " + ", ".join(f"{k} {num(v)} min" for k, v in (R.get("buffers") or {}).items()) + ". "
-               + ("Autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później, więc każda zmiana daje przesiadce więcej czasu. "
-                  if sh.get("shift_direction") == "buffer" else "")
-               + f"Wyniki dotyczą wariantu: {VN[variant]}.\n")
-    rows = {k: [] for k in ("a", "b", "c", "d", "e", "f", "g")}
-    for d in days:
-        v, r = R["day_types"][d]["variants"][variant], R["day_types"][d]
-        nd = v["good_before"]["n_dates"]
-        gb0, gb1 = v["good_buffered_before"]["total"] / nd, v["good_buffered_after"]["total"] / nd
-        g0, g1 = v["good_before"]["total"] / nd, v["good_after"]["total"] / nd
-        pa, pb = past_mean(R, d, "obecny"), past_mean(R, d, "propozycja")
-        rows["a"].append(f"{num(gb0)} → {num(gb1)} \\mut{{({spct((gb1 - gb0) / gb0)})}}")
-        rows["b"].append(f"{num(g0)} → {num(g1)} \\mut{{({spct((g1 - g0) / g0)})}}")
-        rows["c"].append(f"{num(pa['actual_caught'])} → {num(pb['actual_caught'])} \\mut{{({spct((pb['actual_caught'] - pa['actual_caught']) / pa['actual_caught'])})}}" if pa and pb else "--")
-        rows["d"].append(f"{len(v['changes'])} z {r['trips']}")
-        rows["e"].append(f"{num(v['indicators_before']['duty_hours'], 1)} → {num(v['indicators_after']['duty_hours'], 1)}")
-        rows["f"].append(f"{v['indicators_before']['peak_vehicles']} → {v['indicators_after']['peak_vehicles']}")
-        rows["g"].append(f"{v['breaks_before']['ok_breaks']}/{v['breaks_before']['duties']} → {v['breaks_after']['ok_breaks']}/{v['breaks_after']['duties']}")
-    labels = {"a": "Dobre przesiadki dziennie, z zapasem na opóźnienie", "b": "Bez zapasu (pociągi punktualne)",
-              "c": "Minione dni, rzeczywiste godziny pociągów: złapane przesiadki dziennie", "d": "Zmienione kursy (wszystkie etapy)",
-              "e": "Godziny pracy kierowców dziennie", "f": "Autobusy w szczycie", "g": "Służby z przerwą zgodną z ustawą"}
-    out.append(table([("Wskaźnik", "p{5.4cm}")] + [(DAYNAME[d].split(" ")[0], "r") for d in days],
-                     [[labels[k]] + rows[k] for k in labels], size="footnotesize"))
+REASON = {"shift": lambda q, sh: f"potrzebne przesunięcie o {q.get('need')} min, większe niż {sh['max_shift']} min: zmiana rozkładu linii lub obiegu",
+          "blocks": lambda q, sh: "autobus nie ma zapasu postoju przed kolejnym kursem albo kierowca straciłby przerwę: zmiana obiegu lub służby",
+          "trade": lambda q, sh: "przesunięcie możliwe, ale kosztem innych przesiadek albo nowego „uciekającego” odjazdu"}
 
-    # how to read: glossary and method, before the results
-    out.append("\\section*{Jak czytać ten raport}\n")
-    out.append("\\subsection*{Słowniczek}\n\\begin{description}[itemsep=1pt, leftmargin=0pt]\n"
-               "\\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.\n"
-               f"\\item[Dobra przesiadka] czekanie po dojściu najwyżej {tr['good_window']} min. Dojście trwa {tr['walk_train_to_bus']} min z peronu na przystanek "
-               f"i {tr['walk_bus_to_train']} min z przystanku na peron.\n"
-               f"\\item[Zapas na opóźnienie] czas doliczany do planowego przyjazdu pociągu: {qname(tr.get('delay_buffer_quantile'))} opóźnienia pociągów "
-               f"danej kategorii na stacji Iława Główna, najwyżej {tr['delay_buffer_cap']} min. Obecnie: "
-               + ", ".join(f"{k} {num(v)} min" for k, v in (R.get("buffers") or {}).items()) + ". Przy przesiadce z pociągu okno czekania zaczyna się po zapasie.\n"
-               f"\\item[Złapana przesiadka] przesiadka, przy której po dojściu czeka się najwyżej {tr['good_window']} min plus zapas na opóźnienie kategorii pociągu. "
-               "Na minionych dniach, przy rzeczywistych godzinach pociągów, pokazuje, ilu podróżnych zdąży na autobus (lub pociąg), który daje im rozkład. "
-               "Gdy przesiadka się nie uda, czeka się na następny autobus linii.\n"
-               "\\item[Kierunek przesunięć] " + ("autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później. Każda zmiana daje przesiadce "
+
+def runaway_section(R: dict, variant: str) -> str:
+    """Departures that „run away” from trains: before and after the correction, cases for ZKM."""
+    days = [d for d in DAYS if d in R["day_types"] and R["day_types"][d]["variants"][variant].get("runaways")]
+    if not days:
+        return ""
+    sh = R["config"]["shifts"]
+    ra0 = R["day_types"][days[0]]["variants"][variant]["runaways"]
+    out = ["\\section{Odjazdy, które „uciekają” pociągom}\n",
+           f"Odjazd „ucieka”, gdy autobus odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek, a następny kurs "
+           f"tej linii jest za {num(ra0['min_gap'])} min lub później. Korekta usuwa większość takich przypadków prostym przesunięciem kursu. Pozostałe wymagają "
+           "zmian, które musi ocenić ZKM: przesunięcia o więcej niż kilka minut, zmiany obiegu autobusu albo służby kierowcy. Na dni z dużymi opóźnieniami "
+           "pociągów odpowiedzią może być linia przesiadkowa.\n"]
+    rows = []
+    for d in days:
+        ra = R["day_types"][d]["variants"][variant]["runaways"]
+        pd_ = ra["per_day"]
+        rows.append([DAYNAME[d], num(pd_["before"], 1), num(pd_["after"], 1), spct((pd_["after"] - pd_["before"]) / pd_["before"]) if pd_["before"] else "--",
+                     f"{ra['solved']} z {ra['pairs']}", str(len(ra.get("remaining") or []))])
+    out.append(table([("Typ dnia", "l"), ("Pary dziennie: obecnie", "r"), ("po korekcie", "r"), ("Zmiana", "r"),
+                      ("Rozwiązane w dniu planowania", "r"), ("Do decyzji ZKM", "r")], rows, size="footnotesize"))
+    for d in days:
+        ra = R["day_types"][d]["variants"][variant]["runaways"]
+        out.append(f"\\subsection*{{{DAYNAME[d]} ({fdate(ra['date'])})}}\n")
+        rows = []
+        for r in ra["rows"]:
+            after = "bez zmiany" if r.get("new_dep") is None or abs(r["new_dep"] - r["dep"]) < 0.01 else hm(r["new_dep"])
+            res = "; ".join(f"{t['time']} {tex(t['cat'])} {tex(t['no'])}: {'rozwiązane' if t.get('solved') else 'ZKM'}" for t in r["trains"])
+            rows.append([hm(r["dep"]), dot(r["line"]), "brak" if r.get("next") is None else hm(r["next"]), after, res])
+        out.append(table([("Odjazd", "l"), ("Linia", "l"), ("Następny", "l"), ("Po korekcie", "l"), ("Pociągi i wynik", "p{7.4cm}")],
+                         rows, long=True, size="footnotesize"))
+        z = ra.get("remaining") or []
+        if z:
+            out.append("Przypadki do decyzji ZKM (po korekcie):\n")
+            rows = [[hm(q["dep"]), dot(q["line"]), f"{q['time']} {tex(q['cat'])} {tex(q['no'])}" + (" (nowy)" if q.get("new") else ""),
+                     "brak" if q.get("next") is None else hm(q["next"]),
+                     tex(REASON[q["reason"]](q, sh) if q.get("reason") in REASON else q.get("reason") or "")] for q in z]
+            out.append(table([("Odjazd", "l"), ("Linia", "l"), ("Pociąg", "l"), ("Następny", "l"), ("Co jest potrzebne", "p{6.4cm}")],
+                             rows, long=True, size="footnotesize"))
+    return "".join(out)
+
+
+def how_to_read_korekty(R: dict) -> str:
+    """Glossary and method of the corrections report (at the end, after the results, as on the web page)."""
+    cfg = R["config"]
+    sh, tr = cfg["shifts"], cfg["transfers"]
+    buf = any((v or 0) > 0 for v in (R.get("buffers") or {}).values())
+    acc = float(tr.get("acceptable_window") or 0)
+    acc = acc if acc > float(tr["good_window"]) else 0
+    wg = num(float(tr.get("acceptable_weight") or 0.5), 1)
+    mid = f"{int(float(tr['good_window'])) + 1}--{num(acc)} min" if acc else ""
+    out = ["\\section*{Jak czytać ten raport}\n",
+           "\\subsection*{Słowniczek}\n\\begin{description}[itemsep=1pt, leftmargin=0pt]\n"
+           "\\item[Para pociąg--linia] jeden pociąg i jedna linia ZKM. Podróżny potrzebuje konkretnej linii, więc każda para liczy się osobno.\n"
+           f"\\item[Dobra przesiadka] czekanie po dojściu najwyżej {tr['good_window']} min. Dojście trwa {tr['walk_train_to_bus']} min z peronu na przystanek "
+           f"i {tr['walk_bus_to_train']} min z przystanku na peron.\n"]
+    if acc:
+        out.append(f"\\item[Przesiadka z czekaniem do {num(acc)} min] czekanie po dojściu najwyżej {num(acc)} min. Narzędzie liczy ją z wagą {wg} dobrej przesiadki. "
+                   f"Dzięki temu zmiana, która daje nową dobrą przesiadkę, a innym podróżnym wydłuża czekanie do {mid}, jest dozwolona. "
+                   f"Przesiadka jest stracona, gdy po zmianie nie ma autobusu tej linii w ciągu {num(acc)} min.\n")
+    out.append(f"\\item[Odjazd „uciekający”] autobus odjeżdża od 2 min przed przyjazdem pociągu do chwili, w której podróżni dochodzą na przystanek, "
+               f"a następny kurs tej linii jest za {num(float(sh.get('runaway_min_gap') or 30))} min lub później. Przypadek jest rozwiązany, gdy po zmianie "
+               f"podróżny ma autobus tej linii najwyżej {num(float(sh.get('runaway_max_wait') or 10))} min po dojściu.\n")
+    if buf:
+        out.append(f"\\item[Zapas na opóźnienie] czas doliczany do planowego przyjazdu pociągu: {qname(tr.get('delay_buffer_quantile'))} opóźnienia pociągów "
+                   f"danej kategorii na stacji Iława Główna, najwyżej {tr['delay_buffer_cap']} min. Obecnie: "
+                   + ", ".join(f"{k} {num(v)} min" for k, v in (R.get("buffers") or {}).items()) + ". Przy przesiadce z pociągu okno czekania zaczyna się po zapasie.\n"
+                   f"\\item[Złapana przesiadka] przesiadka, przy której po dojściu czeka się najwyżej {tr['good_window']} min plus zapas na opóźnienie kategorii pociągu. "
+                   "Na minionych dniach, przy rzeczywistych godzinach pociągów, pokazuje, ilu podróżnych zdąży na autobus (lub pociąg), który daje im rozkład. "
+                   "Gdy przesiadka się nie uda, czeka się na następny autobus linii.\n")
+    out.append("\\item[Kierunek przesunięć] " + ("autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później. Każda zmiana daje przesiadce "
                                                 "więcej czasu, więc nie zależy od punktualności autobusu.\n" if sh.get("shift_direction") == "buffer"
                                                 else "autobus może przyjechać i odjechać wcześniej lub później.\n") +
                "\\item[Przesunięcie kursu] zmiana godzin kursu na wszystkich jego przystankach o tyle samo minut.\n"
@@ -766,17 +958,23 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
                "\\item[Służba] czas pracy jednego kierowcy, od przygotowania autobusu do końca ostatniego kursu.\n"
                "\\item[Przerwa] postój kierowcy trwający co najmniej 15 min, wliczany do przerwy wymaganej ustawą o czasie pracy kierowców.\n"
                "\\item[Wozokilometr, wozogodzina] kilometr i godzina pracy autobusu, razem z dojazdami z zajezdni.\n"
-               "\\item[Wariant ostrożny, średni, optymistyczny] założenia o liczbie pasażerów: udział podróżnych kolejowych, którzy jadą dalej autobusem, "
-               "i wrażliwość na czas czekania.\n"
                "\\end{description}\n")
     out.append("\\subsection*{Metoda i założenia}\n\\begin{itemize}\n"
                "\\item \\textbf{Dane.} Rozkład ZKM z rozklad.com, przetworzony do formatu GTFS. Rozkład pociągów z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.\n"
+               f"\\item \\textbf{{Cel.}} Jak najwięcej dobrych przesiadek (czekanie do {tr['good_window']} min)."
+               + (f" Przesiadka z czekaniem do {num(acc)} min liczy się z wagą {wg}. Zmiana może więc wydłużyć czekanie części podróżnych do {mid}, gdy daje innym "
+                  f"dobrą przesiadkę. Utrata autobusu w ciągu {num(acc)} min kosztuje więcej niż wydłużenie czekania." if acc else "") + "\n"
                f"\\item \\textbf{{Przesunięcia.}} Kurs zmienia się najwyżej o {sh['max_shift']} min (kursy szkolne o {sh['school_max_shift']} min). "
                "Każdy zmieniony kurs i każda minuta zmiany mają karę, więc optymalizator (program całkowitoliczbowy) zmienia tylko te kursy, które coś dają.\n"
                f"\\item \\textbf{{Obiegi.}} Postój między kursami autobusu co najmniej {cfg['blocks']['min_layover']} min. Kolejność kursów linii na Dworcowej zostaje ta sama.\n"
                "\\item \\textbf{Koszt.} Łączny czas pracy autobusów i kierowców nie może wzrosnąć, kilometry są te same. Każda służba zachowuje przerwę wymaganą ustawą.\n"
-               f"\\item \\textbf{{Pociągi.}} Wszystkie pociągi mają tę samą wagę. Zapas na opóźnienie: {qname(tr.get('delay_buffer_quantile'))} z danych, "
-               f"najwyżej {tr['delay_buffer_cap']} min.\n"
+               "\\item \\textbf{Pociągi.} Wszystkie pociągi mają tę samą wagę. "
+               + (f"Zapas na opóźnienie: {qname(tr.get('delay_buffer_quantile'))} z danych, najwyżej {tr['delay_buffer_cap']} min.\n" if buf else
+                  "Okno czekania liczy się od planowej godziny pociągu; autobus odjeżdżający pod koniec okna zabiera też podróżnych z pociągu spóźnionego o kilka minut.\n")
+               + f"\\item \\textbf{{„Uciekające” odjazdy.}} Kara za każdą parę pociąg--linia, w której autobus odjeżdża tuż przed dojściem podróżnych, równa "
+               f"{num(float(sh.get('runaway_penalty') or 0), 1)} dobrej przesiadki za każde 30 min czekania na następny kurs. Dla przypadków, których proste przesunięcie "
+               f"nie rozwiązuje, narzędzie sprawdza, czy potrzebne jest przesunięcie o więcej niż {sh['max_shift']} min, zmiana obiegu lub służby, albo czy rozwiązanie "
+               "kosztuje inne przesiadki.\n"
                "\\item \\textbf{Test na minionych dniach.} Obecny rozkład, każdy etap i pełna propozycja są sprawdzane na minionych dniach z danymi "
                "o opóźnieniach, od początku obowiązywania rozkładu ZKM. Godziny pociągów są rzeczywiste: z monitora PKP PLK (wszyscy przewoźnicy), a gdy go brak, "
                "z historii PKP Intercity (spoznienia.me). Pociąg bez danych liczy się jako punktualny. Godziny autobusów są planowe.\n"
@@ -784,24 +982,84 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
                "Propozycję trzeba sprawdzić z dyspozytorem ZKM przed wdrożeniem.\n"
                "\\item \\textbf{Powtarzalność.} Narzędzie można uruchomić ponownie po każdej zmianie rozkładu ZKM lub PKP.\n"
                "\\end{itemize}\n")
+    return "".join(out)
+
+
+def attachment_korekty(R: dict, variant: str = "single") -> str:
+    cfg = R["config"]
+    sh, du, tr = cfg["shifts"], cfg["duties"], cfg["transfers"]
+    buf = any((v or 0) > 0 for v in (R.get("buffers") or {}).values())
+    acc = float(tr.get("acceptable_window") or 0)
+    acc = acc if acc > float(tr["good_window"]) else 0
+    days = [d for d in DAYS if d in R["day_types"]]
+    VN = {"single": "obiegi jednej linii", "interlined": "obiegi mieszane (zmiana linii na Dworcowej)"}
+    out = [header("Załącznik nr 3", "Korekty rozkładu ZKM Iława")]
+    feed = R.get("feed") or {}
+    fs = str(feed.get("feed_start_date") or "20260901")
+    out.append(title_block(att("Załącznik nr 3 · propozycja korekt", "Raport ZKM Iława · propozycja korekt"), "Korekty rozkładu ZKM Iława",
+                           "Przesunięcia kursów o kilka minut, które dają więcej przesiadek z pociągów i do pociągów na przystanku Dworcowa.",
+                           f"Rozkład ZKM ważny od {fdate(fs[:4] + '-' + fs[4:6] + '-' + fs[6:8])}. "
+                           f"Przystanki: {', '.join(R['station_stops'])}. Obliczenia z dnia {fdate(R['generated'])}."))
+    has_run = any(R["day_types"][d]["variants"][variant].get("runaways") for d in days)
+    out.append("\\section*{Wynik}\n")
+    out.append("Obiegi autobusów, przerwy kierowców, liczba autobusów i łączny czas pracy kierowców zostają zachowane. "
+               f"Przesiadka jest dobra, gdy po dojściu z peronu ({tr['walk_train_to_bus']} min) lub na peron ({tr['walk_bus_to_train']} min) czeka się najwyżej "
+               f"{tr['good_window']} min. Liczone są pary pociąg--linia, bo podróżny potrzebuje konkretnej linii. "
+               + ("Do przyjazdu pociągu doliczany jest zapas na opóźnienie jego kategorii: " + ", ".join(f"{k} {num(v)} min" for k, v in R["buffers"].items()) + ". " if buf else "")
+               + ("Narzędzie usuwa też „uciekające” odjazdy: autobus nie powinien odjeżdżać tuż przed dojściem podróżnych, gdy następny kurs linii jest dużo później. " if has_run else "")
+               + ("Autobus może tylko przyjechać na Dworcową wcześniej albo odjechać z niej później, więc każda zmiana daje przesiadce więcej czasu. "
+                  if sh.get("shift_direction") == "buffer" else "")
+               + f"Wyniki dotyczą wariantu: {VN[variant]}.\n")
+    keys = ["a"] + (["acc"] if acc else []) + (["run"] if has_run else []) + ["c", "d", "e", "f", "g"]
+    rows = {k: [] for k in keys}
+    caught = "actual_caught" if buf else "actual_total"
+    ch = lambda x, y: f"{num(x)} → {num(y)} \\mut{{({spct((y - x) / x)})}}" if x else f"{num(x)} → {num(y)}"
+    for d in days:
+        v, r = R["day_types"][d]["variants"][variant], R["day_types"][d]
+        nd = v["good_before"]["n_dates"]
+        gk = "good_buffered" if buf else "good"
+        rows["a"].append(ch(v[f"{gk}_before"]["total"] / nd, v[f"{gk}_after"]["total"] / nd))
+        if acc:
+            rows["acc"].append(ch(v["acceptable_before"]["total"] / nd, v["acceptable_after"]["total"] / nd) if v.get("acceptable_before") else "--")
+        if has_run:
+            ra = (v.get("runaways") or {}).get("per_day")
+            rows["run"].append(ch(ra["before"], ra["after"]) if ra else "--")
+        pa, pb = past_mean(R, d, "obecny"), past_mean(R, d, "propozycja")
+        rows["c"].append(ch(pa[caught], pb[caught]) if pa and pb else "--")
+        rows["d"].append(f"{len(v['changes'])} z {r['trips']}")
+        rows["e"].append(f"{num(v['indicators_before']['duty_hours'], 1)} → {num(v['indicators_after']['duty_hours'], 1)}")
+        rows["f"].append(f"{v['indicators_before']['peak_vehicles']} → {v['indicators_after']['peak_vehicles']}")
+        rows["g"].append(f"{v['breaks_before']['ok_breaks']}/{v['breaks_before']['duties']} → {v['breaks_after']['ok_breaks']}/{v['breaks_after']['duties']}")
+    labels = {"a": "Dobre przesiadki dziennie, z zapasem na opóźnienie" if buf else f"Dobre przesiadki dziennie (czekanie do {tr['good_window']} min)",
+              "acc": f"Przesiadki z czekaniem do {num(acc)} min dziennie",
+              "run": "„Uciekające” odjazdy: pary pociąg--linia dziennie",
+              "c": "Minione dni, rzeczywiste godziny pociągów: " + ("złapane" if buf else "dobre") + " przesiadki dziennie",
+              "d": "Zmienione kursy (wszystkie etapy)", "e": "Godziny pracy kierowców dziennie", "f": "Autobusy w szczycie",
+              "g": "Służby z przerwą zgodną z ustawą"}
+    out.append(table([("Wskaźnik", "p{5.4cm}")] + [(DAYNAME[d].split(" ")[0], "r") for d in days],
+                     [[labels[k]] + rows[k] for k in keys], size="footnotesize"))
 
     # stages
     out.append("\\section{Etapy wdrożenia}\n")
     out.append("Każdy etap zachowuje zmiany poprzedniego i dodaje kolejne, więc rozkład można zmieniać krok po kroku. Etap 1 to 20 najbardziej opłacalnych "
-               "zmian, etap 2 to łącznie 40 zmian, ostatni etap nie ma limitu. Liczone z zapasem na opóźnienie pociągu.\n")
+               "zmian, etap 2 to łącznie 40 zmian, ostatni etap nie ma limitu." + (" Liczone z zapasem na opóźnienie pociągu." if buf else "") + "\n")
     FIG.mkdir(parents=True, exist_ok=True)
     fig_stages(R, variant, FIG / "korekty-etapy.pdf")
     out.append(figure("fig/korekty-etapy.pdf", "Rys. 1. Dobre przesiadki dziennie po kolejnych etapach."))
     rows = []
+    has_acc = acc and all(p.get("acceptable_per_day") is not None for d in days for p in R["day_types"][d]["variants"][variant]["curve"])
     for d in days:
         c = R["day_types"][d]["variants"][variant]["curve"]
         g0 = c[0]["good_per_day"]
         for p in c:
             rows.append([DAYSHORT[d] if p["stage"] == 0 else "", "obecny rozkład" if not p["stage"] else f"etap {p['stage']}",
-                         num(p["changes"]), num(p["good_per_day"]), spct((p["good_per_day"] - g0) / g0) if p["stage"] else "--"])
-    out.append(table([("Dzień", "l"), ("Etap", "l"), ("Zmienione kursy", "r"), ("Dobre przesiadki/dzień", "r"), ("Zmiana", "r")], rows))
+                         num(p["changes"]), num(p["good_per_day"]), spct((p["good_per_day"] - g0) / g0) if p["stage"] else "--"]
+                        + ([num(p["acceptable_per_day"])] if has_acc else []))
+    out.append(table([("Dzień", "l"), ("Etap", "l"), ("Zmienione kursy", "r"), ("Dobre przesiadki/dzień", "r"), ("Zmiana", "r")]
+                     + ([(f"Do {num(acc)} min/dzień", "r")] if has_acc else []), rows))
     out.append("Pełny wykaz zmienionych kursów, z pociągami, dla których przesiadka staje się dogodna, "
                + att("zawiera załącznik nr 1.", "jest w ostatnim rozdziale.") + "\n")
+    out.append(runaway_section(R, variant))
     out.append(past_section(R))
 
     # boards
@@ -875,25 +1133,10 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
         out.append(f"Jeżeli autobus może zmienić linię na Dworcowej, obecny rozkład wymaga w dzień roboczy {vi['peak_vehicles']} autobusów w szczycie zamiast "
                    f"{vs['peak_vehicles']}, a godzin pracy kierowców jest o {pct(1 - vi['duty_hours'] / vs['duty_hours'])} mniej. "
                    "Nie wiadomo, jak ZKM układa obiegi obecnie.\n")
+    # No passenger estimate: the share of rail travellers who take the bus is not known (decision of the author, 22.10.2026).
 
-    # passengers
-    v = R["day_types"]["Roboczy"]["variants"][variant]
-    d_ = v["demand"]
-    out.append("\\section{Ilu pasażerów mogą dać lepsze przesiadki}\n")
-    out.append(f"Na stacji Iława Główna wsiada i wysiada średnio {num(float(dm['station_daily_exchange']))} osób na dobę (Urząd Transportu Kolejowego, 2025). "
-               "Część z nich przesiada się tylko między pociągami. Nie wiadomo, ilu podróżnych jedzie dalej autobusem ZKM, dlatego narzędzie liczy trzy warianty: "
-               "udział autobusu i wrażliwość na czas czekania to założenia, nie pomiar. "
-               f"Średni czas czekania na przesiadkę (pociąg--linia, w obu kierunkach) zmienia się w dzień roboczy z {num(d_['wait_before'], 1)} do "
-               f"{num(d_['wait_after'], 1)} min ({spct(d_['wait_change'], 1)}).\n")
-    ad = (R.get("annual_demand") or {}).get(variant, {})
-    nm = {"low": "ostrożny", "mid": "średni", "high": "optymistyczny"}
-    rows = [[nm[k], pct(d_[k]["bus_share"]), num(d_[k]["elasticity"], 1), num(d_[k]["base_trips_day"]), spct(d_[k]["change"], 1),
-             num(d_[k]["extra_trips_day"]), num(ad.get(k)) if ad else "--"] for k in ("low", "mid", "high")]
-    out.append(table([("Wariant", "l"), ("Udział autobusu", "r"), ("Elastyczność", "r"), ("Przejazdy/dzień", "r"), ("Zmiana", "r"),
-                      ("Dodatkowe/dzień", "r"), ("Dodatkowe/rok", "r")], rows))
-    out.append("\\mut{\\footnotesize Wartości dzienne dotyczą dnia roboczego, roczne obejmują wszystkie typy dni. Elastyczność: o tyle procent zmienia się "
-               "liczba pasażerów, gdy czas czekania zmienia się o 1\\,\\%.}\n")
-
+    # how to read: glossary and method, after the results (as on the web page)
+    out.append(how_to_read_korekty(R))
     out.append("\\end{document}\n")
     return "".join(out)
 
@@ -908,6 +1151,9 @@ def newest_plan() -> Path:
 
 def compile_pdf(tex_path: Path) -> None:
     exe = shutil.which("xelatex")
+    if not exe and shutil.which("tectonic"):
+        subprocess.run([shutil.which("tectonic"), "-X", "compile", tex_path.name], cwd=tex_path.parent, stdout=subprocess.DEVNULL, check=True)
+        return
     if not exe:
         print("xelatex not found: compile the .tex files by hand.")
         return
@@ -921,6 +1167,11 @@ def changes_section(R: dict) -> str:
     from zkmplan import write_latex
     f = OUT / "wykaz-zmian.tex"
     write_latex(R, f)
+    tr = R["config"]["transfers"]
+    gw, acc = num(float(tr["good_window"])), float(tr.get("acceptable_window") or 0)
+    acc = num(acc) if acc > float(tr["good_window"]) else ""
+    mid = f"{int(float(tr['good_window'])) + 1}--{acc} min" if acc else ""
+    wg = num(float(tr.get("acceptable_weight") or 0.5), 1)
     return ("\\clearpage\n\\section{Wykaz proponowanych zmian}\n"
             "Wykaz dotyczy obiegów, w których autobus zostaje na jednej linii. Godziny są godzinami na przystanku Dworcowa: "
             "obecna $\\to$ \\textbf{proponowana}. Autobus przyjeżdża tylko wcześniej albo odjeżdża tylko później niż obecnie.\n"
@@ -928,11 +1179,26 @@ def changes_section(R: dict) -> str:
             "\\item \\textbf{Etap}: 1 -- najskuteczniejsze zmiany (do 20 kursów), 2 -- do 40 kursów łącznie, 3 -- pozostałe zmiany. "
             "Każdy etap zachowuje zmiany poprzedniego.\n"
             "\\item \\textbf{Inne przyst.}: zmiana godzin na pozostałych przystankach kursu, w minutach.\n"
-            "\\item \\textbf{Zysk}: liczba dogodnych przesiadek dziennie, którą daje ta jedna zmiana.\n"
-            "\\item \\textbf{Pociągi}: pociągi, z których (\\emph{z}) lub na które (\\emph{na}) przesiadka staje się dogodna. "
-            "Kursywą: pociągi, dla których przesiadka przestaje być dogodna. Zmiana towarzysząca zachowuje przerwę kierowcy, "
-            "postój autobusu lub kolejność kursów po innej zmianie.\n\\end{itemize}\n"
-            "{\\footnotesize\\setlength{\\tabcolsep}{3pt}\\renewcommand{\\arraystretch}{1.15}\n\\input{wykaz-zmian.tex}\n}\n")
+            + (f"\\item \\textbf{{Zysk}}: zmiana liczby przesiadek dziennie, którą daje ta jedna zmiana. Przesiadka z czekaniem do {gw} min liczy się "
+               f"jako 1, z czekaniem {mid} jako {wg}.\n"
+               f"\\item \\textbf{{Pociągi}}: pociągi, z których (\\emph{{z}}) lub na które (\\emph{{na}}) przesiadka staje się dogodna (czekanie do {gw} min). "
+               f"„{mid}”: przesiadka staje się możliwa z czekaniem {mid}. „Czeka dłużej”: przesiadka była dogodna i zostaje, ale czeka się {mid}. "
+               f"Kursywą („traci”): po zmianie nie ma autobusu tej linii w ciągu {acc} min. „Usuwa »uciekający« odjazd”: po zmianie autobus nie odjeżdża "
+               "tuż przed dojściem podróżnych; taka zmiana może mieć ujemny zysk, bo służy przede wszystkim podróżnym, którzy dotąd czekali pół godziny "
+               "lub dłużej. Zmiana towarzysząca zachowuje przerwę kierowcy, "
+               if acc else
+               "\\item \\textbf{Zysk}: liczba dogodnych przesiadek dziennie, którą daje ta jedna zmiana.\n"
+               "\\item \\textbf{Pociągi}: pociągi, z których (\\emph{z}) lub na które (\\emph{na}) przesiadka staje się dogodna. "
+               "Kursywą: pociągi, dla których przesiadka przestaje być dogodna. Zmiana towarzysząca zachowuje przerwę kierowcy, ")
+            + "postój autobusu lub kolejność kursów po innej zmianie.\n\\end{itemize}\n"
+            + "{\\footnotesize\\setlength{\\tabcolsep}{3pt}\\renewcommand{\\arraystretch}{1.15}\n\\input{wykaz-zmian.tex}\n}\n")
+
+
+def data_from_html(path: Path) -> dict:
+    """The DATA object embedded in a published web report (przesiadki.html, korekty.html)."""
+    h = path.read_text(encoding="utf-8")
+    i = h.index("const DATA = ") + len("const DATA = ")
+    return json.JSONDecoder().raw_decode(h[i:])[0]
 
 
 def main() -> None:
@@ -941,18 +1207,27 @@ def main() -> None:
     ap.add_argument("--plan", default=None, help="result.json of zkmplan.py (default: newest run)")
     ap.add_argument("--variant", default="single", choices=["single", "interlined"])
     ap.add_argument("--pdf", action="store_true", help="compile with xelatex")
+    ap.add_argument("--from-html", default=None, metavar="FOLDER",
+                    help="take the data from the published web reports in FOLDER (przesiadki.html, korekty.html) instead of "
+                         "--report-data and --plan, so that the PDFs match the published pages")
     ap.add_argument("--public", default=None, metavar="HEADER",
                     help="make the public versions (no references to the letters, with the list of changes); "
                          "HEADER is the text in the page header, for example the web address of the page")
     a = ap.parse_args()
     setup_mpl()
     OUT.mkdir(parents=True, exist_ok=True)
-    D = json.loads(Path(a.report_data).read_text(encoding="utf-8"))
-    R = json.loads(Path(a.plan or newest_plan()).read_text(encoding="utf-8"))
+    if a.from_html:
+        D, R = data_from_html(Path(a.from_html) / "przesiadki.html"), data_from_html(Path(a.from_html) / "korekty.html")
+    else:
+        D = json.loads(Path(a.report_data).read_text(encoding="utf-8"))
+        R = json.loads(Path(a.plan or newest_plan()).read_text(encoding="utf-8"))
     p2, p3 = OUT / "zalacznik-2-przesiadki.tex", OUT / "zalacznik-3-korekty.tex"
     if a.public is not None:
         PUBLIC.update(on=True, head=tex(a.public))
         p2, p3 = OUT / "przesiadki-ilawa-glowna.tex", OUT / "korekty-rozkladu-zkm-ilawa.tex"
+    for d, x in R["day_types"].items():
+        v = x["variants"][a.variant]
+        PLAN_GAIN[d] = (v["good_after"]["total"] - v["good_before"]["total"]) / v["good_before"]["total"]
     p2.write_text(attachment_przesiadki(D), encoding="utf-8")
     k = attachment_korekty(R, a.variant)
     if PUBLIC["on"]:
