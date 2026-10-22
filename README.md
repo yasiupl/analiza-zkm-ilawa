@@ -303,7 +303,7 @@ The layout of the summary page is in `reports/site_template.html`.
 
 The published page is ahead of these tools. Its files were made with a version of `zkmplan.py` that is not in this repository (10-minute window with weight 0.5, the „runaway” departures, the cases for ZKM), and then edited by hand in the repository of 14-200.pl:
 
-- `index.html`: the map of one weekday is part of the story of the page, with the basic terms; the tile shows counts of good transfers (84 → 130 by the timetable, 86 → 115 by the measured train times);
+- `index.html`: the map of one weekday is part of the story of the page, with the basic terms; the tiles show counts, not percentages (84 → 130 good transfers, 34 → 13 „runaway” departures, 86 → 115 by the measured train times);
 - `przesiadki.html`, `korekty.html`: fonts hosted with the page, the glossary and the method at the end of the report, the section „Pomiar faktycznych przyjazdów” with the measured train times, no estimate of passengers.
 
 The templates in `reports/` do not have these edits, and `data/plan` has no run with the published numbers. Until they do, treat the published HTML files as the source:
@@ -316,6 +316,8 @@ The templates in `reports/` do not have these edits, and `data/plan` has no run 
 
   The PDFs are compiled with `xelatex`, or with `tectonic` when there is no `xelatex`. The figures use TeX Gyre Heros (install the font so that matplotlib finds it).
 - `publish_site.py` keeps the existing files of the page, so it does not undo the edits.
+- `publish_site.py` adds the navigation of the page: a bar on top of both web reports and of the summary page (current page marked), a link back to the summary page and the previous/next report at the end of the web reports. The tiles of the summary page show counts.
+- The report on the corrections has no row with the test on past days in its result table; the measured arrivals are in the transfer report.
 
 ### Measured train arrivals (monitor_test.py)
 
