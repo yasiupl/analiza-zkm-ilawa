@@ -1,23 +1,33 @@
 #!/usr/bin/env python3
 """Build the public web page of the report for a static web site.
 
-The page is one folder, raport-zkm-<date>, with these files:
+The page is one folder, <date>-raport-zkm, with these files:
   index.html                            summary, links to the reports and to the files
   przesiadki.html, korekty.html         the two web reports
   przesiadki-ilawa-glowna.pdf           printable report on the transfers
   korekty-rozkladu-zkm-ilawa.pdf        printable report on the corrections (with the list of changes)
   wykaz-zmian.csv                       list of the proposed changes
   test-minione-dni.csv                  test of the timetables on past days with the actual train times
+  pomiar-dni.csv                        test with the measured train times from the monitor (monitor_test.py)
   zkm-ilawa-gtfs.zip                    current ZKM Iława timetable (GTFS, not official)
   zkm-ilawa-gtfs-propozycja.zip         timetable with the proposed changes (GTFS)
 
 Make the data first:
     python3 report.py
     python3 zkmplan.py --no-fetch
-    python3 print_reports.py --public "14-200.pl/@yasiu/raport-zkm-<date>" --pdf
+    python3 print_reports.py --public "14-200.pl/@yasiu/<date>-raport-zkm" --pdf
 
 Usage:
     python3 publish_site.py --out ../14-200.pl/src/@yasiu --url https://14-200.pl/@yasiu
+
+The published pages (index.html, przesiadki.html, korekty.html) were edited by hand after the first
+publication: the map in the story of index.html, local fonts, the glossary at the end of the reports,
+the measured arrivals, no estimate of passengers. The templates in reports/ do not have these edits yet.
+The data files of the published page (wykaz-zmian.csv, test-minione-dni.csv, GTFS) also come from a run of
+zkmplan.py that is not in data/plan. So the script does not overwrite any file of the page that exists; it
+only adds the missing ones. Use --overwrite only after the templates have the edits and the data come from
+the current tools. The PDFs of the published page: print_reports.py --from-html <page folder> --public ... --pdf,
+then copy them by hand.
 """
 from __future__ import annotations
 
@@ -46,16 +56,22 @@ def newest_plan() -> Path:
     return runs[-1]
 
 
+def half_up(x: float, d: int = 0):
+    """Round half away from zero, like toLocaleString in the web reports (114,5 → 115)."""
+    from decimal import Decimal, ROUND_HALF_UP
+    return Decimal(repr(x)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP)
+
+
 def pct(x: float, d: int = 0) -> str:
-    return f"{100 * x:.{d}f}".replace(".", ",") + "%"
+    return f"{half_up(100 * x, d):.{d}f}".replace(".", ",") + "%"
 
 
 def spct(x: float) -> str:
-    return ("+" if x > 0 else "−" if x < 0 else "") + f"{abs(100 * x):.0f}%"
+    return ("+" if x > 0 else "−" if x < 0 else "") + f"{half_up(abs(100 * x)):.0f}%"
 
 
 def num(x: float, d: int = 0) -> str:
-    return f"{x:,.{d}f}".replace(",", " ").replace(".", ",")
+    return f"{half_up(x, d):,.{d}f}".replace(",", " ").replace(".", ",")
 
 
 def fdate(s: str) -> str:
@@ -68,9 +84,64 @@ def size(p: Path) -> str:
     return f"{b / 1024:.0f} kB" if b < 1024 * 1024 else f"{b / 1024 / 1024:.1f} MB".replace(".", ",")
 
 
-def public_report(src: Path, pdf: str) -> str:
-    """The web report with a plain link to the PDF (no viewer script) and links inside the folder."""
+# Navigation of the report page: summary page · transfer report · corrections report (same markup as on 14-200.pl).
+NAV_CSS = """
+/* Nawigacja raportu: strona główna · Przesiadki · Korekty */
+.rnav { background: var(--poster); color: var(--poster-ink); border-bottom: 1px solid var(--poster-rule); font: 600 .86rem/1.3 var(--f-display); }
+.rnav ol { list-style: none; margin: 0; padding: .45rem 0; display: flex; flex-wrap: wrap; align-items: center; }
+.rnav li + li::before { content: "·"; margin: 0 .5rem; opacity: .6; }
+.rnav a { color: inherit; text-decoration: none; display: inline-block; padding: .35rem 0; }
+.rnav a:hover { text-decoration: underline; }
+.rnav a[aria-current="page"] { font-weight: 800; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.rnav a:focus-visible, .rnav-end a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.rnav-end { border-top: 1px solid var(--rule); font-family: var(--f-display); }
+.rnav-end a { color: inherit; text-underline-offset: 3px; }
+.rnav-end .wrap { padding-block: 2rem; display: grid; gap: 1rem; }
+.rnav-end .back { font-weight: 600; justify-self: start; }
+.rnav-end .pn { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.rnav-end .pn a { background: var(--paper); padding: .9rem 1.1rem; text-decoration: none; font-weight: 700; line-height: 1.3; display: flex; flex-direction: column; gap: .3rem; min-width: 0; }
+.rnav-end .pn a:hover { background: var(--panel); }
+.rnav-end .pn a span { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.rnav-end .pn a[rel="next"] { text-align: right; }
+@media print { .rnav, .rnav-end { display: none; } }
+"""
+NAV_PAGES = [("./", "Raport ZKM"), ("przesiadki.html", "Przesiadki Iława Główna"), ("korekty.html", "Korekty rozkładu ZKM Iława")]
+
+
+def nav_top(cur: str) -> str:
+    li = "".join(f'<li><a href="{h}"{' aria-current="page"' if h == cur else ""}>{t}</a></li>' for h, t in NAV_PAGES)
+    return f'<nav class="rnav" aria-label="Raport ZKM"><div class="wrap"><ol>{li}</ol></div></nav>\n'
+
+
+def nav_end(cur: str) -> str:
+    i = [h for h, _ in NAV_PAGES].index(cur)
+    pn = ""
+    if i - 1 >= 1:
+        pn += f'<a rel="prev" href="{NAV_PAGES[i - 1][0]}"><span>← Poprzedni raport</span>{NAV_PAGES[i - 1][1]}</a>'
+    if i + 1 < len(NAV_PAGES):
+        pn += f'<a rel="next" href="{NAV_PAGES[i + 1][0]}"><span>Następny raport →</span>{NAV_PAGES[i + 1][1]}</a>'
+    return (f'<nav class="rnav-end" aria-label="Dalej w raporcie"><div class="wrap">\n'
+            f'  <a class="back" href="./">← Wróć do strony głównej raportu</a>\n'
+            f'  <div class="pn">{pn}</div>\n</div></nav>\n')
+
+
+def nav_index() -> str:
+    li = []
+    for h, t in NAV_PAGES:
+        if h == "./":
+            li.append(f'<li><a href="./" aria-current="page" class="inline-block py-2 font-bold text-gray-900 underline decoration-brand-500 decoration-2 underline-offset-4">{t}</a></li>')
+        else:
+            li.append(f'<li class="before:content-[\'·\'] before:mx-2 before:text-gray-400"><a href="{h}" class="inline-block py-2 hover:text-accent-600 hover:underline">{t}</a></li>')
+    return '            <nav aria-label="Raport ZKM" class="mb-6 text-sm font-semibold text-gray-600"><ol class="flex flex-wrap items-center">' + "".join(li) + '</ol></nav>\n'
+
+
+def public_report(src: Path, pdf: str, name: str) -> str:
+    """The web report with a plain link to the PDF (no viewer script), links inside the folder and the navigation of the page."""
     h = src.read_text(encoding="utf-8")
+    if "</style>" in h and '<header class="poster">' in h and "<footer>" in h:
+        h = h.replace("</style>", NAV_CSS.lstrip("\n") + "</style>", 1)
+        h = h.replace('<header class="poster">', nav_top(name) + '<header class="poster">', 1)
+        h = h.replace("<footer>", nav_end(name) + "<footer>", 1)
     if DL_BUTTON not in h:
         raise SystemExit(f"{src}: the download button is missing. Build the report again.")
     h = h.replace(DL_BUTTON, f'<a href="{pdf}" download>Pobierz wersję do druku (PDF)</a>'
@@ -84,13 +155,26 @@ def public_report(src: Path, pdf: str) -> str:
     return h
 
 
+def measured_weekday() -> tuple | None:
+    """Good transfers per weekday with the measured train times (results/pomiar/dni.csv): current, proposal, days."""
+    p = ROOT / "results" / "pomiar" / "dni.csv"
+    if not p.exists():
+        return None
+    import csv
+    rows = [r for r in csv.DictReader(p.open(encoding="utf-8")) if r["day_type"] == "Roboczy" and float(r["window"]) == 5.0]
+    m = lambda tt: [float(r["actual_total"]) for r in rows if r["timetable"] == tt]
+    a, b = m("obecny"), m("propozycja")
+    return (sum(a) / len(a), sum(b) / len(b), len(a)) if a and b else None
+
+
 def summary(D: dict, R: dict, variant: str) -> dict:
     """The numbers of the index page."""
     wd = R["day_types"]["Roboczy"]["variants"][variant]
     c = wd["curve"]
     past = {r["timetable"]: r for r in (R.get("past_test") or {}).get("summary", []) if r["day_type"] == "Roboczy"}
     nm = D["overall"]["Roboczy"]["plain"]["t2b_near_miss"]
-    return {"near_all": D["static"]["Roboczy"]["t2b"]["all"]["near_miss_rate"],
+    return {"run": (wd.get("runaways") or {}).get("per_day"),
+            "near_all": D["static"]["Roboczy"]["t2b"]["all"]["near_miss_rate"],
             "near_test": nm["observed"], "near_null": nm["null_mean"], "near_p05": nm["null_p05"], "near_p95": nm["null_p95"],
             "test_date": D["rep_dates"]["Roboczy"], "g0": c[0]["good_per_day"], "g1": c[-1]["good_per_day"],
             "changes": c[-1]["changes"], "trips": R["day_types"]["Roboczy"]["trips"],
@@ -113,18 +197,21 @@ def content(S: dict, files: list[tuple[str, str, Path]], date: str, author: str,
             '<i class="fa-solid fa-file-pdf"></i> PDF do druku</a></div></div>')
     tile = ('<div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm"><div class="text-3xl font-bold text-gray-900">{v}</div>'
             '<div class="text-sm text-gray-600 mt-1">{k}</div></div>')
-    gain = (S["g1"] - S["g0"]) / S["g0"]
+    # Counts, not percentages (decision for the published page, 22.10.2026).
     tiles = [tile.format(v=pct(S["near_all"]), k="pociągów w dzień roboczy: autobus odjeżdża, gdy podróżni idą jeszcze z peronu"),
-             tile.format(v=spct(gain), k=f"dogodnych przesiadek w dzień roboczy po przesunięciu {S['changes']} z {S['trips']} kursów")]
-    if S["caught0"] and S["caught1"]:
-        tiles.append(tile.format(v=spct((S["caught1"] - S["caught0"]) / S["caught0"]),
-                                 k=f"udanych przesiadek przy rzeczywistych godzinach pociągów ({S['past_days']} minionych dni)"))
+             tile.format(v=f"{num(S['g0'])} → {num(S['g1'])}", k=f"dogodnych przesiadek dziennie w dzień roboczy po przesunięciu {S['changes']} z {S['trips']} kursów")]
+    ra = S.get("run")
+    if ra:
+        tiles.append(tile.format(v=f"{num(ra['before'])} → {num(ra['after'])}", k="„uciekających” odjazdów dziennie w dzień roboczy (pary pociąg–linia)"))
+    M = measured_weekday()
+    if M:
+        tiles.append(tile.format(v=f"{num(M[0])} → {num(M[1])}", k=f"dogodnych przesiadek dziennie w dzień roboczy według pomiaru przyjazdów pociągów ({M[2]} dni)"))
     q = "mediana" if S["quantile"] == 0.5 else f"{S['quantile'] * 100:.0f}. percentyl"
     rows = "".join(f'<tr class="border-t border-gray-100"><td class="py-3 pr-4"><a class="text-accent-600 hover:underline font-medium" href="{e(n)}" download>{e(n)}</a></td>'
                    f'<td class="py-3 pr-4 text-gray-600">{e(d)}</td><td class="py-3 text-right whitespace-nowrap text-gray-500">{size(p)}</td></tr>'
                    for n, d, p in files)
     return f"""
-            <p class="text-sm font-semibold uppercase tracking-wide text-brand-700 mb-3">Raport · komunikacja miejska</p>
+{nav_index()}            <p class="text-sm font-semibold uppercase tracking-wide text-brand-700 mb-3">Raport · komunikacja miejska</p>
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 font-heading mb-4">Autobus a pociąg: przesiadki na stacji Iława Główna</h1>
             <p class="text-gray-500 mb-8">{e(author)} · {fdate(date)}</p>
 
@@ -175,29 +262,43 @@ def main() -> None:
     ap.add_argument("--variant", default="single", choices=["single", "interlined"])
     ap.add_argument("--author", default="Marcin Jasiukowicz")
     ap.add_argument("--code-url", default="https://github.com/yasiupl/analiza-zkm-ilawa")
+    ap.add_argument("--overwrite", action="store_true",
+                    help="write the files of the page also when they exist (this undoes the edits by hand)")
     a = ap.parse_args()
     plan = Path(a.plan) if a.plan else newest_plan()
     R = json.loads(plan.read_text(encoding="utf-8"))
     D = json.loads((REPORTS / "report_data.json").read_text(encoding="utf-8"))
     date = a.date or plan.parent.name
-    name = f"raport-zkm-{date}"
+    name = f"{date}-raport-zkm"
     out = Path(a.out) / name
     out.mkdir(parents=True, exist_ok=True)
 
     pdfs = {"przesiadki-ilawa-glowna.pdf": DRUK / "przesiadki-ilawa-glowna.pdf",
             "korekty-rozkladu-zkm-ilawa.pdf": DRUK / "korekty-rozkladu-zkm-ilawa.pdf"}
+    keep = lambda f: (out / f).exists() and not a.overwrite
     for n, p in pdfs.items():
         if not p.exists():
             raise SystemExit(f"{p} is missing. Run: python3 print_reports.py --public \"<address>\" --pdf")
+        if keep(n):
+            print(f"  {n}: exists, not overwritten (see --overwrite)")
+            continue
         shutil.copyfile(p, out / n)
-    (out / "przesiadki.html").write_text(public_report(REPORTS / "przesiadki-ilawa.html", "przesiadki-ilawa-glowna.pdf"), encoding="utf-8")
-    (out / "korekty.html").write_text(public_report(REPORTS / "korekty-zkm.html", "korekty-rozkladu-zkm-ilawa.pdf"), encoding="utf-8")
+    for f, src, pdf in (("przesiadki.html", "przesiadki-ilawa.html", "przesiadki-ilawa-glowna.pdf"),
+                        ("korekty.html", "korekty-zkm.html", "korekty-rozkladu-zkm-ilawa.pdf")):
+        if keep(f):
+            print(f"  {f}: exists, not overwritten (see --overwrite)")
+        else:
+            (out / f).write_text(public_report(REPORTS / src, pdf, f), encoding="utf-8")
     data = [("wykaz-zmian.csv", plan.parent / "zmiany.csv"),
             ("test-minione-dni.csv", ROOT / "results" / "test_na_minionych_dniach" / "dni.csv"),
             ("zkm-ilawa-gtfs.zip", ROOT / "data" / "zkm_gtfs.zip"),
-            ("zkm-ilawa-gtfs-propozycja.zip", plan.parent / "gtfs_propozycja.zip")]
+            ("zkm-ilawa-gtfs-propozycja.zip", plan.parent / "gtfs_propozycja.zip"),
+            ("pomiar-dni.csv", ROOT / "results" / "pomiar" / "dni.csv")]
     for n, p in data:
-        shutil.copyfile(p, out / n)
+        if keep(n):
+            print(f"  {n}: exists, not overwritten (see --overwrite)")
+        elif p.exists():
+            shutil.copyfile(p, out / n)
     files = [("przesiadki-ilawa-glowna.pdf", "Raport „Przesiadki Iława Główna”, wersja do druku", out / "przesiadki-ilawa-glowna.pdf"),
              ("korekty-rozkladu-zkm-ilawa.pdf", "Raport „Korekty rozkładu ZKM Iława” z pełnym wykazem zmian, wersja do druku", out / "korekty-rozkladu-zkm-ilawa.pdf"),
              ("wykaz-zmian.csv", "Wykaz proponowanych zmian: typ dnia, etap, kurs, godziny obecne i proponowane, pociągi", out / "wykaz-zmian.csv"),
@@ -212,7 +313,10 @@ def main() -> None:
     page = (tpl.replace("{{TITLE}}", html.escape(title)).replace("{{DESCRIPTION}}", html.escape(desc))
             .replace("{{URL}}", f"{a.url.rstrip('/')}/{name}/")
             .replace("{{CONTENT}}", content(S, files, date, a.author, a.code_url)))
-    (out / "index.html").write_text(page, encoding="utf-8")
+    if keep("index.html"):
+        print("  index.html: exists, not overwritten (see --overwrite)")
+    else:
+        (out / "index.html").write_text(page, encoding="utf-8")
     print(f"Page: {out}\nAddress: {a.url.rstrip('/')}/{name}/")
     for f in sorted(out.iterdir()):
         print(f"  {f.name:34} {size(f)}")

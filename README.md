@@ -284,7 +284,7 @@ The report page is one folder for a static web site. It contains a summary page,
 2. Make the public printable reports. They have no references to the letters, and the report on the corrections contains the full list of changes. Give the web address of the page as the header text:
 
    ```
-   python print_reports.py --public "<site>/<path>/raport-zkm-<date>" --pdf
+   python print_reports.py --public "<site>/<path>/<date>-raport-zkm" --pdf
    ```
 
 3. Make the page folder in the source folder of the web site:
@@ -293,11 +293,39 @@ The report page is one folder for a static web site. It contains a summary page,
    python publish_site.py --out <site source folder>/<path> --url https://<site>/<path>
    ```
 
-   The script makes the folder `raport-zkm-<date>` (the date of the newest zkmplan run). It replaces the download button of the web reports with a plain link to the PDF file.
+   The script makes the folder `<date>-raport-zkm` (the date of the newest zkmplan run). It replaces the download button of the web reports with a plain link to the PDF file. It does not overwrite files that exist in the folder (see below); `--overwrite` does.
 4. Open `index.html` of the new folder and make sure that all links work.
 5. Commit the folder in the repository of the web site and publish it.
 
 The layout of the summary page is in `reports/site_template.html`.
+
+### The published page 14-200.pl/@yasiu/2026-09-30-raport-zkm
+
+The published page is ahead of these tools. Its files were made with a version of `zkmplan.py` that is not in this repository (10-minute window with weight 0.5, the „runaway” departures, the cases for ZKM), and then edited by hand in the repository of 14-200.pl:
+
+- `index.html`: the map of one weekday is part of the story of the page, with the basic terms; the tiles show counts, not percentages (84 → 130 good transfers, 34 → 13 „runaway” departures, 86 → 115 by the measured train times);
+- `przesiadki.html`, `korekty.html`: fonts hosted with the page, the glossary and the method at the end of the report, the section „Pomiar faktycznych przyjazdów” with the measured train times, no estimate of passengers.
+
+The templates in `reports/` do not have these edits, and `data/plan` has no run with the published numbers. Until they do, treat the published HTML files as the source:
+
+- PDFs of the page, from the data embedded in its web reports:
+
+  ```
+  python print_reports.py --from-html <14-200.pl>/src/@yasiu/2026-09-30-raport-zkm --public "14-200.pl/@yasiu/2026-09-30-raport-zkm" --pdf
+  ```
+
+  The PDFs are compiled with `xelatex`, or with `tectonic` when there is no `xelatex`. The figures use TeX Gyre Heros (install the font so that matplotlib finds it).
+- `publish_site.py` keeps the existing files of the page, so it does not undo the edits.
+- `publish_site.py` adds the navigation of the page: a bar on top of both web reports and of the summary page (current page marked), a link back to the summary page and the previous/next report at the end of the web reports. The tiles of the summary page show counts.
+- The report on the corrections has no row with the test on past days in its result table; the measured arrivals are in the transfer report.
+
+### Measured train arrivals (monitor_test.py)
+
+`monitor_test.py` repeats the test on past days with the train times measured by the monitor (`data/monitor/*.csv`): the current timetable and the proposal (current timetable with all changes from `data/plan/2026-09-30/wykaz-zmian-opublikowany.csv`, the published list), at 5 and 10 minutes of waiting, with the „runaway” departures. Buses keep the planned times. It writes `results/pomiar/dni.csv` (a train without data counts as on time), `results/pomiar/dni-tylko-zmierzone.csv` (only measured trains) and `results/pomiar/walidacja-wrzesien.csv` (check against the published September test). `print_reports.py` uses these files for the section „Pomiar faktycznych przyjazdów”, and the page has `dni.csv` as `pomiar-dni.csv`.
+
+```
+python monitor_test.py
+```
 
 ### Letters
 
@@ -337,6 +365,7 @@ The folder `pismo/` has two letters in LaTeX: a request for the timetable change
 | `zkmplan.py` | Tool for timetable corrections |
 | `zkmplan.ini` | Parameters of the tool for timetable corrections |
 | `past_test.py` | Test of timetables on past days with the actual train times |
+| `monitor_test.py` | Test of the current and proposed timetable with the train times measured by the monitor |
 | `print_reports.py` | Printable reports (LaTeX, PDF), also the public versions |
 | `publish_site.py` | Public report page for a static web site |
 | `pismo/` | Letters (LaTeX) |
@@ -344,6 +373,7 @@ The folder `pismo/` has two letters in LaTeX: a request for the timetable change
 | `reports/zkmplan_template.html` | Template of the report of the timetable corrections |
 | `reports/site_template.html` | Layout of the summary page of the public report |
 | `reports/druk/` | Printable reports and their figures |
+| `results/pomiar/` | Results of `monitor_test.py` |
 | `ilawa/model.py` | Transfer metrics and null model |
 | `ilawa/zkm.py` | Bus events at the stop Dworcowa |
 | `ilawa/zkm_scrape.py` | Reader of the rozklad.com pages |
