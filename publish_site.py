@@ -84,22 +84,33 @@ def size(p: Path) -> str:
     return f"{b / 1024:.0f} kB" if b < 1024 * 1024 else f"{b / 1024 / 1024:.1f} MB".replace(".", ",")
 
 
-# Navigation of the report page (same markup as on 14-200.pl): the web reports link only back to the summary page;
-# the summary page links only to the home page of 14-200.pl and to the forum (header of the site template).
-NAV_CSS = """/* Nawigacja: powrót do strony głównej raportu */
-.rnav { background: var(--poster); color: var(--poster-ink); border-bottom: 1px solid var(--poster-rule); font: 600 .86rem/1.3 var(--f-display); }
-.rnav .wrap { padding-block: .45rem; }
-.rnav a, .rnav-end a { color: inherit; text-underline-offset: 3px; }
-.rnav a { text-decoration: none; display: inline-block; padding: .35rem 0; }
-.rnav a:hover { text-decoration: underline; }
-.rnav a:focus-visible, .rnav-end a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+# Navigation of the report page (same markup as on 14-200.pl): one bar on all three pages with the logo (home page of
+# 14-200.pl), the pages of the report and the forum. The bar hides when the reader scrolls down and comes back when the
+# reader scrolls up. Its style and script are in reports/raport-nav.css and reports/raport-nav.js; the script copies them
+# into the page folder. The web reports also keep the link back to the summary page at the end (hidden in print).
+NAV_FILES = ("raport-nav.css", "raport-nav.js")
+NAV_PAGES = (("./", "Raport ZKM"), ("przesiadki.html", "Przesiadki"), ("korekty.html", "Korekty rozkładu"))
+NAV_CSS = """/* Nawigacja na końcu: powrót do strony głównej raportu (belka u góry: raport-nav.css) */
 .rnav-end { border-top: 1px solid var(--rule); font-family: var(--f-display); }
+.rnav-end a { color: inherit; text-underline-offset: 3px; font-weight: 600; display: inline-block; padding: .35rem 0; }
+.rnav-end a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .rnav-end .wrap { padding-block: 2rem; }
-.rnav-end a { font-weight: 600; display: inline-block; padding: .35rem 0; }
-@media print { .rnav, .rnav-end { display: none; } }
+@media print { .rnav-end { display: none; } }
 """
-NAV_TOP = '<nav class="rnav" aria-label="Raport ZKM"><div class="wrap"><a href="./">← Raport ZKM</a></div></nav>\n'
 NAV_END = '<nav class="rnav-end" aria-label="Powrót"><div class="wrap"><a href="./">← Wróć do strony głównej raportu</a></div></nav>\n'
+
+
+def nav_bar(current: str) -> str:
+    """The navigation bar of the report page; current is the href of this page ("./", "przesiadki.html", "korekty.html")."""
+    cur = ' aria-current="page"'
+    links = "".join(f'<a href="{h}"{cur if h == current else ""}>{t}</a>' for h, t in NAV_PAGES)
+    return ('<header class="rn" id="rn"><div class="rn-in">'
+            '<a class="rn-logo" href="/" aria-label="14-200.pl, strona główna"><img src="/favicon.svg" width="40" height="40" alt=""><span>14-200.pl</span></a>'
+            f'<nav class="rn-links" aria-label="Raport ZKM">{links}</nav>'
+            '<a class="rn-forum" href="https://forum.14-200.pl">Przejdź na forum</a>'
+            '</div></header>')
+
+
 AUTHOR_URL = "https://14-200.pl/@yasiu/"
 
 
@@ -107,9 +118,14 @@ def public_report(src: Path, pdf: str, name: str) -> str:
     """The web report with a plain link to the PDF (no viewer script), links inside the folder and the navigation of the page."""
     h = src.read_text(encoding="utf-8")
     if "</style>" in h and '<header class="poster">' in h and "<footer>" in h:
+        # The templates are fragments (no <html>, <head>, <body>); a full document gets the same parts in its head and body.
+        link, script = '<link rel="stylesheet" href="raport-nav.css">\n', '<script src="raport-nav.js"></script>\n'
+        theme = '<script>document.documentElement.classList.add("rn-theme")</script>\n'  # the bar follows the dark theme of the report
         h = h.replace("</style>", NAV_CSS.lstrip("\n") + "</style>", 1)
-        h = h.replace('<header class="poster">', NAV_TOP + '<header class="poster">', 1)
+        h = h.replace("</head>", link + "</head>", 1) if "</head>" in h else link + h
+        h = h.replace('<header class="poster">', theme + nav_bar(name) + "\n" + '<header class="poster">', 1)
         h = h.replace("<footer>", NAV_END + "<footer>", 1)
+        h = h.replace("</body>", script + "</body>", 1) if "</body>" in h else h.rstrip("\n") + "\n" + script
     if DL_BUTTON not in h:
         raise SystemExit(f"{src}: the download button is missing. Build the report again.")
     h = h.replace(DL_BUTTON, f'<a href="{pdf}" download>Pobierz wersję do druku (PDF)</a>'
@@ -166,8 +182,8 @@ def content(S: dict, files: list[tuple[str, str, Path]], date: str, author: str,
     tile = ('<div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm"><div class="text-3xl font-bold text-gray-900">{v}</div>'
             '<div class="text-sm text-gray-600 mt-1">{k}</div></div>')
     # Counts, not percentages (decision for the published page, 22.10.2026).
-    tiles = [tile.format(v=pct(S["near_all"]), k="pociągów w dzień roboczy: autobus odjeżdża, gdy podróżni idą jeszcze z peronu"),
-             tile.format(v=f"{num(S['g0'])} → {num(S['g1'])}", k=f"dogodnych przesiadek dziennie w dzień roboczy po przesunięciu {S['changes']} z {S['trips']} kursów")]
+    tiles = [tile.format(v=pct(S["near_all"]), k="pociągów w dzień roboczy według rozkładu: autobus odjeżdża, gdy podróżni idą jeszcze z peronu"),
+             tile.format(v=f"{num(S['g0'])} → {num(S['g1'])}", k=f"dogodnych przesiadek dziennie w dzień roboczy po przesunięciu {S['changes']} ze {S['trips']} kursów ZKM")]
     ra = S.get("run")
     if ra:
         tiles.append(tile.format(v=f"{num(ra['before'])} → {num(ra['after'])}", k="„uciekających” odjazdów dziennie w dzień roboczy (pary pociąg–linia)"))
@@ -183,8 +199,8 @@ def content(S: dict, files: list[tuple[str, str, Path]], date: str, author: str,
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 font-heading mb-4">Autobus a pociąg: przesiadki na stacji Iława Główna</h1>
             <p class="text-gray-500 mb-8"><a href="{AUTHOR_URL}" class="hover:text-accent-600 hover:underline">{e(author)}</a> · {fdate(date)}</p>
 
-            <p class="text-xl text-gray-700 leading-relaxed mb-8">W dzień roboczy autobus ZKM odjeżdża spod dworca w chwili, gdy podróżni idą jeszcze z peronu, przy {pct(S['near_all'])} pociągów.
-            Rozkład autobusów ułożony losowo daje podobny wynik, więc autobusy nie „uciekają” celowo, ale też nie są dopasowane do pociągów.
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">Według rozkładu w dzień roboczy autobus ZKM odjeżdża spod dworca w chwili, gdy podróżni idą jeszcze z peronu, przy {pct(S['near_all'])} pociągów.
+            Rozkład autobusów ułożony losowo daje podobny wynik: autobusy nie „uciekają” celowo, ale rozkłady ZKM i PKP nie są ze sobą uzgodnione.
             Przesunięcie {S['changes']} kursów o kilka minut, bez nowych autobusów i kierowców, daje w dzień roboczy {num(S['g0'])} → {num(S['g1'])} dogodnych przesiadek dziennie.</p>
 
             <div class="grid md:grid-cols-{len(tiles)} gap-4 mb-14">{''.join(tiles)}</div>
@@ -257,6 +273,11 @@ def main() -> None:
             print(f"  {f}: exists, not overwritten (see --overwrite)")
         else:
             (out / f).write_text(public_report(REPORTS / src, pdf, f), encoding="utf-8")
+    for n in NAV_FILES:
+        if keep(n):
+            print(f"  {n}: exists, not overwritten (see --overwrite)")
+        else:
+            shutil.copyfile(REPORTS / n, out / n)
     data = [("wykaz-zmian.csv", plan.parent / "zmiany.csv"),
             ("test-minione-dni.csv", ROOT / "results" / "test_na_minionych_dniach" / "dni.csv"),
             ("zkm-ilawa-gtfs.zip", ROOT / "data" / "zkm_gtfs.zip"),
@@ -272,7 +293,9 @@ def main() -> None:
              ("wykaz-zmian.csv", "Wykaz proponowanych zmian: typ dnia, etap, kurs, godziny obecne i proponowane, pociągi", out / "wykaz-zmian.csv"),
              ("test-minione-dni.csv", "Przesiadki na minionych dniach przy rzeczywistych godzinach pociągów, obecny i proponowany rozkład", out / "test-minione-dni.csv"),
              ("zkm-ilawa-gtfs.zip", "Obecny rozkład jazdy ZKM Iława w formacie GTFS", out / "zkm-ilawa-gtfs.zip"),
-             ("zkm-ilawa-gtfs-propozycja.zip", "Rozkład jazdy ZKM Iława z proponowanymi zmianami w formacie GTFS", out / "zkm-ilawa-gtfs-propozycja.zip")]
+             ("zkm-ilawa-gtfs-propozycja.zip", "Rozkład jazdy ZKM Iława z proponowanymi zmianami w formacie GTFS", out / "zkm-ilawa-gtfs-propozycja.zip"),
+             ("pomiar-dni.csv", "Pomiar faktycznych przyjazdów pociągów: przesiadki dzień po dniu, obecny i proponowany rozkład", out / "pomiar-dni.csv")]
+    files = [f for f in files if f[2].exists()]
     S = summary(D, R, a.variant)
     title = "Autobus a pociąg: przesiadki na stacji Iława Główna"
     desc = (f"Raport o przesiadkach między autobusami ZKM a pociągami w Iławie: test rozkładu, propozycja korekt "
