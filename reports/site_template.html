@@ -33,29 +33,12 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="raport-nav.css">
 </head>
 <body class="font-sans text-gray-800 antialiased bg-gray-50 flex flex-col min-h-screen">
-    <nav class="bg-white/90 backdrop-blur-md fixed w-full z-50 border-b border-gray-200 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="/" class="flex items-center gap-2 group">
-                        <div class="bg-brand-500 text-gray-900 p-2 rounded-lg group-hover:bg-brand-400 transition-colors">
-                            <i class="fa-solid fa-comments text-xl"></i>
-                        </div>
-                        <span class="font-heading font-bold text-2xl text-gray-900 tracking-tight">14-200.pl</span>
-                    </a>
-                </div>
-                <div class="flex items-center">
-                    <a href="https://forum.14-200.pl" class="bg-brand-500 hover:bg-brand-400 text-gray-900 px-4 sm:px-5 py-2.5 rounded-lg font-bold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                        Przejdź na forum
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <header class="rn" id="rn"><div class="rn-in"><a class="rn-logo" href="/" aria-label="14-200.pl, strona główna"><img src="/favicon.svg" width="40" height="40" alt=""><span>14-200.pl</span></a><nav class="rn-links" aria-label="Raport ZKM"><a href="./" aria-current="page">Raport ZKM</a><a href="przesiadki.html">Przesiadki</a><a href="korekty.html">Korekty rozkładu</a></nav><a class="rn-forum" href="https://forum.14-200.pl">Przejdź na forum</a></div></header>
 
-    <main class="flex-grow pt-32 pb-20">
+    <main class="flex-grow pt-10 md:pt-14 pb-20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 {{CONTENT}}
         </div>
@@ -85,9 +68,6 @@
             </div>
         </div>
     </footer>
-    <script>
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => navbar.classList.toggle('shadow-md', window.scrollY > 20));
-    </script>
+    <script src="raport-nav.js"></script>
 </body>
 </html>

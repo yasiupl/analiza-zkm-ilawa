@@ -304,7 +304,8 @@ The layout of the summary page is in `reports/site_template.html`.
 The published page is ahead of these tools. Its files were made with a version of `zkmplan.py` that is not in this repository (10-minute window with weight 0.5, the „runaway” departures, the cases for ZKM), and then edited by hand in the repository of 14-200.pl:
 
 - `index.html`: the map of one weekday is part of the story of the page, with the basic terms; the tiles show counts, not percentages (84 → 130 good transfers, 34 → 13 „runaway” departures, 86 → 115 by the measured train times);
-- `przesiadki.html`, `korekty.html`: fonts hosted with the page, the glossary and the method at the end of the report, the section „Pomiar faktycznych przyjazdów” with the measured train times, no estimate of passengers.
+- `index.html` (22.10.2026): the section „Co po 13 grudnia?” (new train timetable, no known rule for the bus timetable, the offer of the tool), the measured range of the gain (60 → 71 for the measured trains only), the explanation of 50 % (plan) and 55 % (test day) and of the periods;
+- `przesiadki.html`, `korekty.html`: fonts hosted with the page, the glossary and the method at the end of the report, the section „Pomiar faktycznych przyjazdów” with the measured train times, no estimate of passengers; a result with the percentile of 95 or more inside the 90 % band of the random timetables is „na granicy” in the answer, the table and the figure (22.10.2026).
 
 The templates in `reports/` do not have these edits, and `data/plan` has no run with the published numbers. Until they do, treat the published HTML files as the source:
 
@@ -316,7 +317,7 @@ The templates in `reports/` do not have these edits, and `data/plan` has no run 
 
   The PDFs are compiled with `xelatex`, or with `tectonic` when there is no `xelatex`. The figures use TeX Gyre Heros (install the font so that matplotlib finds it).
 - `publish_site.py` keeps the existing files of the page, so it does not undo the edits.
-- `publish_site.py` adds the navigation of the page: both web reports link only back to the summary page (on top and at the end, hidden in print); the header of the summary page links only to the home page of 14-200.pl and to the forum; the name of the author links to https://14-200.pl/@yasiu/. The tiles of the summary page show counts.
+- `publish_site.py` adds the navigation of the page. All three pages have the same bar: the logo (home page of 14-200.pl), the links „Raport ZKM”, „Przesiadki”, „Korekty rozkładu” and the button to the forum. The bar hides when the reader scrolls down and comes back when the reader scrolls up. Its style and script are `reports/raport-nav.css` and `reports/raport-nav.js`; the script copies them into the page folder. The web reports also link back to the summary page at the end (hidden in print). The name of the author links to https://14-200.pl/@yasiu/. The tiles of the summary page show counts.
 - The report on the corrections has no row with the test on past days in its result table; the measured arrivals are in the transfer report.
 
 ### Measured train arrivals (monitor_test.py)

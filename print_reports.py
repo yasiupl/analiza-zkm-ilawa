@@ -359,7 +359,9 @@ def verdict(D: dict) -> str:
     W = D["overall"]["Roboczy"]["plain"]
     l1 = D["per_line"]["Roboczy"]["1"][T2B]
     nm = lambda d: D["overall"][d]["plain"]["t2b_near_miss"]
-    worse = [d for d in days if nm(d)["percentile"] >= 0.95]
+    # "potwierdza" only above the 90 % band; percentile >= 95 inside the band is "na granicy" (as in the web report)
+    worse = [d for d in days if nm(d)["percentile"] >= 0.95 and nm(d)["observed"] > nm(d)["null_p95"]]
+    at_edge = [d for d in days if nm(d)["percentile"] >= 0.95 and not nm(d)["observed"] > nm(d)["null_p95"]]
     edge = [d for d in days if 0.9 <= nm(d)["percentile"] < 0.95]
     w_good = "Roboczy" in worse
     t = ("W dzień roboczy teza się potwierdza. " if w_good else "W dzień roboczy teza się nie potwierdza dla całej sieci. ")
@@ -373,8 +375,8 @@ def verdict(D: dict) -> str:
     t += (f" Rozkłady nie są ze sobą skoordynowane: według rozkładu planowego dobrych przesiadek (czekanie do {P['good_window']} min) "
           "jest mniej więcej tyle, ile przy rozkładzie losowym.")
     if l1.get("near_miss_pct", 0) >= 0.95:
-        t += (f" Wyjątkiem jest \\textbf{{linia 1}} w dni robocze: autobus „ucieka” częściej niż losowo "
-              f"({pct(l1['rep_near_miss'])} wobec {pct(l1['null_near_miss'])}).")
+        t += (f" Na granicy przypadku jest \\textbf{{linia 1}} w dni robocze: autobus „ucieka” częściej niż w "
+              f"{round(100 * l1['near_miss_pct'])}\\,\\% rozkładów losowych ({pct(l1['rep_near_miss'])} wobec {pct(l1['null_near_miss'])}).")
         eve = [c for c in D["collisions"].get("Roboczy") or [] if c["line"] == "1" and c["time"] >= "17:00" and c.get("gap")]
         if eve:
             t += (f" Chodzi głównie o {len(eve)} odjazdy po 17:00, po których następny kurs jest za "
@@ -383,6 +385,11 @@ def verdict(D: dict) -> str:
     if other:
         t += " " + "; ".join(f"{DAYNAME[d]} ({rep_txt(D, d)}): autobus „ucieka” częściej niż przy 95\\,\\% rozkładów losowych "
                              f"({pct(nm(d)['observed'])} wobec {pct(nm(d)['null_mean'])}), więc tego dnia teza się potwierdza" for d in other) + "."
+    e1 = [d for d in at_edge if d != "Roboczy"]
+    if e1:
+        t += " " + "; ".join(f"{DAYNAME[d]} ({rep_txt(D, d)}): wynik jest na granicy, autobus „ucieka” częściej niż w "
+                             f"{round(100 * nm(d)['percentile'])}\\,\\% rozkładów losowych ({pct(nm(d)['observed'])} wobec {pct(nm(d)['null_mean'])}). "
+                             "Przy wielu testach taki pojedynczy wynik może być przypadkowy" for d in e1) + "."
     e2 = [d for d in edge if d != "Roboczy"]
     if e2:
         t += " " + " i ".join(DAYNAME[d] for d in e2) + ": wynik jest blisko górnej granicy losowości, ale kursów jest mało i test nie daje pewności."
@@ -476,7 +483,8 @@ def attachment_przesiadki(D: dict) -> str:
     out.append(title_block(att("Załącznik nr 2 · analiza rozkładów", "Raport ZKM Iława · analiza rozkładów"), "Przesiadki Iława Główna",
                            "Czy autobusy ZKM odjeżdżają spod dworca akurat wtedy, gdy przyjeżdżają pociągi?",
                            f"Dworzec Iława Główna: {c['Roboczy']['trains']} pociągów w dzień roboczy. Przystanek Dworcowa: "
-                           f"linie ZKM 1, 2, 3, 4, 7, {c['Roboczy']['bus_dep']} odjazdów w dzień roboczy. Stan na {fdate(D['generated'])}."))
+                           f"linie ZKM 1, 2, 3, 4, 7, {c['Roboczy']['bus_dep']} odjazdów w dzień roboczy. Stan na {fdate(D['generated'])}"
+                           + (f", pomiar przyjazdów pociągów do {fdate(str(max(Mx['days'])))}." if (Mx := measured_data()) else ".")))
 
     # answer (the same rules as the web report)
     out.append("\\section*{Odpowiedź}\n")
@@ -776,6 +784,9 @@ def measured_section(plan_gain: float | None = None, plan_run: tuple | None = No
                f"{num(s('Sobota', 'propozycja', 'actual_total'))} przy faktycznych godzinach pociągów (plan: {num(s('Sobota', 'obecny', 'plan_total'))} $\\to$ "
                f"{num(s('Sobota', 'propozycja', 'plan_total'))}). Niedziele ({nd['Niedziela']} dni): {num(s('Niedziela', 'obecny', 'actual_total'))} $\\to$ "
                f"{num(s('Niedziela', 'propozycja', 'actual_total'))} (plan: {num(s('Niedziela', 'obecny', 'plan_total'))} $\\to$ {num(s('Niedziela', 'propozycja', 'plan_total'))}).}}\n\n")
+    out.append(f"\\mut{{\\footnotesize Kolumny „plan” to średnia z {nd['Roboczy']} dni roboczych pomiaru. "
+               + (f"Raport o korektach podaje średnią z dni planowania (np. „uciekające” odjazdy {num(plan_run[0])} $\\to$ {num(plan_run[1])}), " if plan_run else "Raport o korektach podaje średnią z dni planowania, ")
+               + "dlatego liczby różnią się nieco.}\n\n")
     a0, a1 = g("obecny", 5.0, "actual_total"), g("propozycja", 5.0, "actual_total")
     p0, p1 = g("obecny", 5.0, "plan_total"), g("propozycja", 5.0, "plan_total")
     r0, r1 = g("obecny", 5.0, "actual_runaway"), g("propozycja", 5.0, "actual_runaway")

@@ -35,9 +35,9 @@
 {\sffamily\footnotesize\bfseries\MakeUppercase{Raport ZKM Iława · analiza rozkładów}}\par\smallskip
 {\sffamily\LARGE\bfseries Przesiadki Iława Główna}\par\medskip
 {\large Czy autobusy ZKM odjeżdżają spod dworca akurat wtedy, gdy przyjeżdżają pociągi?}\par\medskip
-{\small\mut{Dworzec Iława Główna: 107 pociągów w dzień roboczy. Przystanek Dworcowa: linie ZKM 1, 2, 3, 4, 7, 106 odjazdów w dzień roboczy. Stan na 30.09.2026.}}\par\bigskip
+{\small\mut{Dworzec Iława Główna: 107 pociągów w dzień roboczy. Przystanek Dworcowa: linie ZKM 1, 2, 3, 4, 7, 106 odjazdów w dzień roboczy. Stan na 30.09.2026, pomiar przyjazdów pociągów do 21.10.2026.}}\par\bigskip
 \section*{Odpowiedź}
-W dzień roboczy teza się nie potwierdza dla całej sieci. W dniu testowym (28.09.2026, rzeczywiste godziny pociągów) autobus odjeżdża w chwili przyjazdu pociągu przy \textbf{55\,\%} pociągów. Rozkład losowy daje \textbf{47\,\%} (90\,\% wyników losowych: 38\,\%--56\,\%). Wynik jest blisko górnej granicy losowości, ale mieści się w niej. Wrażenie „uciekającego autobusu” jest prawdziwe, ale wynika głównie z liczby kursów i skupień pociągów, a nie z ułożenia rozkładu. Rozkłady nie są ze sobą skoordynowane: według rozkładu planowego dobrych przesiadek (czekanie do 5 min) jest mniej więcej tyle, ile przy rozkładzie losowym. Wyjątkiem jest \textbf{linia 1} w dni robocze: autobus „ucieka” częściej niż losowo (24\,\% wobec 16\,\%). Chodzi głównie o 4 odjazdy po 17:00, po których następny kurs jest za 54--98 min. Sobota (26.09.2026, rzeczywiste godziny pociągów): autobus „ucieka” częściej niż przy 95\,\% rozkładów losowych (35\,\% wobec 27\,\%), więc tego dnia teza się potwierdza.
+W dzień roboczy teza się nie potwierdza dla całej sieci. W dniu testowym (28.09.2026, rzeczywiste godziny pociągów) autobus odjeżdża w chwili przyjazdu pociągu przy \textbf{55\,\%} pociągów. Rozkład losowy daje \textbf{47\,\%} (90\,\% wyników losowych: 38\,\%--56\,\%). Wynik jest blisko górnej granicy losowości, ale mieści się w niej. Wrażenie „uciekającego autobusu” jest prawdziwe, ale wynika głównie z liczby kursów i skupień pociągów, a nie z ułożenia rozkładu. Rozkłady nie są ze sobą skoordynowane: według rozkładu planowego dobrych przesiadek (czekanie do 5 min) jest mniej więcej tyle, ile przy rozkładzie losowym. Na granicy przypadku jest \textbf{linia 1} w dni robocze: autobus „ucieka” częściej niż w 97\,\% rozkładów losowych (24\,\% wobec 16\,\%). Chodzi głównie o 4 odjazdy po 17:00, po których następny kurs jest za 54--98 min. Sobota (26.09.2026, rzeczywiste godziny pociągów): wynik jest na granicy, autobus „ucieka” częściej niż w 97\,\% rozkładów losowych (35\,\% wobec 27\,\%). Przy wielu testach taki pojedynczy wynik może być przypadkowy.
 
 {\small
 \begin{center}\begin{tabular}{@{}p{9.2cm} r p{4.2cm}@{}}\toprule
@@ -254,6 +254,8 @@ Przesiadki z czekaniem do 10 min & 154 & 151 & 201 & 184 \\
 „Uciekające” odjazdy & 34 & 37 & 12 & \textbf{22} \\
 \bottomrule\end{tabular}\end{center}}
 \mut{\footnotesize Soboty (3 dni): dogodne przesiadki 44 $\to$ 54 przy faktycznych godzinach pociągów (plan: 45 $\to$ 63). Niedziele (3 dni): 24 $\to$ 29 (plan: 26 $\to$ 34).}
+
+\mut{\footnotesize Kolumny „plan” to średnia z 12 dni roboczych pomiaru. Raport o korektach podaje średnią z dni planowania (np. „uciekające” odjazdy 34 $\to$ 13), dlatego liczby różnią się nieco.}
 
 Przy faktycznych godzinach pociągów propozycja nadal daje więcej dogodnych przesiadek niż obecny rozkład: w dzień roboczy 86 $\to$ 115 dziennie (+34\,\%), a nie +56\,\% jak w planie. Słabiej wypada usuwanie „uciekających” odjazdów: 37 $\to$ 22 ($-$40\,\%), a nie 34 $\to$ 13 ($-$62\,\%) jak w planie. Prawdopodobna przyczyna: przesunięte kursy odjeżdżają kilka minut po planowym przyjeździe pociągu, więc podróżni ze spóźnionego pociągu Intercity często już na nie nie zdążą. Obecny rozkład prawie nie zależy od opóźnień, bo i tak rzadko jest dopasowany do pociągów.
 
