@@ -26,6 +26,14 @@
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.9em}{0.3em}
 \setlength{\LTpre}{4pt}\setlength{\LTpost}{4pt}
+% Page breaks: never inside a paragraph, never inside a list or between a list and the sentence before it;
+% the page may end earlier (ragged bottom) instead of stretching the space. Long tables (longtable) still break.
+\raggedbottom
+\interlinepenalty=10000
+\clubpenalty=10000 \widowpenalty=10000 \displaywidowpenalty=10000
+\makeatletter
+\@itempenalty=10000 \@beginparpenalty=10000
+\makeatother
 \pagestyle{fancy}\fancyhf{}
 \renewcommand{\headrulewidth}{0.3pt}
 \fancyhead[L]{\sffamily\footnotesize 14-200.pl/@yasiu/2026-09-30-raport-zkm}
@@ -36,6 +44,23 @@
 {\sffamily\LARGE\bfseries Przesiadki Iława Główna}\par\medskip
 {\large Czy autobusy ZKM odjeżdżają spod dworca akurat wtedy, gdy przyjeżdżają pociągi?}\par\medskip
 {\small\mut{Dworzec Iława Główna: 107 pociągów w dzień roboczy. Przystanek Dworcowa: linie ZKM 1, 2, 3, 4, 7, 106 odjazdów w dzień roboczy. Stan na 30.09.2026, pomiar przyjazdów pociągów do 21.10.2026.}}\par\bigskip
+\section*{W skrócie}
+Kto jeździ koleją z Iławy, zna ten kłopot. Rano autobus ZKM przywozi na dworzec zwykle 21--35 min przed pociągiem albo za późno, żeby zdążyć. Wieczorem odjeżdża z przystanku Dworcowa, zanim podróżni dojdą z peronu, a na następny kurs trzeba czekać nawet ponad godzinę. Iława ma dobre połączenia kolejowe z Trójmiastem, Warszawą i Krakowem, ale korzysta z nich tylko ten, kto łatwo dojedzie na dworzec, a turysta -- z dworca do hotelu.
+
+\begin{itemize}
+\item \textbf{Problem jest prawdziwy.} Według rozkładu w dzień roboczy przy 50\,\% pociągów autobus odjeżdża, zanim podróżni dojdą z peronu. Przykład z dnia testowego 28.09.2026: o 21:06 odjeżdża linia 2, a między 21:04 i 21:08 przyjeżdżają 4 pociągi: TLK 35105, R 90113, EIP 3503, TLK 53170. Następny kurs tej linii jest o 22:20.
+\item \textbf{To nie jest celowe, ale rozkłady nie są uzgodnione.} W dniu testowym autobus „ucieka” przy 55\,\% pociągów, a rozkład ułożony losowo daje średnio 47\,\%. Rozkład ZKM nie jest ułożony przeciw podróżnym kolei, ale też nie jest do nich dopasowany. Lepiej pasuje do pociągów PKP Intercity sprzed korekty rozkładu PKP z 30 sierpnia (rozdział „Według jakiego klucza ułożono rozkład?”).
+\item \textbf{Można to poprawić bez nowych autobusów i kierowców.} Przesunięcie 51 ze 188 kursów w dzień roboczy, najwyżej o 5 min, daje 84 $\to$ 130 dogodnych przesiadek dziennie (+56\,\%), a „uciekających” odjazdów jest 34 $\to$ 13. Zmiany można wprowadzać etapami: pierwsze 20 daje +23\,\% dogodnych przesiadek. Przy faktycznych godzinach pociągów zysk jest mniejszy: od +19\,\% do +34\,\%, bo pociągi Intercity często się spóźniają (rozdział „Pomiar faktycznych przyjazdów”).
+\item \textbf{Propozycję trzeba sprawdzić w ZKM.} Obiegi autobusów i służby kierowców odtworzono z rozkładu, bo ZKM ich nie publikuje. Każdą zmianę musi sprawdzić dyspozytor ZKM.
+\end{itemize}
+
+\subsection*{Pytania do ZKM i miasta}
+\begin{enumerate}
+\item \textbf{Według jakich zasad ZKM układa rozkład?} Zasady nie są opublikowane. Rozkład ważny od 1 września lepiej pasuje do pociągów sprzed korekty rozkładu PKP z 30 sierpnia niż do tych, które jeżdżą teraz.
+\item \textbf{Co po 13 grudnia 2026 r.?} Wtedy zaczyna obowiązywać nowy rozkład kolejowy. Z Iławy pojedzie między innymi 14 zamiast 12 par pociągów EIP do Warszawy i Trójmiasta. Jakie kryteria przyjmie ZKM, żeby kolejny rozkład autobusów pasował do pociągów? Propozycję z tego raportu można przeliczyć dla nowego rozkładu PKP.
+\item \textbf{Czy rozkład ZKM będzie dostępny w otwartym formacie, np. GTFS?} Z tego formatu korzystają aplikacje do planowania podróży, takie jak Google Maps i Jakdojade. Zdarza się, że pokazują kurs, który nie przyjeżdża. Podróżny czeka wtedy na autobus, zamiast od razu zamówić taksówkę. Nieoficjalny rozkład ZKM w formacie GTFS, przygotowany do tego raportu, może być punktem wyjścia.
+\end{enumerate}
+
 \section*{Odpowiedź}
 W dzień roboczy teza się nie potwierdza dla całej sieci. W dniu testowym (28.09.2026, rzeczywiste godziny pociągów) autobus odjeżdża w chwili przyjazdu pociągu przy \textbf{55\,\%} pociągów. Rozkład losowy daje \textbf{47\,\%} (90\,\% wyników losowych: 38\,\%--56\,\%). Wynik jest blisko górnej granicy losowości, ale mieści się w niej. Wrażenie „uciekającego autobusu” jest prawdziwe, ale wynika głównie z liczby kursów i skupień pociągów, a nie z ułożenia rozkładu. Rozkłady nie są ze sobą skoordynowane: według rozkładu planowego dobrych przesiadek (czekanie do 5 min) jest mniej więcej tyle, ile przy rozkładzie losowym. Na granicy przypadku jest \textbf{linia 1} w dni robocze: autobus „ucieka” częściej niż w 97\,\% rozkładów losowych (24\,\% wobec 16\,\%). Chodzi głównie o 4 odjazdy po 17:00, po których następny kurs jest za 54--98 min. Sobota (26.09.2026, rzeczywiste godziny pociągów): wynik jest na granicy, autobus „ucieka” częściej niż w 97\,\% rozkładów losowych (35\,\% wobec 27\,\%). Przy wielu testach taki pojedynczy wynik może być przypadkowy.
 
@@ -48,7 +73,7 @@ Mediana opóźnienia pociągów PKP Intercity w Iławie & 3 min & POLREGIO: 0 mi
 Ciasne przesiadki z IC na daną linię (czekanie do 9 min), które się udają & 47\,\% & POLREGIO: 88\,\% \\
 \bottomrule\end{tabular}\end{center}}
 \section{Dni testowe: rozkład planowy i rzeczywiste godziny pociągów}
-Rozkład ZKM jest ten sam każdego dnia danego typu, ale pociągi się spóźniają. Dlatego wyniki sprawdzono na minionych dniach, dla których są rzeczywiste godziny prawie wszystkich pociągów na stacji Iława Główna (monitor API PKP PLK). Dla każdego typu dnia dniem testowym jest dzień z największą liczbą pociągów spóźnionych ponad 5 min. Tabela podaje udział pociągów z dobrą przesiadką na dowolną linię dla okien czekania 5 min i 10 min: według planu / w rzeczywistości.
+Rozkład ZKM jest ten sam każdego dnia danego typu, ale pociągi się spóźniają. Dlatego wyniki sprawdzono na minionych dniach, dla których są rzeczywiste godziny prawie wszystkich pociągów na stacji Iława Główna (dane PKP PLK). Dla każdego typu dnia dniem testowym jest dzień z największą liczbą pociągów spóźnionych ponad 5 min. Tabela podaje udział pociągów z dobrą przesiadką na dowolną linię dla okien czekania 5 min i 10 min: według planu / w rzeczywistości.
 
 W dniu roboczym 28.09.2026 średnie opóźnienie przyjazdu wynosiło 12,0 min, a 24 z 93 pociągów przyjechało ponad 5 min po czasie. Przy oknie 5 min dobrą przesiadkę z pociągu na autobus miało 45\,\% pociągów według planu i 44\,\% w rzeczywistości; przy oknie 10 min: 67\,\% i 60\,\%.
 
@@ -154,9 +179,8 @@ niedziela & 21:08 & \linedot{L3}3 $\to$ Nowa Wieś & 21:06 TLK 53170 & brak & --
 \section{Czas oczekiwania na konkretną linię}
 Podróżny potrzebuje konkretnej linii, a nie dowolnego autobusu. Mediana czasu od przyjazdu pociągu do odjazdu danej linii oraz od przyjazdu autobusu do odjazdu pociągu, średnio ze wszystkich dni okresu analizy (1.09.2026--29.09.2026), z planowymi godzinami pociągów.
 {\footnotesize
-\begin{longtable}{@{}l l r r r r r@{}}\toprule
-Dzień & Linia & Kursy/dzień & Pociąg → linia: mediana & „Ucieka” & Dobra & Linia → pociąg: mediana \\ \midrule\endhead
-\bottomrule\endfoot
+\begin{center}\begin{tabular}{@{}l l r r r r r@{}}\toprule
+Dzień & Linia & Kursy/dzień & Pociąg → linia: mediana & „Ucieka” & Dobra & Linia → pociąg: mediana \\ \midrule
 dzień roboczy & \linedot{L1}1 & 31 & 29 min & 22\,\% & 17\,\% & 34 min \\
 dzień roboczy & \linedot{L2}2 & 30 & 22 min & 17\,\% & 18\,\% & 21 min \\
 dzień roboczy & \linedot{L3}3 & 36 & 24 min & 15\,\% & 16\,\% & 22 min \\
@@ -168,9 +192,9 @@ sobota & \linedot{L3}3 & 21 & 33 min & 13\,\% & 11\,\% & 28 min \\
 niedziela & \linedot{L1}1 & 12 & 32 min & 10\,\% & 8\,\% & 47 min \\
 niedziela & \linedot{L2}2 & 8 & 68 min & 8\,\% & 8\,\% & 73 min \\
 niedziela & \linedot{L3}3 & 13 & 38 min & 7\,\% & 7\,\% & 41 min \\
-\end{longtable}}
+\bottomrule\end{tabular}\end{center}}
 \section{Co robią opóźnienia pociągów}
-Rozkład ZKM porównano z faktycznymi czasami pociągów. Dla PKP Intercity są dane z 18 dni (11.09.2026--28.09.2026, źródło: spoznienia.me). Dla wszystkich przewoźników, także POLREGIO, są dane z 4 dni (26.09.2026--29.09.2026, API PKP PLK). Dla autobusów nie ma publicznych danych o faktycznych odjazdach. Przyjęto odchylenie w granicach tolerancji ZKM: od 1 min przed czasem do 3 min po czasie. „Ciasna” przesiadka to taka, w której według rozkładu podróżny czeka na swoją linię najwyżej 9 min.
+Rozkład ZKM porównano z faktycznymi czasami pociągów. Dla PKP Intercity są dane z 18 dni (11.09.2026--28.09.2026, źródło: spoznienia.me). Dla wszystkich przewoźników, także POLREGIO, są dane z 4 dni (26.09.2026--29.09.2026, PKP PLK). Dla autobusów nie ma publicznych danych o faktycznych odjazdach. Przyjęto odchylenie w granicach tolerancji ZKM: od 1 min przed czasem do 3 min po czasie. „Ciasna” przesiadka to taka, w której według rozkładu podróżny czeka na swoją linię najwyżej 9 min.
 
 \subsection*{Opóźnienie przyjazdu do Iławy Głównej}
 {\small
@@ -180,16 +204,16 @@ EIP \mut{spoznienia.me} & 390 & 3 min & 18 min & 31\,\% \\
 EIC \mut{spoznienia.me} & 48 & 6 min & 30 min & 50\,\% \\
 IC \mut{spoznienia.me} & 483 & 1 min & 15 min & 22\,\% \\
 TLK \mut{spoznienia.me} & 108 & 6 min & 35 min & 54\,\% \\
-EIP \mut{API PLK} & 68 & 3 min & 20 min & 25\,\% \\
-EIC \mut{API PLK} & 10 & 7 min & 18 min & 60\,\% \\
-IC \mut{API PLK} & 89 & 1 min & 16 min & 24\,\% \\
-TLK \mut{API PLK} & 19 & 6 min & 28 min & 58\,\% \\
-R \mut{API PLK} & 88 & 0 min & 3 min & 3\,\% \\
+EIP \mut{PKP PLK} & 68 & 3 min & 20 min & 25\,\% \\
+EIC \mut{PKP PLK} & 10 & 7 min & 18 min & 60\,\% \\
+IC \mut{PKP PLK} & 89 & 1 min & 16 min & 24\,\% \\
+TLK \mut{PKP PLK} & 19 & 6 min & 28 min & 58\,\% \\
+R \mut{PKP PLK} & 88 & 0 min & 3 min & 3\,\% \\
 \bottomrule\end{tabular}\end{center}}
 \subsection*{Ciasne przesiadki pociąg → linia, które dochodzą do skutku}
 {\small
 \begin{center}\begin{tabular}{@{}l r r r@{}}\toprule
-Linia & IC (spoznienia.me) & Wszystkie (API PLK) & POLREGIO \\ \midrule
+Linia & IC (spoznienia.me) & Wszystkie (PKP PLK) & POLREGIO \\ \midrule
 \linedot{L1}1 & 43\,\% \mut{n=159} & 56\,\% \mut{n=28} & 78\,\% \mut{n=8} \\
 \linedot{L2}2 & 46\,\% \mut{n=174} & 59\,\% \mut{n=30} & 98\,\% \mut{n=7} \\
 \linedot{L3}3 & 59\,\% \mut{n=117} & 73\,\% \mut{n=36} & 89\,\% \mut{n=18} \\
@@ -231,9 +255,9 @@ Autobus → pociąg: dobra przesiadka & 45\,\% \mut{(38\,\%)} & 41\,\% \mut{(38\
 \bottomrule\end{tabular}\end{center}}
 \mut{\footnotesize Ten sam rozkład ZKM (od 1.09.2026) porównany z pociągami PKP Intercity z dnia roboczego przed korektą i po niej.}
 \section{Korekty rozkładu}
-Propozycje zmian rozkładu przygotowuje osobne narzędzie. Przesuwa ono kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej, i zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. Wyniki i pełny wykaz zmian są w raporcie „Korekty rozkładu ZKM Iława”.
+Propozycja korekty przesuwa kursy o kilka minut tak, żeby przybyło dobrych przesiadek na Dworcowej. Zachowuje obiegi autobusów, przerwy kierowców, liczbę autobusów oraz czas pracy kierowców. Wyniki i pełny wykaz zmian są w raporcie „Korekty rozkładu ZKM Iława”.
 \section{Pomiar faktycznych przyjazdów}
-Monitor pobiera z API PKP PLK stan kursów na stacji Iława Główna i zapisuje potwierdzone godziny przyjazdu i odjazdu pociągów. Są dane z 18 dni: 26--29.09.2026 i 8--21.10.2026 (12 dni roboczych, 3 soboty, 3 niedziele). \textbf{Faktyczne godziny są tylko dla pociągów.} Godziny autobusów są nadal planowe, bo nie ma publicznych danych o faktycznych odjazdach ZKM.
+Faktyczne godziny przyjazdów i odjazdów pociągów na stacji Iława Główna pochodzą z danych PKP PLK (Otwarte Dane Kolejowe). Są dane z 18 dni: 26--29.09.2026 i 8--21.10.2026 (12 dni roboczych, 3 soboty, 3 niedziele). \textbf{Faktyczne godziny są tylko dla pociągów.} Godziny autobusów są nadal planowe, bo nie ma publicznych danych o faktycznych odjazdach ZKM.
 
 \subsection*{Opóźnienia pociągów na przyjeździe do Iławy Głównej}
 {\small
@@ -261,16 +285,15 @@ Przy faktycznych godzinach pociągów propozycja nadal daje więcej dogodnych pr
 
 \subsection*{Ograniczenia}
 \begin{itemize}
-\item \textbf{Dane są niepełne.} Monitor zapisał faktyczne godziny 1116 z 1650 przyjazdów (68\,\%). Od 8.10 odpytuje API raz dziennie o 20:15, więc brakuje pociągów po 20:15 i części wcześniejszych, w październiku 64\,\% przyjazdów. Pociągi TLK w październiku prawie nie mają danych (1 z 112). Brakuje dni 30.09--7.10. Pociąg bez danych liczy się jako punktualny, tak jak w teście na minionych dniach, więc wynik „faktycznie” jest raczej zbyt łagodny.
+\item \textbf{Dane są niepełne.} Faktyczne godziny są dla 1116 z 1650 przyjazdów (68\,\%). W październiku brakuje głównie pociągów po 20:15; dane są dla 64\,\% przyjazdów. Pociągi TLK w październiku prawie nie mają danych (1 z 112). Brakuje dni 30.09--7.10. Pociąg bez danych liczy się jako punktualny, tak jak w teście na minionych dniach, więc wynik „faktycznie” jest raczej zbyt łagodny.
 \item \textbf{Sprawdzenie na samych zmierzonych pociągach} daje ten sam kierunek, ale mniejszy zysk: dogodne przesiadki w dzień roboczy 60 $\to$ 71 (+19\,\%), „uciekające” odjazdy 24 $\to$ 19.
 \item \textbf{Autobusy nie są mierzone.} Spóźniony autobus może uratować przesiadkę z opóźnionego pociągu, a wcześniejszy może ją zerwać. Tego ten pomiar nie pokazuje.
 \item 18 dni to mała próba, zwłaszcza dla sobót i niedziel (po 3 dni). Niedziela 27.09 miała duże zakłócenia (średnie opóźnienie 22 min).
 \end{itemize}
-\mut{\footnotesize Metoda: test na minionych dniach (ilawa/plan/pasttest.py) z faktycznymi godzinami z monitora, plan pociągów z API PKP PLK. Propozycja to obecny rozkład z wszystkimi zmianami z wykazu zmian (wykaz-zmian.csv), obiegi jednej linii. „Uciekający” odjazd liczony według definicji z raportu: autobus odjeżdża od 2 min przed przyjazdem pociągu do dojścia podróżnych, a następny kurs linii jest za 30 min lub później. Wyniki dla każdego dnia: pomiar-dni.csv.}
+\mut{\footnotesize Metoda: ten sam test co na minionych dniach, z faktycznymi godzinami pociągów i planowymi godzinami autobusów. Propozycja to obecny rozkład z wszystkimi zmianami z wykazu zmian (wykaz-zmian.csv), obiegi jednej linii. „Uciekający” odjazd liczony według definicji z raportu: autobus odjeżdża od 2 min przed przyjazdem pociągu do dojścia podróżnych, a następny kurs linii jest za 30 min lub później. Wyniki dla każdego dnia: pomiar-dni.csv.}
 
 \subsection*{Co dalej}
 \begin{enumerate}
-\item Monitor powinien znów odpytywać API co kilka minut, a nie raz dziennie. Wtedy będą też pociągi wieczorne.
 \item Autobusy nie mają publicznych danych o faktycznych odjazdach. Są trzy możliwości: wniosek do ZKM Iława o dane GPS lub z komputerów pokładowych (tryb dostępu do informacji publicznej), krótkie obserwacje na przystanku Dworcowa w godzinach szczytu albo założenie tolerancji ZKM, jak w tym raporcie.
 \item Rozkład ZKM zmienia się sezonowo (szkolny, wakacyjny). Po każdej zmianie trzeba ponownie pobrać tabliczki przystanku Dworcowa.
 \end{enumerate}
@@ -304,7 +327,7 @@ Czas dojścia & P→A: ucieka & P→A: dobra & A→P: nie zdąży & A→P: dobra
 \end{description}
 \subsection*{Metoda i założenia}
 \begin{itemize}
-\item \textbf{Dane.} Rozkład ZKM z rozklad.com, rozkład pociągów wszystkich przewoźników z API PKP PLK, opóźnienia z API PKP PLK i spoznienia.me.
+\item \textbf{Dane.} Rozkład ZKM z rozklad.com, rozkład pociągów wszystkich przewoźników i ich rzeczywiste godziny z PKP PLK (Otwarte Dane Kolejowe), historia opóźnień PKP Intercity ze spoznienia.me.
 \item \textbf{Model losowy.} 3000 powtórzeń dla sieci, 1000 dla każdej linii osobno.
 \item \textbf{Okres.} Minione dni od 1.09.2026 do 29.09.2026, z rozkładem ZKM ważnym od 1.09.2026. Wyniki zbiorcze używają planowych godzin pociągów. Dni testowe: dzień roboczy 28.09.2026, rzeczywiste godziny pociągów; sobota 26.09.2026, rzeczywiste godziny pociągów; niedziela 27.09.2026, rzeczywiste godziny pociągów.
 \item \textbf{Ograniczenia.} Brak danych o faktycznych odjazdach autobusów. Test przeprowadzono dla wielu linii i dni, więc pojedynczy wynik na granicy 95. percentyla może być przypadkowy.
