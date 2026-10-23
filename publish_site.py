@@ -90,6 +90,8 @@ def size(p: Path) -> str:
 # into the page folder. The web reports also keep the link back to the summary page at the end (hidden in print).
 NAV_FILES = ("raport-nav.css", "raport-nav.js")
 NAV_PAGES = (("./", "Raport ZKM"), ("przesiadki.html", "Przesiadki"), ("korekty.html", "Korekty rozkładu"))
+# The button of the bar invites to the discussion of the report on the forum (the topic of the report).
+FORUM_TOPIC = "https://forum.14-200.pl/t/autobus-odjechal-mi-sprzed-nosa-sprawdzilem-czy-to-przypadek/206"
 NAV_CSS = """/* Nawigacja na końcu: powrót do strony głównej raportu (belka u góry: raport-nav.css) */
 .rnav-end { border-top: 1px solid var(--rule); font-family: var(--f-display); }
 .rnav-end a { color: inherit; text-underline-offset: 3px; font-weight: 600; display: inline-block; padding: .35rem 0; }
@@ -107,7 +109,7 @@ def nav_bar(current: str) -> str:
     return ('<header class="rn" id="rn"><div class="rn-in">'
             '<a class="rn-logo" href="/" aria-label="14-200.pl, strona główna"><img src="/favicon.svg" width="40" height="40" alt=""><span>14-200.pl</span></a>'
             f'<nav class="rn-links" aria-label="Raport ZKM">{links}</nav>'
-            '<a class="rn-forum" href="https://forum.14-200.pl">Przejdź na forum</a>'
+            f'<a class="rn-forum" href="{FORUM_TOPIC}">Skomentuj na forum</a>'
             '</div></header>')
 
 
