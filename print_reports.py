@@ -309,6 +309,14 @@ PREAMBLE = r"""\documentclass[10pt,a4paper]{article}
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.9em}{0.3em}
 \setlength{\LTpre}{4pt}\setlength{\LTpost}{4pt}
+% Page breaks: never inside a paragraph, never inside a list or between a list and the sentence before it;
+% the page may end earlier (ragged bottom) instead of stretching the space. Long tables (longtable) still break.
+\raggedbottom
+\interlinepenalty=10000
+\clubpenalty=10000 \widowpenalty=10000 \displaywidowpenalty=10000
+\makeatletter
+\@itempenalty=10000 \@beginparpenalty=10000
+\makeatother
 \pagestyle{fancy}\fancyhf{}
 \renewcommand{\headrulewidth}{0.3pt}
 """
@@ -642,7 +650,7 @@ def attachment_przesiadki(D: dict) -> str:
             rows.append([DAYSHORT[d], dot(ln), num((a or b)["n_buses_per_day"]), f"{num(a['median_wait'])} min" if a else "--",
                          pct(a["near_miss"]) if a else "--", pct(a["good"]) if a else "--", f"{num(b['median_wait'])} min" if b else "--"])
     out.append(table([("Dzień", "l"), ("Linia", "l"), ("Kursy/dzień", "r"), ("Pociąg → linia: mediana", "r"), ("„Ucieka”", "r"),
-                      ("Dobra", "r"), ("Linia → pociąg: mediana", "r")], rows, long=True, size="footnotesize"))
+                      ("Dobra", "r"), ("Linia → pociąg: mediana", "r")], rows, size="footnotesize"))
 
     # dynamic
     out.append("\\section{Co robią opóźnienia pociągów}\n")
@@ -1199,7 +1207,7 @@ def attachment_korekty(R: dict, variant: str = "single") -> str:
                 rows.append([DAYSHORT[d], "jednej linii" if vn == "single" else "mieszane", lab, str(i["peak_vehicles"]), num(i["total_km"]),
                              num(i["vehicle_hours"], 1), str(i["duties"]), num(i["duty_hours"], 1)])
     out.append(table([("Dzień", "l"), ("Obiegi", "l"), ("Rozkład", "l"), ("Autobusy", "r"), ("Wozokm", "r"), ("Wozogodz.", "r"),
-                      ("Służby", "r"), ("Godz. kierowców", "r")], rows, long=True, size="footnotesize"))
+                      ("Służby", "r"), ("Godz. kierowców", "r")], rows, size="footnotesize"))
     rows = []
     for vn, A in (R.get("annual") or {}).items():
         for when, lab in (("before", "obecny"), ("after", "proponowany")):

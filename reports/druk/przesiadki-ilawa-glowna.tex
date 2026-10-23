@@ -26,6 +26,14 @@
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.9em}{0.3em}
 \setlength{\LTpre}{4pt}\setlength{\LTpost}{4pt}
+% Page breaks: never inside a paragraph, never inside a list or between a list and the sentence before it;
+% the page may end earlier (ragged bottom) instead of stretching the space. Long tables (longtable) still break.
+\raggedbottom
+\interlinepenalty=10000
+\clubpenalty=10000 \widowpenalty=10000 \displaywidowpenalty=10000
+\makeatletter
+\@itempenalty=10000 \@beginparpenalty=10000
+\makeatother
 \pagestyle{fancy}\fancyhf{}
 \renewcommand{\headrulewidth}{0.3pt}
 \fancyhead[L]{\sffamily\footnotesize 14-200.pl/@yasiu/2026-09-30-raport-zkm}
@@ -171,9 +179,8 @@ niedziela & 21:08 & \linedot{L3}3 $\to$ Nowa Wieś & 21:06 TLK 53170 & brak & --
 \section{Czas oczekiwania na konkretną linię}
 Podróżny potrzebuje konkretnej linii, a nie dowolnego autobusu. Mediana czasu od przyjazdu pociągu do odjazdu danej linii oraz od przyjazdu autobusu do odjazdu pociągu, średnio ze wszystkich dni okresu analizy (1.09.2026--29.09.2026), z planowymi godzinami pociągów.
 {\footnotesize
-\begin{longtable}{@{}l l r r r r r@{}}\toprule
-Dzień & Linia & Kursy/dzień & Pociąg → linia: mediana & „Ucieka” & Dobra & Linia → pociąg: mediana \\ \midrule\endhead
-\bottomrule\endfoot
+\begin{center}\begin{tabular}{@{}l l r r r r r@{}}\toprule
+Dzień & Linia & Kursy/dzień & Pociąg → linia: mediana & „Ucieka” & Dobra & Linia → pociąg: mediana \\ \midrule
 dzień roboczy & \linedot{L1}1 & 31 & 29 min & 22\,\% & 17\,\% & 34 min \\
 dzień roboczy & \linedot{L2}2 & 30 & 22 min & 17\,\% & 18\,\% & 21 min \\
 dzień roboczy & \linedot{L3}3 & 36 & 24 min & 15\,\% & 16\,\% & 22 min \\
@@ -185,7 +192,7 @@ sobota & \linedot{L3}3 & 21 & 33 min & 13\,\% & 11\,\% & 28 min \\
 niedziela & \linedot{L1}1 & 12 & 32 min & 10\,\% & 8\,\% & 47 min \\
 niedziela & \linedot{L2}2 & 8 & 68 min & 8\,\% & 8\,\% & 73 min \\
 niedziela & \linedot{L3}3 & 13 & 38 min & 7\,\% & 7\,\% & 41 min \\
-\end{longtable}}
+\bottomrule\end{tabular}\end{center}}
 \section{Co robią opóźnienia pociągów}
 Rozkład ZKM porównano z faktycznymi czasami pociągów. Dla PKP Intercity są dane z 18 dni (11.09.2026--28.09.2026, źródło: spoznienia.me). Dla wszystkich przewoźników, także POLREGIO, są dane z 4 dni (26.09.2026--29.09.2026, PKP PLK). Dla autobusów nie ma publicznych danych o faktycznych odjazdach. Przyjęto odchylenie w granicach tolerancji ZKM: od 1 min przed czasem do 3 min po czasie. „Ciasna” przesiadka to taka, w której według rozkładu podróżny czeka na swoją linię najwyżej 9 min.
 

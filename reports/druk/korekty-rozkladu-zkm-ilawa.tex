@@ -26,6 +26,14 @@
 \titlespacing*{\section}{0pt}{1.2em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.9em}{0.3em}
 \setlength{\LTpre}{4pt}\setlength{\LTpost}{4pt}
+% Page breaks: never inside a paragraph, never inside a list or between a list and the sentence before it;
+% the page may end earlier (ragged bottom) instead of stretching the space. Long tables (longtable) still break.
+\raggedbottom
+\interlinepenalty=10000
+\clubpenalty=10000 \widowpenalty=10000 \displaywidowpenalty=10000
+\makeatletter
+\@itempenalty=10000 \@beginparpenalty=10000
+\makeatother
 \pagestyle{fancy}\fancyhf{}
 \renewcommand{\headrulewidth}{0.3pt}
 \fancyhead[L]{\sffamily\footnotesize 14-200.pl/@yasiu/2026-09-30-raport-zkm}
@@ -332,9 +340,8 @@ niedziela & \linedot{L3}3 & 10:06 & 10:52 & 10:04--11:00 & +1 & 60 min & 14,8 & 
 \section{Praca przewozowa}
 Wskaźniki dzienne obecnego i proponowanego rozkładu, w obu wariantach obiegów. Wozokilometry obejmują dojazdy z zajezdni.
 {\footnotesize
-\begin{longtable}{@{}l l l r r r r r@{}}\toprule
-Dzień & Obiegi & Rozkład & Autobusy & Wozokm & Wozogodz. & Służby & Godz. kierowców \\ \midrule\endhead
-\bottomrule\endfoot
+\begin{center}\begin{tabular}{@{}l l l r r r r r@{}}\toprule
+Dzień & Obiegi & Rozkład & Autobusy & Wozokm & Wozogodz. & Służby & Godz. kierowców \\ \midrule
 dzień roboczy & jednej linii & obecny & 18 & 1\,600 & 211,4 & 34 & 197,4 \\
 dzień roboczy & jednej linii & proponowany & 18 & 1\,600 & 211,4 & 34 & 196,7 \\
 dzień roboczy & mieszane & obecny & 15 & 1\,589 & 194,4 & 32 & 185,9 \\
@@ -347,7 +354,7 @@ niedziela & jednej linii & obecny & 5 & 456 & 58,9 & 10 & 53,5 \\
 niedziela & jednej linii & proponowany & 5 & 456 & 58,9 & 10 & 53,3 \\
 niedziela & mieszane & obecny & 4 & 452 & 46,6 & 8 & 44,5 \\
 niedziela & mieszane & proponowany & 4 & 452 & 46,6 & 8 & 44,5 \\
-\end{longtable}}
+\bottomrule\end{tabular}\end{center}}
 \subsection*{Rok, wszystkie typy dni}
 {\small
 \begin{center}\begin{tabular}{@{}l l r r r r@{}}\toprule
